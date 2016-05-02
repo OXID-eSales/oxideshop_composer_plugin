@@ -32,7 +32,7 @@ class ShopPackagesInstaller extends LibraryInstaller
 {
     /** @var array Available installers for packages. */
     private $installers = [
-        'oxideshop' => ShopInstaller::class
+        'oxid-esales-oxideshop' => ShopInstaller::class
     ];
 
     /**
