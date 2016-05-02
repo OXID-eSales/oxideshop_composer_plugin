@@ -52,7 +52,7 @@ class ShopInstaller extends AbstractInstaller
      */
     public function install(PackageInterface $package, $packagePath)
     {
-        $this->getIO()->write("Install shop package");
+        $this->getIO()->write("Installing shop package");
         $fileSystem = $this->getFileSystem();
         $fileSystem->mirror($packagePath.'/source/', $this->getRootDirectory());
     }
@@ -65,7 +65,7 @@ class ShopInstaller extends AbstractInstaller
      */
     public function update(PackageInterface $package, $packagePath)
     {
-        $this->getIO()->write("Update shop package");
+        $this->getIO()->write("Updating shop package");
         $fileSystem = $this->getFileSystem();
         foreach ($this->overwritableDirectories as $directory) {
             if ($fileSystem->exists("$packagePath/source/$directory")) {
