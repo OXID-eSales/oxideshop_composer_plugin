@@ -53,8 +53,10 @@ class ShopInstaller extends AbstractInstaller
     public function install(PackageInterface $package, $packagePath)
     {
         $this->getIO()->write("Installing shop package");
+        $root = $this->getRootDirectory();
         $fileSystem = $this->getFileSystem();
-        $fileSystem->mirror($packagePath.'/source/', $this->getRootDirectory());
+        $fileSystem->mirror($packagePath.'/source/', $root);
+        $fileSystem->copy($root.'/config.inc.php.dist', $root.'/config.inc.php');
     }
 
     /**
