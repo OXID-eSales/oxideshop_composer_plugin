@@ -62,8 +62,8 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
         $structure = [
             'source/vendor/oxideshop_ce/source' => [
                 'index.php' => '<?php',
-                'Application/TestClass.php' => '<?php',
-                'Core/TestClass.php' => '<?php'
+                'Application/views/template.tpl' => '<?php',
+                'config.inc.php.dist' => '<?php',
             ]
         ];
         vfsStream::setup('root', 777, ['projectRoot' => $this->prepareStructure($structure)]);
@@ -75,72 +75,15 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
         $shopPreparator->install(new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'), $shopDirectory);
 
         $this->assertFileExists($rootPath . '/index.php');
-        $this->assertFileExists($rootPath . '/Application/TestClass.php');
-        $this->assertFileExists($rootPath . '/Core/TestClass.php');
+        $this->assertFileExists($rootPath . '/Application/views/template.tpl');
+        $this->assertFileExists($rootPath . '/config.inc.php.dist');
     }
 
-    public function testUpdateOverwritesCoreFiles()
+    public function testInstallCreatesConfigInc()
     {
         $structure = [
-            'source' => [
-                'Core/TestClass.php' => '<?php old content',
-                'Application/Model/TestClass.php' => '<?php old content',
-                'vendor/oxideshop_ce/source' => [
-                    'Core/TestClass.php' => '<?php new content',
-                    'Application/Model/TestClass.php' => '<?php new content',
-                ]
-            ],
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->prepareStructure($structure)]);
-
-        $rootPath = vfsStream::url('root/projectRoot/source');
-        $shopDirectory = "$rootPath/vendor/oxideshop_ce";
-
-        $shopPreparator = new ShopInstaller(new Filesystem(), new NullIO, $rootPath);
-        $shopPreparator->update(new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'), $shopDirectory);
-
-        $this->assertStringEqualsFile("$rootPath/Core/TestClass.php", "<?php new content");
-        $this->assertStringEqualsFile("$rootPath/Application/Model/TestClass.php", "<?php new content");
-    }
-
-    public function testUpdateDeletesOldFilesInCoreDirectories()
-    {
-        $structure = [
-            'source' => [
-                'Core/OldClass.php' => '<?php',
-                'Application/Model/OldClass.php' => '<?php',
-                'vendor/oxideshop_ce/source' => [
-                    'Core/NewClass.php' => '<?php',
-                    'Application/Model/NewClass.php' => '<?php',
-                ]
-            ],
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->prepareStructure($structure)]);
-
-        $rootPath = vfsStream::url('root/projectRoot/source');
-        $shopDirectory = "$rootPath/vendor/oxideshop_ce";
-
-        $shopPreparator = new ShopInstaller(new Filesystem(), new NullIO, $rootPath);
-        $shopPreparator->update(new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'), $shopDirectory);
-
-        $this->assertFileExists("$rootPath/Core/NewClass.php");
-        $this->assertFileNotExists("$rootPath/Core/OldClass.php");
-        $this->assertFileExists("$rootPath/Application/Model/NewClass.php");
-        $this->assertFileNotExists("$rootPath/Application/Model/OldClass.php");
-    }
-
-    public function testUpdateDoesNotOverwriteUserConfigurableFiles()
-    {
-        $structure = [
-            'source' => [
-                'config.inc.php' => '<?php old content',
-                'out/azure/myPicture.jpg' => 'old content',
-                'Application/views/azure/template.tpl' => 'old content',
-                'vendor/oxideshop_ce/source' => [
-                    'config.inc.php' => '<?php new content',
-                    'out/azure/myPicture.jpg' => 'new content',
-                    'Application/views/azure/template.tpl' => 'new content',
-                ],
+            'source/vendor/oxideshop_ce/source' => [
+                'config.inc.php.dist' => '<?php',
             ]
         ];
         vfsStream::setup('root', 777, ['projectRoot' => $this->prepareStructure($structure)]);
@@ -149,11 +92,32 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
         $shopDirectory = "$rootPath/vendor/oxideshop_ce";
 
         $shopPreparator = new ShopInstaller(new Filesystem(), new NullIO, $rootPath);
-        $shopPreparator->update(new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'), $shopDirectory);
+        $shopPreparator->install(new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'), $shopDirectory);
 
-        $this->assertStringEqualsFile("$rootPath/config.inc.php", "<?php old content");
-        $this->assertStringEqualsFile("$rootPath/out/azure/myPicture.jpg", "old content");
-        $this->assertStringEqualsFile("$rootPath/Application/views/azure/template.tpl", "old content");
+        $this->assertFileExists($rootPath . '/config.inc.php');
+    }
+
+    public function testInstallDoesNotCopyClasses()
+    {
+        $structure = [
+            'source/vendor/oxideshop_ce/source' => [
+                'Core/Class.php' => '<?php',
+                'Application/Model/Class.php' => '<?php',
+                'Application/Controller/Class.php' => '<?php',
+            ]
+        ];
+        vfsStream::setup('root', 777, ['projectRoot' => $this->prepareStructure($structure)]);
+
+        $rootPath = vfsStream::url('root/projectRoot/source');
+        $shopDirectory = "$rootPath/vendor/oxideshop_ce";
+
+        $shopPreparator = new ShopInstaller(new Filesystem(), new NullIO, $rootPath);
+        $shopPreparator->install(new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'), $shopDirectory);
+
+        $this->assertFileNotExists($rootPath . '/Core/Class.php');
+        $this->assertFileNotExists($rootPath . '/Application/Model/Class.php');
+        $this->assertFileNotExists($rootPath . '/Application/Controller/Class.php');
+        $this->assertFileNotExists($rootPath . '/Application/Controller');
     }
 
     /**

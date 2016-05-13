@@ -29,7 +29,7 @@ use Symfony\Component\Filesystem\Filesystem;
 class ShopInstaller extends AbstractInstaller
 {
     /** @var array Core directories, which are safe to overwrite. */
-    private $overwritableDirectories = [
+    private $directoriesToSkip = [
         'Application/Component',
         'Application/Controller',
         'Application/Model',
@@ -53,10 +53,25 @@ class ShopInstaller extends AbstractInstaller
     public function install(PackageInterface $package, $packagePath)
     {
         $this->getIO()->write("Installing shop package");
+
+        $packagePath = "$packagePath/source";
         $root = $this->getRootDirectory();
+
+        $directoriesToSkip = array_map(
+            function($directory) use ($packagePath) { return "$packagePath/$directory"; },
+            $this->directoriesToSkip
+        );
+
+        $directoryIterator = new \RecursiveDirectoryIterator($packagePath, \FilesystemIterator::SKIP_DOTS);
+        $directoryFilter = new DirectoryRecursiveFilterIterator($directoryIterator, $directoriesToSkip);
+        $iterator = new \RecursiveIteratorIterator($directoryFilter, \RecursiveIteratorIterator::SELF_FIRST);
+
         $fileSystem = $this->getFileSystem();
-        $fileSystem->mirror($packagePath.'/source/', $root);
-        $fileSystem->copy($root.'/config.inc.php.dist', $root.'/config.inc.php');
+        $fileSystem->mirror($packagePath, $root, $iterator);
+
+        if (file_exists($root.'/config.inc.php.dist')) {
+            $fileSystem->copy($root.'/config.inc.php.dist', $root.'/config.inc.php');
+        }
     }
 
     /**
@@ -67,12 +82,5 @@ class ShopInstaller extends AbstractInstaller
      */
     public function update(PackageInterface $package, $packagePath)
     {
-        $this->getIO()->write("Updating shop package");
-        $fileSystem = $this->getFileSystem();
-        foreach ($this->overwritableDirectories as $directory) {
-            if ($fileSystem->exists("$packagePath/source/$directory")) {
-                $fileSystem->mirror("$packagePath/source/$directory", $this->getRootDirectory()."/$directory", null, ['delete' => true]);
-            }
-        }
     }
 }
