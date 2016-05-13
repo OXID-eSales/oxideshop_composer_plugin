@@ -54,7 +54,7 @@ class ShopInstaller extends AbstractInstaller
     {
         $this->getIO()->write("Installing shop package");
 
-        $packagePath = "$packagePath/source";
+        $packagePath = rtrim($packagePath, '/') . '/source';
         $root = $this->getRootDirectory();
 
         $directoriesToSkip = array_map(

@@ -37,7 +37,7 @@ class DirectoryRecursiveFilterIterator extends RecursiveFilterIterator
     public function accept()
     {
         foreach ($this->directoriesToSkip as $skip) {
-            $skip = preg_quote(trim($skip, '/'), '/');
+            $skip = preg_quote(rtrim($skip, '/'), '/');
             if (preg_match("/^${skip}(\\/|$)/", $this->current()->getPathName())) {
                 return false;
             }
