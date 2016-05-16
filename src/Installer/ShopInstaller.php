@@ -57,17 +57,8 @@ class ShopInstaller extends AbstractInstaller
         $packagePath = rtrim($packagePath, '/') . '/source';
         $root = $this->getRootDirectory();
 
-        $directoriesToSkip = array_map(
-            function($directory) use ($packagePath) { return "$packagePath/$directory"; },
-            $this->directoriesToSkip
-        );
-
-        $directoryIterator = new \RecursiveDirectoryIterator($packagePath, \FilesystemIterator::SKIP_DOTS);
-        $directoryFilter = new DirectoryRecursiveFilterIterator($directoryIterator, $directoriesToSkip);
-        $iterator = new \RecursiveIteratorIterator($directoryFilter, \RecursiveIteratorIterator::SELF_FIRST);
-
         $fileSystem = $this->getFileSystem();
-        $fileSystem->mirror($packagePath, $root, $iterator);
+        $fileSystem->mirror($packagePath, $root, $this->formIterator($packagePath, $this->directoriesToSkip));
 
         if (file_exists($root.'/config.inc.php.dist')) {
             $fileSystem->copy($root.'/config.inc.php.dist', $root.'/config.inc.php');
@@ -82,5 +73,21 @@ class ShopInstaller extends AbstractInstaller
      */
     public function update(PackageInterface $package, $packagePath)
     {
+    }
+
+    /**
+     * @param string $packagePath
+     * @param array  $directoriesToSkip
+     *
+     * @return \RecursiveIteratorIterator
+     */
+    private function formIterator($packagePath, $directoriesToSkip)
+    {
+        foreach ($directoriesToSkip as &$directory) {
+            $directory = "$packagePath/$directory";
+        }
+        $directoryIterator = new \RecursiveDirectoryIterator($packagePath, \FilesystemIterator::SKIP_DOTS);
+        $directoryFilter = new DirectoryRecursiveFilterIterator($directoryIterator, $directoriesToSkip);
+        return new \RecursiveIteratorIterator($directoryFilter, \RecursiveIteratorIterator::SELF_FIRST);
     }
 }
