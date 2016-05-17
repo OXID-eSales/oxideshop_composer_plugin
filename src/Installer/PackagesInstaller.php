@@ -27,7 +27,7 @@ use Composer\Package\PackageInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Class responsible for triggering installation process .
+ * Class responsible for triggering installation process.
  */
 class PackagesInstaller extends LibraryInstaller
 {

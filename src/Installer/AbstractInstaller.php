@@ -58,6 +58,8 @@ abstract class AbstractInstaller
     /**
      * Check whether given package is already installed.
      *
+     * @param PackageInterface $package
+     *
      * @return mixed
      */
     abstract public function isInstalled(PackageInterface $package);

@@ -26,7 +26,6 @@ use Composer\Package\PackageInterface;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @inheritdoc
