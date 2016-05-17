@@ -30,7 +30,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ShopInstallerTest extends \PHPUnit_Framework_TestCase
 {
-    public function testIsInstalledWhenNotInstalled()
+    public function testChecksIfPackageIsNotInstalled()
     {
         $structure = [
             'source/vendor/oxideshop_ce/source/index.php' => '<?php',
@@ -42,7 +42,7 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($shopPreparator->isInstalled(new Package('oxid-esales/oxideshop-ce', 'dev', 'dev')));
     }
 
-    public function testIsInstalledWhenInstalled()
+    public function testChecksIfPackageInstalled()
     {
         $structure = [
             'source' => [
@@ -57,7 +57,7 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($shopPreparator->isInstalled(new Package('oxid-esales/oxideshop-ce', 'dev', 'dev')));
     }
 
-    public function testInstall()
+    public function testInstallationOfPackage()
     {
         $structure = [
             'source/vendor/oxideshop_ce/source' => [
