@@ -26,7 +26,7 @@ use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
-use OxidEsales\ComposerPlugin\Installer\ShopPackagesInstaller;
+use OxidEsales\ComposerPlugin\Installer\PackagesInstaller;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
@@ -58,7 +58,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function activate(Composer $composer, IOInterface $io)
     {
-        $installer = new ShopPackagesInstaller($io, $composer);
+        $installer = new PackagesInstaller($io, $composer);
         $composer->getInstallationManager()->addInstaller($installer);
 
         $this->composer = $composer;
@@ -71,7 +71,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function installPackages()
     {
         $repo = $this->composer->getRepositoryManager()->getLocalRepository();
-        $packagesInstaller = new ShopPackagesInstaller($this->io, $this->composer);
+        $packagesInstaller = new PackagesInstaller($this->io, $this->composer);
         foreach ($repo->getPackages() as $package) {
             if ($packagesInstaller->supports($package->getType())) {
                 $packagesInstaller->installPackage($package);

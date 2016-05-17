@@ -23,12 +23,17 @@
 namespace OxidEsales\ComposerPlugin\Installer;
 
 use Composer\Package\PackageInterface;
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
 
-/**  */
+/**
+ * @inheritdoc
+ */
 class ShopInstaller extends AbstractInstaller
 {
-    /** @var array Core directories, which are safe to overwrite. */
+    /** @var array Directories which shouldn't be copied. */
     private $directoriesToSkip = [
         'Application/Component',
         'Application/Controller',
@@ -37,6 +42,8 @@ class ShopInstaller extends AbstractInstaller
     ];
 
     /**
+     * @param PackageInterface $package
+     *
      * @return bool
      */
     public function isInstalled(PackageInterface $package)
@@ -79,15 +86,15 @@ class ShopInstaller extends AbstractInstaller
      * @param string $packagePath
      * @param array  $directoriesToSkip
      *
-     * @return \RecursiveIteratorIterator
+     * @return RecursiveIteratorIterator
      */
     private function formIterator($packagePath, $directoriesToSkip)
     {
         foreach ($directoriesToSkip as &$directory) {
             $directory = "$packagePath/$directory";
         }
-        $directoryIterator = new \RecursiveDirectoryIterator($packagePath, \FilesystemIterator::SKIP_DOTS);
+        $directoryIterator = new RecursiveDirectoryIterator($packagePath, FilesystemIterator::SKIP_DOTS);
         $directoryFilter = new DirectoryRecursiveFilterIterator($directoryIterator, $directoriesToSkip);
-        return new \RecursiveIteratorIterator($directoryFilter, \RecursiveIteratorIterator::SELF_FIRST);
+        return new RecursiveIteratorIterator($directoryFilter, RecursiveIteratorIterator::SELF_FIRST);
     }
 }

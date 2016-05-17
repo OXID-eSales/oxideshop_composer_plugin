@@ -26,7 +26,10 @@ use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-/**  */
+/**
+ * Class is responsible for preparing project structure.
+ * It copies necessary files to specific directories.
+ */
 abstract class AbstractInstaller
 {
     /** @var Filesystem */

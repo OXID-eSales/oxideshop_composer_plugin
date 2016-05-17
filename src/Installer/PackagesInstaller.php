@@ -24,11 +24,12 @@ namespace OxidEsales\ComposerPlugin\Installer;
 
 use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
-use Composer\Repository\InstalledRepositoryInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-/**  */
-class ShopPackagesInstaller extends LibraryInstaller
+/**
+ * Class responsible for triggering installation process .
+ */
+class PackagesInstaller extends LibraryInstaller
 {
     /** @var array Available installers for packages. */
     private $installers = [
