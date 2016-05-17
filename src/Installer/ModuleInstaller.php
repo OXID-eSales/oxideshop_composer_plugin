@@ -29,12 +29,20 @@ use Composer\Package\PackageInterface;
  */
 class ModuleInstaller extends AbstractInstaller
 {
+    const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
+    const EXTRA_PARAMETER_KEY_MODULE = 'module-name';
+    const EXTRA_PARAMETER_KEY_VENDOR = 'vendor-name';
+
+    /** @var PackageInterface */
+    private $package;
+
     /**
      * @return bool
      */
     public function isInstalled(PackageInterface $package)
     {
-        return false;
+        $this->setPackage($package);
+        return file_exists($this->formModuleTargetPath() .'/metadata.php');
     }
 
     /**
@@ -45,15 +53,73 @@ class ModuleInstaller extends AbstractInstaller
      */
     public function install(PackageInterface $package, $packagePath)
     {
+        $packageName = $package->getName();
+        $this->getIO()->write("Installing $packageName package");
+        $this->setPackage($package);
+
+        $packagePath = rtrim($packagePath, '/') ;
+
+        $targetDirectory = $this->formModuleTargetPath();
+        $fileSystem = $this->getFileSystem();
+        $fileSystem->mirror($packagePath, $targetDirectory);
     }
 
     /**
-     * Copies module files to shop directory.
+     * Update module files.
      *
      * @param PackageInterface $package
      * @param string           $packagePath
      */
     public function update(PackageInterface $package, $packagePath)
     {
+    }
+
+    /**
+     * @return PackageInterface
+     */
+    protected function getPackage()
+    {
+        return $this->package;
+    }
+
+    /**
+     * @param PackageInterface $package
+     */
+    protected function setPackage($package)
+    {
+        $this->package = $package;
+    }
+
+    /**
+     * @return string
+     */
+    protected function formModuleTargetPath()
+    {
+        $package = $this->getPackage();
+        $vendorName = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_VENDOR);
+        if (is_null($vendorName)) {
+            $vendorName = explode('/', $package->getName())[0];
+        }
+        $moduleName =  $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_MODULE);
+        if (is_null($moduleName)) {
+            $moduleName = explode('/', $package->getName())[1];
+        }
+        $targetDirectory = $this->getRootDirectory() . "/modules/$vendorName/$moduleName";
+        return $targetDirectory;
+    }
+
+    /**
+     * @param $extraParameterKey
+     * @return null|string
+     */
+    protected function getExtraParameterValueByKey($extraParameterKey)
+    {
+        $extraParameterValue = null;
+        $package = $this->getPackage();
+        $extraParameters = $package->getExtra();
+        if (isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT]) && isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey])) {
+            $extraParameterValue =  $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey];
+        }
+        return $extraParameterValue;
     }
 }

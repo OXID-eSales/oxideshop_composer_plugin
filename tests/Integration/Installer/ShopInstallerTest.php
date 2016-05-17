@@ -20,7 +20,7 @@
  * @version   OXID eShop Composer plugin
  */
 
-namespace Tests\Integration;
+namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer;
 
 use Composer\IO\NullIO;
 use Composer\Package\Package;
@@ -35,7 +35,7 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
         $structure = [
             'source/vendor/oxideshop_ce/source/index.php' => '<?php',
         ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
         $rootPath = vfsStream::url('root/projectRoot/source');
 
         $shopPreparator = new ShopInstaller(new Filesystem(), new NullIO, $rootPath);
@@ -50,7 +50,7 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
                 'vendor/oxideshop_ce/source/index.php' => '<?php',
             ]
         ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
         $rootPath = vfsStream::url('root/projectRoot/source');
 
         $shopPreparator = new ShopInstaller(new Filesystem(), new NullIO, $rootPath);
@@ -66,7 +66,7 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
                 'config.inc.php.dist' => '<?php',
             ]
         ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
 
         $rootPath = vfsStream::url('root/projectRoot/source');
         $shopDirectory = "$rootPath/vendor/oxideshop_ce";
@@ -86,7 +86,7 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
                 'config.inc.php.dist' => '<?php',
             ]
         ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
 
         $rootPath = vfsStream::url('root/projectRoot/source');
         $shopDirectory = "$rootPath/vendor/oxideshop_ce";
@@ -106,7 +106,7 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
                 'Application/Controller/Class.php' => '<?php',
             ]
         ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
 
         $rootPath = vfsStream::url('root/projectRoot/source');
         $shopDirectory = "$rootPath/vendor/oxideshop_ce";
@@ -121,22 +121,10 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param array $structure
-     *
-     * @return array
+     * @return StructurePreparator
      */
-    public function prepareStructure($structure)
+    public function getStructurePreparator()
     {
-        $newStructure = [];
-        foreach ($structure as $path => $element) {
-            $position = &$newStructure;
-            foreach (explode('/', $path) as $part) {
-                $position[$part] = [];
-                $position = &$position[$part];
-            }
-            $position = strpos($path, '/') === false ? [] : $position;
-            $position = is_array($element) ? $this->prepareStructure($element) : $element;
-        }
-        return $newStructure;
+        return new StructurePreparator();
     }
 }

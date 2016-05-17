@@ -20,7 +20,7 @@
  * @version   OXID eShop Composer plugin
  */
 
-namespace Tests\Integration;
+namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer;
 
 use org\bovigo\vfs\vfsStream;
 use OxidEsales\ComposerPlugin\Installer\DirectoryRecursiveFilterIterator;

@@ -22,6 +22,9 @@
   "autoload": {
     "psr-4": {"OxidEsales\\ComposerPlugin\\": "src"}
   },
+  "autoload-dev": {
+    "psr-4": { "OxidEsales\\ComposerPlugin\\Tests\\": "tests/" }
+  },
   "extra": {
     "class": "OxidEsales\\ComposerPlugin\\Plugin"
   }
