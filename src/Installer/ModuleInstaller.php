@@ -24,8 +24,10 @@ namespace OxidEsales\ComposerPlugin\Installer;
 
 use Composer\Package\PackageInterface;
 
-/**  */
-class ShopInstaller extends AbstractInstaller
+/**
+ * @inheritdoc
+ */
+class ModuleInstaller extends AbstractInstaller
 {
     /**
      * @return bool
