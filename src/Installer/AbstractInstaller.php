@@ -41,18 +41,23 @@ abstract class AbstractInstaller
     /** @var string */
     private $rootDirectory;
 
+    /** @var PackageInterface */
+    private $package;
+
     /**
      * AbstractInstaller constructor.
      *
-     * @param Filesystem  $fileSystem
+     * @param Filesystem $fileSystem
      * @param IOInterface $io
-     * @param string      $rootDirectory
+     * @param string $rootDirectory
+     * @param PackageInterface $package
      */
-    public function __construct(Filesystem $fileSystem, IOInterface $io, $rootDirectory)
+    public function __construct(Filesystem $fileSystem, IOInterface $io, $rootDirectory, PackageInterface $package)
     {
         $this->fileSystem = $fileSystem;
         $this->io = $io;
         $this->rootDirectory = $rootDirectory;
+        $this->package = $package;
     }
 
     /**
@@ -62,23 +67,21 @@ abstract class AbstractInstaller
      *
      * @return mixed
      */
-    abstract public function isInstalled(PackageInterface $package);
+    abstract public function isInstalled();
 
     /**
      * Run package installation procedure. After installation files should be moved to correct location.
      *
-     * @param PackageInterface $package
-     * @param string           $packagePath Path to downloaded package in vendors directory.
+     * @param string $packagePath Path to downloaded package in vendors directory.
      */
-    abstract public function install(PackageInterface $package, $packagePath);
+    abstract public function install($packagePath);
 
     /**
      * Run update procedure to keep package files up to date.
      *
-     * @param PackageInterface $package
-     * @param string           $packagePath Path to downloaded package in vendors directory.
+     * @param string $packagePath Path to downloaded package in vendors directory.
      */
-    abstract public function update(PackageInterface $package, $packagePath);
+    abstract public function update($packagePath);
 
     /**
      * @return Filesystem
@@ -102,5 +105,13 @@ abstract class AbstractInstaller
     protected function getRootDirectory()
     {
         return $this->rootDirectory;
+    }
+
+    /**
+     * @return PackageInterface
+     */
+    public function getPackage()
+    {
+        return $this->package;
     }
 }

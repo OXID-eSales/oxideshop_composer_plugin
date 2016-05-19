@@ -41,11 +41,9 @@ class ShopInstaller extends AbstractInstaller
     ];
 
     /**
-     * @param PackageInterface $package
-     *
      * @return bool
      */
-    public function isInstalled(PackageInterface $package)
+    public function isInstalled()
     {
         return file_exists($this->getRootDirectory() .'/index.php');
     }
@@ -53,10 +51,9 @@ class ShopInstaller extends AbstractInstaller
     /**
      * Copies all shop files from vendors to source directory.
      *
-     * @param PackageInterface $package
-     * @param string           $packagePath
+     * @param string $packagePath
      */
-    public function install(PackageInterface $package, $packagePath)
+    public function install($packagePath)
     {
         $this->getIO()->write("Installing shop package");
 
@@ -74,10 +71,9 @@ class ShopInstaller extends AbstractInstaller
     /**
      * Overwrites files in core directories.
      *
-     * @param PackageInterface $package
-     * @param string           $packagePath
+     * @param string $packagePath
      */
-    public function update(PackageInterface $package, $packagePath)
+    public function update($packagePath)
     {
     }
 

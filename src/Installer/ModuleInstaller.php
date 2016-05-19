@@ -33,34 +33,28 @@ class ModuleInstaller extends AbstractInstaller
     const EXTRA_PARAMETER_KEY_MODULE = 'module-name';
     const EXTRA_PARAMETER_KEY_VENDOR = 'vendor-name';
 
-    /** @var PackageInterface */
-    private $package;
-
     /**
      * @return bool
      */
-    public function isInstalled(PackageInterface $package)
+    public function isInstalled()
     {
-        $this->setPackage($package);
         return file_exists($this->formModuleTargetPath() .'/metadata.php');
     }
 
     /**
      * Copies module files to shop directory.
      *
-     * @param PackageInterface $package
-     * @param string           $packagePath
+     * @param string $packagePath
      */
-    public function install(PackageInterface $package, $packagePath)
+    public function install($packagePath)
     {
+        $package = $this->getPackage();
         $packageName = $package->getName();
         $this->getIO()->write("Installing $packageName package");
-        $this->setPackage($package);
-
-        $packagePath = rtrim($packagePath, '/') ;
-
+        
         $targetDirectory = $this->formModuleTargetPath();
         $fileSystem = $this->getFileSystem();
+        $packagePath = rtrim($packagePath, '/') ;
         $fileSystem->mirror($packagePath, $targetDirectory);
     }
 
@@ -70,24 +64,8 @@ class ModuleInstaller extends AbstractInstaller
      * @param PackageInterface $package
      * @param string           $packagePath
      */
-    public function update(PackageInterface $package, $packagePath)
+    public function update($packagePath)
     {
-    }
-
-    /**
-     * @return PackageInterface
-     */
-    protected function getPackage()
-    {
-        return $this->package;
-    }
-
-    /**
-     * @param PackageInterface $package
-     */
-    protected function setPackage($package)
-    {
-        $this->package = $package;
     }
 
     /**

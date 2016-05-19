@@ -40,8 +40,8 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $shopPreparator = new ModuleInstaller(new Filesystem(), new NullIO, $rootPath);
-        $this->assertFalse($shopPreparator->isInstalled(new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev')));
+        $shopPreparator = new ModuleInstaller(new Filesystem(), new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
+        $this->assertFalse($shopPreparator->isInstalled());
     }
 
     public function testChecksIfPackageInstalled()
@@ -53,8 +53,8 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $shopPreparator = new ModuleInstaller(new Filesystem(), new NullIO, $rootPath);
-        $this->assertTrue($shopPreparator->isInstalled(new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev')));
+        $shopPreparator = new ModuleInstaller(new Filesystem(), new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
+        $this->assertTrue($shopPreparator->isInstalled());
     }
 
     public function providerChecksIfModuleIsInstalled()
@@ -86,11 +86,11 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         $eshopRootPath = "$rootPath/source";
         $installedModuleMetadata = "$eshopRootPath/$installedModuleMetadata";
 
-        $shopPreparator = new ModuleInstaller(new Filesystem(), new NullIO(), $eshopRootPath);
         $package = new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev');
+        $shopPreparator = new ModuleInstaller(new Filesystem(), new NullIO(), $eshopRootPath, $package);
         $package->setExtra($composerExtras);
         $moduleInVendor = "$rootPath/vendor/" . static::PRODUCT_NAME_IN_COMPOSER_FILE . "";
-        $shopPreparator->install($package, $moduleInVendor);
+        $shopPreparator->install($moduleInVendor);
 
         $this->assertFileExists($installedModuleMetadata);
     }

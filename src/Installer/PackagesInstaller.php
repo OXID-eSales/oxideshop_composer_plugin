@@ -53,23 +53,22 @@ class PackagesInstaller extends LibraryInstaller
      */
     public function installPackage(PackageInterface $package)
     {
-        $installer = $this->createInstaller($package->getType());
-        if (!$installer->isInstalled($package)) {
-            $installer->install($package, $this->getInstallPath($package));
+        $installer = $this->createInstaller($package);
+        if (!$installer->isInstalled()) {
+            $installer->install($this->getInstallPath($package));
         } else {
-            $installer->update($package, $this->getInstallPath($package));
+            $installer->update($this->getInstallPath($package));
         }
     }
 
     /**
      * Creates package installer.
      *
-     * @param string $type
-     *
+     * @param PackageInterface $package
      * @return AbstractInstaller
      */
-    protected function createInstaller($type)
+    protected function createInstaller(PackageInterface $package)
     {
-        return new $this->installers[$type](new Filesystem(), $this->io, getcwd() . '/source');
+        return new $this->installers[$package->getType()](new Filesystem(), $this->io, getcwd() . '/source', $package);
     }
 }
