@@ -23,9 +23,6 @@
 namespace OxidEsales\ComposerPlugin\Installer;
 
 use Composer\Package\PackageInterface;
-use FilesystemIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 
 /**
  * @inheritdoc
@@ -60,8 +57,9 @@ class ShopInstaller extends AbstractInstaller
         $packagePath = rtrim($packagePath, '/') . '/source';
         $root = $this->getRootDirectory();
 
+        $iterator = $this->getDirectoriesToSkipIteratorBuilder();
         $fileSystem = $this->getFileSystem();
-        $fileSystem->mirror($packagePath, $root, $this->formIterator($packagePath, $this->directoriesToSkip));
+        $fileSystem->mirror($packagePath, $root, $iterator->build($packagePath, $this->directoriesToSkip));
 
         if (file_exists($root.'/config.inc.php.dist')) {
             $fileSystem->copy($root.'/config.inc.php.dist', $root.'/config.inc.php');
@@ -78,18 +76,10 @@ class ShopInstaller extends AbstractInstaller
     }
 
     /**
-     * @param string $packagePath
-     * @param array  $directoriesToSkip
-     *
-     * @return RecursiveIteratorIterator
+     * @return DirectoriesSkipIteratorBuilder
      */
-    private function formIterator($packagePath, $directoriesToSkip)
+    protected function getDirectoriesToSkipIteratorBuilder()
     {
-        foreach ($directoriesToSkip as &$directory) {
-            $directory = "$packagePath/$directory";
-        }
-        $directoryIterator = new RecursiveDirectoryIterator($packagePath, FilesystemIterator::SKIP_DOTS);
-        $directoryFilter = new DirectoryRecursiveFilterIterator($directoryIterator, $directoriesToSkip);
-        return new RecursiveIteratorIterator($directoryFilter, RecursiveIteratorIterator::SELF_FIRST);
+        return new DirectoriesSkipIteratorBuilder();
     }
 }

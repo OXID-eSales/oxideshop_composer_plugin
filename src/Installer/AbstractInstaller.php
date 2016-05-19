@@ -32,6 +32,14 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 abstract class AbstractInstaller
 {
+    const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
+
+    /** Used to install third party integrations. */
+    const EXTRA_PARAMETER_KEY_TARGET = 'target-directory';
+
+    /** Used to install third party integration assets. */
+    const EXTRA_PARAMETER_KEY_ASSETS = 'assets-directory';
+
     /** @var Filesystem */
     private $fileSystem;
 
@@ -62,9 +70,6 @@ abstract class AbstractInstaller
 
     /**
      * Check whether given package is already installed.
-     *
-     * @param PackageInterface $package
-     *
      * @return mixed
      */
     abstract public function isInstalled();

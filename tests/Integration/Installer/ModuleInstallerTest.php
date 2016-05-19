@@ -32,7 +32,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
 {
     const PRODUCT_NAME_IN_COMPOSER_FILE = "oxid-esales/paypal-module";
 
-    public function testChecksIfPackageIsNotInstalled()
+    public function testChecksIfModuleIsNotInstalled()
     {
         $structure = [
             'vendor/'.static::PRODUCT_NAME_IN_COMPOSER_FILE.'/metadata.php' => '<?php',
@@ -44,7 +44,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($shopPreparator->isInstalled());
     }
 
-    public function testChecksIfPackageInstalled()
+    public function testChecksIfModuleIsInstalled()
     {
         $structure = [
             'source/modules/oxid-esales/paypal-module/metadata.php' => '<?php',
@@ -57,12 +57,11 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($shopPreparator->isInstalled());
     }
 
-    public function providerChecksIfModuleIsInstalled()
+    public function providerChecksIfModuleFilesExistsAfterInstallation()
     {
         return [
-            [['oxideshop' => ['vendor-name' => 'oe', 'module-name' => 'paypal']], 'modules/oe/paypal/metadata.php'],
-            [['oxideshop' => ['vendor-name' => 'oe']], 'modules/oe/paypal-module/metadata.php'],
-            [['oxideshop' => ['module-name' => 'paypal']], 'modules/oxid-esales/paypal/metadata.php'],
+            [[ModuleInstaller::EXTRA_PARAMETER_KEY_ROOT => [ModuleInstaller::EXTRA_PARAMETER_KEY_TARGET => 'oe/paypal']], 'modules/oe/paypal/metadata.php'],
+            [[ModuleInstaller::EXTRA_PARAMETER_KEY_ROOT => [ModuleInstaller::EXTRA_PARAMETER_KEY_TARGET => 'paypal']], 'modules/paypal/metadata.php'],
             [[], 'modules/oxid-esales/paypal-module/metadata.php']
         ];
     }
@@ -71,9 +70,9 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
      * @param $composerExtras
      * @param $installedModuleMetadata
      * 
-     * @dataProvider providerChecksIfModuleIsInstalled
+     * @dataProvider providerChecksIfModuleFilesExistsAfterInstallation
      */
-    public function testChecksIfModuleIsInstalled($composerExtras, $installedModuleMetadata)
+    public function testChecksIfModuleFilesExistsAfterInstallation($composerExtras, $installedModuleMetadata)
     {
         $structure = [
             'vendor/oxid-esales/paypal-module' => [

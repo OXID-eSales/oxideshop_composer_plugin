@@ -27,16 +27,17 @@ use Composer\Package\PackageInterface;
 /**
  * @inheritdoc
  */
-class ModuleInstaller extends AbstractInstaller
+class ThemeInstaller extends AbstractInstaller
 {
-    const METADATA_FILE_NAME = 'metadata.php';
+    const METADATA_FILE_NAME = 'theme.php';
+    const PATH_TO_THEMES = "Application/views";
 
     /**
      * @return bool
      */
     public function isInstalled()
     {
-        return file_exists($this->formTargetPath() . '/' . static::METADATA_FILE_NAME . '');
+        return file_exists($this->formThemeTargetPath().'/'.static::METADATA_FILE_NAME);
     }
 
     /**
@@ -48,13 +49,16 @@ class ModuleInstaller extends AbstractInstaller
     {
         $package = $this->getPackage();
         $this->getIO()->write("Installing {$package->getName()} package");
-        
+
+        $iterator = $this->getDirectoriesToSkipIteratorBuilder()
+            ->build($packagePath, [$this->formAssetsDirectoryName()]);
         $fileSystem = $this->getFileSystem();
-        $fileSystem->mirror($packagePath, $this->formTargetPath());
+        $fileSystem->mirror($packagePath, $this->formThemeTargetPath(), $iterator);
+        $this->installAssets($packagePath);
     }
 
     /**
-     * Update module files.
+     * Copies module files to shop directory.
      *
      * @param string $packagePath
      */
@@ -65,15 +69,53 @@ class ModuleInstaller extends AbstractInstaller
     /**
      * @return string
      */
-    protected function formTargetPath()
+    protected function formThemeTargetPath()
     {
         $package = $this->getPackage();
-        $targetDirectory =  $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_TARGET);
-        if (is_null($targetDirectory)) {
-            $targetDirectory = $package->getName();
+        $themeDirectoryName = $this->formThemeDirectoryName($package);
+        return "{$this->getRootDirectory()}/" . static::PATH_TO_THEMES . "/$themeDirectoryName";
+    }
+
+    /**
+     * @param $packagePath
+     */
+    protected function installAssets($packagePath)
+    {
+        $package = $this->getPackage();
+        $target = $this->getRootDirectory() . '/out/' . $this->formThemeDirectoryName($package);
+
+        $assetsDirectory = $this->formAssetsDirectoryName();
+        $source = $packagePath . '/' . $assetsDirectory;
+
+        $fileSystem = $this->getFileSystem();
+        if (file_exists($source)) {
+            $fileSystem->mirror($source, $target);
         }
-        $targetDirectory = $this->getRootDirectory() . "/modules/$targetDirectory";
-        return $targetDirectory;
+    }
+
+    /**
+     * @param $package
+     * @return mixed
+     */
+    protected function formThemeDirectoryName($package)
+    {
+        $themePath = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_TARGET);
+        if (is_null($themePath)) {
+            $themePath = explode('/', $package->getName())[1];
+        }
+        return $themePath;
+    }
+
+    /**
+     * @return null|string
+     */
+    protected function formAssetsDirectoryName()
+    {
+        $assetsDirectory = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_ASSETS);
+        if (is_null($assetsDirectory)) {
+            $assetsDirectory = 'out';
+        }
+        return $assetsDirectory;
     }
 
     /**
@@ -91,5 +133,13 @@ class ModuleInstaller extends AbstractInstaller
             $extraParameterValue =  $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey];
         }
         return $extraParameterValue;
+    }
+
+    /**
+     * @return DirectoriesSkipIteratorBuilder
+     */
+    protected function getDirectoriesToSkipIteratorBuilder()
+    {
+        return new DirectoriesSkipIteratorBuilder();
     }
 }
