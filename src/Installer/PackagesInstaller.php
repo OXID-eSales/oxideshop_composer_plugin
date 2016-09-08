@@ -34,12 +34,14 @@ class PackagesInstaller extends LibraryInstaller
     const TYPE_ESHOP = 'oxideshop';
     const TYPE_MODULE = 'oxideshop-module';
     const TYPE_THEME = 'oxideshop-theme';
+    const TYPE_DEMODATA = 'oxideshop-demodata';
 
     /** @var array Available installers for packages. */
     private $installers = [
         self::TYPE_ESHOP => ShopInstaller::class,
         self::TYPE_MODULE => ModuleInstaller::class,
         self::TYPE_THEME => ThemeInstaller::class,
+        self::TYPE_DEMODATA => DemodataInstaller::class,
     ];
 
     /**
