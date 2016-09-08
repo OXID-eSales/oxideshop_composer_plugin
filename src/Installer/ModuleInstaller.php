@@ -75,21 +75,4 @@ class ModuleInstaller extends AbstractInstaller
         $targetDirectory = $this->getRootDirectory() . "/modules/$targetDirectory";
         return $targetDirectory;
     }
-
-    /**
-     * @param $extraParameterKey
-     * @return null|string
-     */
-    protected function getExtraParameterValueByKey($extraParameterKey)
-    {
-        $extraParameterValue = null;
-        $package = $this->getPackage();
-        $extraParameters = $package->getExtra();
-        if (isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT])
-            && isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey])
-        ) {
-            $extraParameterValue =  $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey];
-        }
-        return $extraParameterValue;
-    }
 }
