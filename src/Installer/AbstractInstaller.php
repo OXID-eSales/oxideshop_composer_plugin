@@ -69,12 +69,6 @@ abstract class AbstractInstaller
     }
 
     /**
-     * Check whether given package is already installed.
-     * @return mixed
-     */
-    abstract public function isInstalled();
-
-    /**
      * Run package installation procedure. After installation files should be moved to correct location.
      *
      * @param string $packagePath Path to downloaded package in vendors directory.
@@ -82,11 +76,23 @@ abstract class AbstractInstaller
     abstract public function install($packagePath);
 
     /**
+     * Check whether given package is already installed.
+     *
+     * @return bool
+     */
+    public function isInstalled()
+    {
+        return false;
+    }
+
+    /**
      * Run update procedure to keep package files up to date.
      *
      * @param string $packagePath Path to downloaded package in vendors directory.
      */
-    abstract public function update($packagePath);
+    public function update($packagePath)
+    {
+    }
 
     /**
      * @return Filesystem
@@ -134,7 +140,7 @@ abstract class AbstractInstaller
         if (isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT])
             && isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey])
         ) {
-            $extraParameterValue =  $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey];
+            $extraParameterValue = $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey];
         }
         return $extraParameterValue;
     }
