@@ -76,6 +76,11 @@ class PackagesInstaller extends LibraryInstaller
      */
     protected function createInstaller(PackageInterface $package)
     {
-        return new $this->installers[$package->getType()](new Filesystem(), $this->io, getcwd() . '/source', $package);
+        $shopSource = getcwd();
+        if (file_exists($shopSource . '/source') && is_dir($shopSource . '/source')) {
+            $shopSource .= '/source';
+        }
+
+        return new $this->installers[$package->getType()](new Filesystem(), $this->io, $shopSource, $package);
     }
 }
