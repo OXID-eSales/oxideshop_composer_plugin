@@ -45,6 +45,11 @@ class PackagesInstaller extends LibraryInstaller
     ];
 
     /**
+     * @var array configurations
+     */
+    protected $settings = [];
+
+    /**
      * Decides if the installer supports the given type
      *
      * @param  string $packageType
@@ -53,6 +58,14 @@ class PackagesInstaller extends LibraryInstaller
     public function supports($packageType)
     {
         return array_key_exists($packageType, $this->installers);
+    }
+
+    /**
+     * @param array set additional settings
+     */
+    public function setSettings($settings)
+    {
+        $this->settings = $settings;
     }
 
     /**
@@ -75,12 +88,10 @@ class PackagesInstaller extends LibraryInstaller
      */
     public function getShopSourcePath()
     {
-        // 5.3 shop have composer.json in its source directory
-        $shopSource = getcwd();
-
-        // special case for 6.0, the composer.json is not in source anymore
-        if (file_exists($shopSource . '/source') && is_dir($shopSource . '/source')) {
-            $shopSource .= '/source';
+        if (isset($this->settings['oxideshop']['source-path'])) {
+            $shopSource = $this->settings['oxideshop']['source-path'];
+        } else {
+            $shopSource = getcwd() . '/source';
         }
 
         return $shopSource;

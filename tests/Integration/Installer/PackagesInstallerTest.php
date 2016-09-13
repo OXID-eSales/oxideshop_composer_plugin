@@ -36,14 +36,19 @@ class PackagesInstallerTest extends \PHPUnit_Framework_TestCase
     /**
      * The composer.json file already in source for 5.3
      */
-    public function testGetShopSourcePathFor53()
+    public function testGetShopSourcePathByConfiguration()
     {
         $composerConfigMock = $this->getMock(Config::class);
         $composerMock = $this->getMock(Composer::class);
         $composerMock->method('getConfig')->withAnyParameters()->willReturn($composerConfigMock);
 
         $packageInstallerStub = new PackagesInstaller(new NullIO(), $composerMock);
-        $this->assertEquals($packageInstallerStub->getShopSourcePath(), getcwd());
+        $packageInstallerStub->setSettings([
+            'oxideshop' => [
+                'source-path' => 'some/path/to/source'
+            ]
+        ]);
+        $this->assertEquals($packageInstallerStub->getShopSourcePath(), 'some/path/to/source');
     }
 
     /**

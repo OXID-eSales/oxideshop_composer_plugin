@@ -71,7 +71,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function installPackages()
     {
         $repo = $this->composer->getRepositoryManager()->getLocalRepository();
+        $extraSettings = $this->composer->getPackage()->getExtra();
+
         $packagesInstaller = new PackagesInstaller($this->io, $this->composer);
+        $packagesInstaller->setSettings($extraSettings);
+
         foreach ($repo->getPackages() as $package) {
             if ($packagesInstaller->supports($package->getType())) {
                 $packagesInstaller->installPackage($package);
