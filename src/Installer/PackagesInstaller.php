@@ -69,6 +69,24 @@ class PackagesInstaller extends LibraryInstaller
     }
 
     /**
+     * Get the path to shop's source directory
+     *
+     * @return string
+     */
+    public function getShopSourcePath()
+    {
+        // 5.3 shop have composer.json in its source directory
+        $shopSource = getcwd();
+
+        // special case for 6.0, the composer.json is not in source anymore
+        if (file_exists($shopSource . '/source') && is_dir($shopSource . '/source')) {
+            $shopSource .= '/source';
+        }
+
+        return $shopSource;
+    }
+
+    /**
      * Creates package installer.
      *
      * @param PackageInterface $package
@@ -76,11 +94,6 @@ class PackagesInstaller extends LibraryInstaller
      */
     protected function createInstaller(PackageInterface $package)
     {
-        $shopSource = getcwd();
-        if (file_exists($shopSource . '/source') && is_dir($shopSource . '/source')) {
-            $shopSource .= '/source';
-        }
-
-        return new $this->installers[$package->getType()](new Filesystem(), $this->io, $shopSource, $package);
+        return new $this->installers[$package->getType()](new Filesystem(), $this->io, $this->getShopSourcePath(), $package);
     }
 }
