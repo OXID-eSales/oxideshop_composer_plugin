@@ -34,7 +34,7 @@ use Symfony\Component\Filesystem\Filesystem;
 class PackagesInstallerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * The composer.json file already in source for 5.3
+     * The composer.json file already in source for 5.3.
      */
     public function testGetShopSourcePathByConfiguration()
     {
@@ -52,7 +52,7 @@ class PackagesInstallerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * The composer.json file is taken up from the source directory for 6.0, so we should add source to path
+     * The composer.json file is taken up from the source directory for 6.0, so we should add source to path.
      */
     public function testGetShopSourcePathFor60()
     {
