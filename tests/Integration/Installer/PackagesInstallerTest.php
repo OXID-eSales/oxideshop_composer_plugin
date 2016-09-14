@@ -44,9 +44,7 @@ class PackagesInstallerTest extends \PHPUnit_Framework_TestCase
 
         $packageInstallerStub = new PackagesInstaller(new NullIO(), $composerMock);
         $packageInstallerStub->setSettings([
-            'oxideshop' => [
-                'source-path' => 'some/path/to/source'
-            ]
+            'source-path' => 'some/path/to/source'
         ]);
         $this->assertEquals($packageInstallerStub->getShopSourcePath(), 'some/path/to/source');
     }
