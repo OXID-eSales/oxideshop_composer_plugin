@@ -82,16 +82,16 @@ class PackagesInstaller extends LibraryInstaller
     }
 
     /**
-     * Get the path to shop's source directory
+     * Get the path to shop's source directory.
      *
      * @return string
      */
     public function getShopSourcePath()
     {
-        if (isset($this->settings['oxideshop']['source-path'])) {
-            $shopSource = $this->settings['oxideshop']['source-path'];
-        } else {
-            $shopSource = getcwd() . '/source';
+        $shopSource = getcwd() . '/source';
+
+        if (isset($this->settings['source-path'])) {
+            $shopSource = $this->settings['source-path'];
         }
 
         return $shopSource;

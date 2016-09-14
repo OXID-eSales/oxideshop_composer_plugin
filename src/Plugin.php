@@ -26,6 +26,7 @@ use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
+use OxidEsales\ComposerPlugin\Installer\AbstractInstaller;
 use OxidEsales\ComposerPlugin\Installer\PackagesInstaller;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
@@ -74,7 +75,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $extraSettings = $this->composer->getPackage()->getExtra();
 
         $packagesInstaller = new PackagesInstaller($this->io, $this->composer);
-        $packagesInstaller->setSettings($extraSettings);
+
+        if (isset($extraSettings[AbstractInstaller::EXTRA_PARAMETER_KEY_ROOT])) {
+            $packagesInstaller->setSettings($extraSettings[AbstractInstaller::EXTRA_PARAMETER_KEY_ROOT]);
+        }
 
         foreach ($repo->getPackages() as $package) {
             if ($packagesInstaller->supports($package->getType())) {
