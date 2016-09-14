@@ -32,6 +32,8 @@ class DemodataInstaller extends AbstractInstaller
     const PATH_TO_TARGET_DEMODATA = "Setup/Sql/demodata.sql";
     const PATH_TO_OUT_DIRECTORY = "Out";
 
+    const PATH_TO_SOURCE_DEMODATA = "src/demodata.sql";
+    const PATH_TO_SOURCE_OUT_DURECTORY = "src/out";
     /**
      * Copies module files to shop directory.
      *
@@ -53,7 +55,7 @@ class DemodataInstaller extends AbstractInstaller
         }
 
         $fileSystem = $this->getFileSystem();
-        $fileSystem->copy($packagePath . "/src/demodata.sql", $this->getRootDirectory() . "/" . $demodataFileTargetPath);
-        $fileSystem->mirror($packagePath . "/src/out", $this->getRootDirectory() . "/" . $outDirectoryTargetPath);
+        $fileSystem->copy($packagePath . "/" . static::PATH_TO_SOURCE_DEMODATA, $this->getRootDirectory() . "/" . $demodataFileTargetPath);
+        $fileSystem->mirror($packagePath . "/" . static::PATH_TO_SOURCE_OUT_DURECTORY, $this->getRootDirectory() . "/" . $outDirectoryTargetPath);
     }
 }
