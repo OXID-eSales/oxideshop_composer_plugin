@@ -62,7 +62,7 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
         $structure = [
             'source/vendor/oxideshop_ce/source' => [
                 'index.php' => '<?php',
-                'Application/views/template.tpl' => '<?php',
+                'application/views/template.tpl' => '<?php',
                 'config.inc.php.dist' => '<?php',
             ]
         ];
@@ -75,7 +75,7 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
         $shopPreparator->install($shopDirectory);
 
         $this->assertFileExists($rootPath . '/index.php');
-        $this->assertFileExists($rootPath . '/Application/views/template.tpl');
+        $this->assertFileExists($rootPath . '/application/views/template.tpl');
         $this->assertFileExists($rootPath . '/config.inc.php.dist');
     }
 
@@ -101,9 +101,9 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
     {
         $structure = [
             'source/vendor/oxideshop_ce/source' => [
-                'Core/Class.php' => '<?php',
-                'Application/Model/Class.php' => '<?php',
-                'Application/Controller/Class.php' => '<?php',
+                'core/class.php' => '<?php',
+                'application/model/class.php' => '<?php',
+                'application/controller/class.php' => '<?php',
             ]
         ];
         vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
@@ -114,10 +114,10 @@ class ShopInstallerTest extends \PHPUnit_Framework_TestCase
         $shopPreparator = new ShopInstaller(new Filesystem(), new NullIO, $rootPath, new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'));
         $shopPreparator->install($shopDirectory);
 
-        $this->assertFileNotExists($rootPath . '/Core/Class.php');
-        $this->assertFileNotExists($rootPath . '/Application/Model/Class.php');
-        $this->assertFileNotExists($rootPath . '/Application/Controller/Class.php');
-        $this->assertFileNotExists($rootPath . '/Application/Controller');
+        $this->assertFileNotExists($rootPath . '/core/class.php');
+        $this->assertFileNotExists($rootPath . '/application/model/class.php');
+        $this->assertFileNotExists($rootPath . '/application/controller/class.php');
+        $this->assertFileNotExists($rootPath . '/application/controller');
     }
 
     /**

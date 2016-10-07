@@ -48,7 +48,7 @@ class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
     public function testChecksIfThemeIsInstalled()
     {
         $structure = [
-            'source/Application/views/flow-theme/theme.php' => '<?php',
+            'source/application/views/flow-theme/theme.php' => '<?php',
             'vendor/'.static::THEME_NAME_IN_COMPOSER.'/theme.php' => '<?php'
         ];
         vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
@@ -67,17 +67,17 @@ class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 [ThemeInstaller::EXTRA_PARAMETER_KEY_ROOT => [ThemeInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow']],
-                'Application/views/flow/theme.php',
+                'application/views/flow/theme.php',
                 'out/flow/style.css'
             ],
             [
                 [],
-                'Application/views/flow-theme/theme.php',
+                'application/views/flow-theme/theme.php',
                 'out/flow-theme/style.css'
             ],
             [
                 [ThemeInstaller::EXTRA_PARAMETER_KEY_ROOT => [ThemeInstaller::EXTRA_PARAMETER_KEY_ASSETS => 'custom_directory_name']],
-                'Application/views/flow-theme/theme.php',
+                'application/views/flow-theme/theme.php',
                 'out/flow-theme/custom_style.css'
             ],
             [
@@ -85,7 +85,7 @@ class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
                     ThemeInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow',
                     ThemeInstaller::EXTRA_PARAMETER_KEY_ASSETS => 'custom_directory_name',
                 ]],
-                'Application/views/flow/theme.php',
+                'application/views/flow/theme.php',
                 'out/flow/custom_style.css'
             ],
         ];
@@ -131,7 +131,7 @@ class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
         $rootPath = vfsStream::url('root/projectRoot');
         $eshopRootPath = "$rootPath/source";
         $this->simulateInstallation($composerExtras, $rootPath, $eshopRootPath);
-        $this->assertFileNotExists($eshopRootPath . '/Application/views/flow/out/style.css');
+        $this->assertFileNotExists($eshopRootPath . '/application/views/flow/out/style.css');
     }
 
     /**

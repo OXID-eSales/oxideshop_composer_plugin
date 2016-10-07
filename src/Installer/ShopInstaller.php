@@ -31,10 +31,10 @@ class ShopInstaller extends AbstractInstaller
 {
     /** @var array Directories which shouldn't be copied. */
     private $directoriesToSkip = [
-        'Application/Component',
-        'Application/Controller',
-        'Application/Model',
-        'Core'
+        'application/component',
+        'application/controller',
+        'application/model',
+        'core'
     ];
 
     /**
