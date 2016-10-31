@@ -41,7 +41,6 @@ class PackagesInstaller extends LibraryInstaller
         self::TYPE_ESHOP => ShopInstaller::class,
         self::TYPE_MODULE => ModuleInstaller::class,
         self::TYPE_THEME => ThemeInstaller::class,
-        self::TYPE_DEMODATA => DemodataInstaller::class,
     ];
 
     /**
