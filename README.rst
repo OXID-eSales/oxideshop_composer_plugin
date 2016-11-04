@@ -14,7 +14,6 @@ Available types are:
 - oxideshop - Main shop package is installed into source directory.
 - oxideshop-module - Modules, which are installed into source directory. Modules depends on main shop package.
 - oxideshop-theme - Themes, which are installed into source directory. Themes depends on main shop package.
-- oxideshop-demodata - Demodata package contains demodata.sql and pictures directories.
 
 More information how to create module installable via composer: http://oxid-eshop-developer-documentation.readthedocs.io/en/latest/modules/module_via_composer.html
 
