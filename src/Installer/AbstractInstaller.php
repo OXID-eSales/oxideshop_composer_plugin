@@ -79,6 +79,13 @@ abstract class AbstractInstaller
     abstract public function install($packagePath);
 
     /**
+     * Run update procedure to keep package files up to date.
+     *
+     * @param string $packagePath Path to downloaded package in vendors directory.
+     */
+    abstract public function update($packagePath);
+
+    /**
      * Check whether given package is already installed.
      *
      * @return bool
@@ -86,15 +93,6 @@ abstract class AbstractInstaller
     public function isInstalled()
     {
         return false;
-    }
-
-    /**
-     * Run update procedure to keep package files up to date.
-     *
-     * @param string $packagePath Path to downloaded package in vendors directory.
-     */
-    public function update($packagePath)
-    {
     }
 
     /**
@@ -146,5 +144,30 @@ abstract class AbstractInstaller
             $extraParameterValue = $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey];
         }
         return $extraParameterValue;
+    }
+
+    /**
+     * @param string $messageToAsk
+     * @return bool
+     */
+    protected function askQuestionIfNotInstalled($messageToAsk)
+    {
+        if ($this->isInstalled()) {
+            return $this->askQuestion($messageToAsk);
+        }
+        return true;
+    }
+
+    /**
+     * @param string $messageToAsk
+     * @return bool
+     */
+    protected function askQuestion($messageToAsk)
+    {
+        $response = $this->getIO()->ask($messageToAsk, 'No');
+        if ((strtolower($response) === 'yes' || strtolower($response) === 'y')) {
+            return true;
+        }
+        return false;
     }
 }

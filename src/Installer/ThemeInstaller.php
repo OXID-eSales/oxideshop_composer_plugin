@@ -22,8 +22,6 @@
 
 namespace OxidEsales\ComposerPlugin\Installer;
 
-use Composer\Package\PackageInterface;
-
 /**
  * @inheritdoc
  */
@@ -41,29 +39,41 @@ class ThemeInstaller extends AbstractInstaller
     }
 
     /**
-     * Copies module files to shop directory.
+     * Copies theme files to shop directory.
      *
      * @param string $packagePath
      */
     public function install($packagePath)
     {
-        $package = $this->getPackage();
-        $this->getIO()->write("Installing {$package->getName()} package");
-
-        $iterator = $this->getDirectoriesToSkipIteratorBuilder()
-            ->build($packagePath, [$this->formAssetsDirectoryName()]);
-        $fileSystem = $this->getFileSystem();
-        $fileSystem->mirror($packagePath, $this->formThemeTargetPath(), $iterator);
-        $this->installAssets($packagePath);
+        $this->getIO()->write("Installing {$this->getPackage()->getName()} package");
+        $this->copyFiles($packagePath);
     }
 
     /**
-     * Copies module files to shop directory.
+     * Overwrites theme files.
      *
      * @param string $packagePath
      */
     public function update($packagePath)
     {
+        if ($this->askQuestionIfNotInstalled("Update operation will overwrite {$this->getPackage()->getName()} files."
+            ." Do you want to continue? (Yes/No) ")) {
+            $this->getIO()->write("Copying theme {$this->getPackage()->getName()} files...");
+            $this->copyFiles($packagePath, ['override' => true]);
+        }
+    }
+
+    /**
+     * @param string $packagePath
+     * @param array $options
+     */
+    protected function copyFiles($packagePath, $options = [])
+    {
+        $iterator = $this->getDirectoriesToSkipIteratorBuilder()
+            ->build($packagePath, [$this->formAssetsDirectoryName()]);
+        $fileSystem = $this->getFileSystem();
+        $fileSystem->mirror($packagePath, $this->formThemeTargetPath(), $iterator, $options);
+        $this->installAssets($packagePath, $options);
     }
 
     /**
@@ -77,9 +87,10 @@ class ThemeInstaller extends AbstractInstaller
     }
 
     /**
-     * @param $packagePath
+     * @param string $packagePath
+     * @param array $options
      */
-    protected function installAssets($packagePath)
+    protected function installAssets($packagePath, $options)
     {
         $package = $this->getPackage();
         $target = $this->getRootDirectory() . '/out/' . $this->formThemeDirectoryName($package);
@@ -89,7 +100,7 @@ class ThemeInstaller extends AbstractInstaller
 
         $fileSystem = $this->getFileSystem();
         if (file_exists($source)) {
-            $fileSystem->mirror($source, $target);
+            $fileSystem->mirror($source, $target, null, $options);
         }
     }
 

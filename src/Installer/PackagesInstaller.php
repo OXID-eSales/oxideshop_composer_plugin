@@ -75,9 +75,13 @@ class PackagesInstaller extends LibraryInstaller
         $installer = $this->createInstaller($package);
         if (!$installer->isInstalled()) {
             $installer->install($this->getInstallPath($package));
-        } else {
-            $installer->update($this->getInstallPath($package));
         }
+    }
+
+    public function updatePackage(PackageInterface $package)
+    {
+        $installer = $this->createInstaller($package);
+        $installer->update($this->getInstallPath($package));
     }
 
     /**

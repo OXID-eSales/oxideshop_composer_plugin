@@ -31,12 +31,18 @@ use OxidEsales\ComposerPlugin\Installer\PackagesInstaller;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
+    const ACTION_INSTALL = 'install';
+
+    const ACTION_UPDATE = 'update';
+
     /** @var Composer */
     private $composer;
 
     /** @var IOInterface */
     private $io;
 
+    /** @var PackagesInstaller */
+    private $packageInstaller;
 
     /**
      * Register events.
@@ -47,7 +53,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         return array(
             'post-install-cmd' => 'installPackages',
-            'post-update-cmd' => 'installPackages'
+            'post-update-cmd' => 'updatePackages'
         );
     }
 
@@ -64,6 +70,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         $this->composer = $composer;
         $this->io = $io;
+        $this->packageInstaller = $installer;
+
+        $extraSettings = $this->composer->getPackage()->getExtra();
+        if (isset($extraSettings[AbstractInstaller::EXTRA_PARAMETER_KEY_ROOT])) {
+            $this->packageInstaller->setSettings($extraSettings[AbstractInstaller::EXTRA_PARAMETER_KEY_ROOT]);
+        }
     }
 
     /**
@@ -71,18 +83,29 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function installPackages()
     {
+        $this->executeAction(static::ACTION_INSTALL);
+    }
+
+    /**
+     * Run update for oxid packages.
+     */
+    public function updatePackages()
+    {
+        $this->executeAction(static::ACTION_UPDATE);
+    }
+
+    protected function executeAction($actionName)
+    {
         $repo = $this->composer->getRepositoryManager()->getLocalRepository();
-        $extraSettings = $this->composer->getPackage()->getExtra();
-
-        $packagesInstaller = new PackagesInstaller($this->io, $this->composer);
-
-        if (isset($extraSettings[AbstractInstaller::EXTRA_PARAMETER_KEY_ROOT])) {
-            $packagesInstaller->setSettings($extraSettings[AbstractInstaller::EXTRA_PARAMETER_KEY_ROOT]);
-        }
 
         foreach ($repo->getPackages() as $package) {
-            if ($packagesInstaller->supports($package->getType())) {
-                $packagesInstaller->installPackage($package);
+            if ($this->packageInstaller->supports($package->getType())) {
+                if ($actionName === static::ACTION_INSTALL) {
+                    $this->packageInstaller->installPackage($package);
+                }
+                if ($actionName === static::ACTION_UPDATE) {
+                    $this->packageInstaller->updatePackage($package);
+                }
             }
         }
     }

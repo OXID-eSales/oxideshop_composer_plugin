@@ -22,8 +22,6 @@
 
 namespace OxidEsales\ComposerPlugin\Installer;
 
-use Composer\Package\PackageInterface;
-
 /**
  * @inheritdoc
  */
@@ -52,18 +50,8 @@ class ShopInstaller extends AbstractInstaller
      */
     public function install($packagePath)
     {
-        $this->getIO()->write("Installing shop package");
-
-        $packagePath = rtrim($packagePath, '/') . '/source';
-        $root = $this->getRootDirectory();
-
-        $iterator = $this->getDirectoriesToSkipIteratorBuilder();
-        $fileSystem = $this->getFileSystem();
-        $fileSystem->mirror($packagePath, $root, $iterator->build($packagePath, $this->directoriesToSkip));
-
-        if (file_exists($root.'/config.inc.php.dist')) {
-            $fileSystem->copy($root.'/config.inc.php.dist', $root.'/config.inc.php');
-        }
+        $this->getIO()->write("Installing shop package.");
+        $this->copyFiles($packagePath);
     }
 
     /**
@@ -73,6 +61,11 @@ class ShopInstaller extends AbstractInstaller
      */
     public function update($packagePath)
     {
+        $this->getIO()->write("Instalaaaaaling shop package.");
+        if ($this->askQuestionIfNotInstalled('Do you want to overwrite existing OXID eShop files? (Yes/No) ')) {
+            $this->getIO()->write("Copying shop files to source directory...");
+            $this->copyFiles($packagePath, ['override' => true]);
+        }
     }
 
     /**
@@ -81,5 +74,23 @@ class ShopInstaller extends AbstractInstaller
     protected function getDirectoriesToSkipIteratorBuilder()
     {
         return new DirectoriesSkipIteratorBuilder();
+    }
+
+    /**
+     * @param $packagePath
+     * @param array $options
+     */
+    protected function copyFiles($packagePath, $options = [])
+    {
+        $packagePath = rtrim($packagePath, '/') . '/source';
+        $root = $this->getRootDirectory();
+
+        $iterator = $this->getDirectoriesToSkipIteratorBuilder();
+        $fileSystem = $this->getFileSystem();
+        $fileSystem->mirror($packagePath, $root, $iterator->build($packagePath, $this->directoriesToSkip), $options);
+
+        if (file_exists($root.'/config.inc.php.dist') && !file_exists($root.'/config.inc.php')) {
+            $fileSystem->copy($root.'/config.inc.php.dist', $root.'/config.inc.php');
+        }
     }
 }

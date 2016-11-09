@@ -22,8 +22,6 @@
 
 namespace OxidEsales\ComposerPlugin\Installer;
 
-use Composer\Package\PackageInterface;
-
 /**
  * @inheritdoc
  */
@@ -46,11 +44,8 @@ class ModuleInstaller extends AbstractInstaller
      */
     public function install($packagePath)
     {
-        $package = $this->getPackage();
-        $this->getIO()->write("Installing {$package->getName()} package");
-        
-        $fileSystem = $this->getFileSystem();
-        $fileSystem->mirror($packagePath, $this->formTargetPath());
+        $this->getIO()->write("Installing module {$this->getPackage()->getName()} package.");
+        $this->getFileSystem()->mirror($packagePath, $this->formTargetPath());
     }
 
     /**
@@ -60,6 +55,11 @@ class ModuleInstaller extends AbstractInstaller
      */
     public function update($packagePath)
     {
+        if ($this->askQuestionIfNotInstalled("Update operation will overwrite {$this->getPackage()->getName()} files."
+            ." Do you want to continue? (Yes/No) ")) {
+            $this->getIO()->write("Copying module {$this->getPackage()->getName()} files...");
+            $this->getFileSystem()->mirror($packagePath, $this->formTargetPath(), null, ['override' => true]);
+        }
     }
 
     /**
