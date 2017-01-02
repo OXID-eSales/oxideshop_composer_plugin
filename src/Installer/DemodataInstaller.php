@@ -56,4 +56,41 @@ class DemodataInstaller extends AbstractInstaller
         $fileSystem->copy($packagePath . "/src/demodata.sql", $this->getRootDirectory() . "/" . $demodataFileTargetPath);
         $fileSystem->mirror($packagePath . "/src/out", $this->getRootDirectory() . "/" . $outDirectoryTargetPath);
     }
+
+    /**
+     * Check whether given package is already installed.
+     * @return bool
+     */
+    public function isInstalled()
+    {
+        return false;
+    }
+
+    /**
+     * Run update procedure to keep package files up to date.
+     *
+     * @param string $packagePath Path to downloaded package in vendors directory.
+     */
+    public function update($packagePath)
+    {
+    }
+
+    /**
+     * Search for parameter with specific key in "extra" composer configuration block
+     *
+     * @param string $extraParameterKey
+     * @return null|string
+     */
+    protected function getExtraParameterValueByKey($extraParameterKey)
+    {
+        $extraParameterValue = null;
+        $package = $this->getPackage();
+        $extraParameters = $package->getExtra();
+        if (isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT])
+            && isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey])
+        ) {
+            $extraParameterValue = $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey];
+        }
+        return $extraParameterValue;
+    }
 }
