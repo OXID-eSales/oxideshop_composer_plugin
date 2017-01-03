@@ -93,9 +93,12 @@ class PackagesInstaller extends LibraryInstaller
     {
         $shopSource = getcwd() . '/source';
 
+        var_dump($shopSource);
+        var_dump($this->settings);
         if (isset($this->settings[AbstractInstaller::EXTRA_PARAMETER_SOURCE_PATH])) {
             $shopSource = $this->settings[AbstractInstaller::EXTRA_PARAMETER_SOURCE_PATH];
         }
+        var_dump($shopSource);
 
         return $shopSource;
     }
