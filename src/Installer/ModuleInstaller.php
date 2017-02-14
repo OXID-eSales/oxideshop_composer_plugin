@@ -50,7 +50,7 @@ class ModuleInstaller extends AbstractInstaller
         $this->getIO()->write("Installing {$package->getName()} package");
         
         $fileSystem = $this->getFileSystem();
-        $fileSystem->mirror($packagePath, $this->formTargetPath());
+        $fileSystem->mirror($this->formSourcePath($packagePath), $this->formTargetPath());
     }
 
     /**
@@ -60,6 +60,25 @@ class ModuleInstaller extends AbstractInstaller
      */
     public function update($packagePath)
     {
+    }
+
+    /**
+     * If module source directory option provided add it's relative path.
+     * Otherwise return plain package path.
+     *
+     * @param string $packagePath
+     *
+     * @return string
+     */
+    protected function formSourcePath($packagePath)
+    {
+        $sourceDirectory = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_SOURCE);
+
+        if (empty($sourceDirectory)) {
+            return $packagePath;
+        }
+
+        return $packagePath . "/$sourceDirectory";
     }
 
     /**
