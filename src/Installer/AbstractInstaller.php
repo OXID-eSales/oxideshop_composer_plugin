@@ -34,6 +34,9 @@ abstract class AbstractInstaller
 {
     const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
 
+    /** Used to determine third party package internal source path. */
+    const EXTRA_PARAMETER_KEY_SOURCE = 'source-directory';
+
     /** Used to install third party integrations. */
     const EXTRA_PARAMETER_KEY_TARGET = 'target-directory';
 

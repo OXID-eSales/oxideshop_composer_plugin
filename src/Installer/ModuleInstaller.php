@@ -45,7 +45,7 @@ class ModuleInstaller extends AbstractInstaller
     public function install($packagePath)
     {
         $this->getIO()->write("Installing module {$this->getPackage()->getName()} package.");
-        $this->getFileSystem()->mirror($packagePath, $this->formTargetPath());
+        $this->getFileSystem()->mirror($this->formSourcePath($packagePath), $this->formTargetPath());
     }
 
     /**
@@ -58,8 +58,32 @@ class ModuleInstaller extends AbstractInstaller
         if ($this->askQuestionIfNotInstalled("Update operation will overwrite {$this->getPackage()->getName()} files."
             ." Do you want to continue? (Yes/No) ")) {
             $this->getIO()->write("Copying module {$this->getPackage()->getName()} files...");
-            $this->getFileSystem()->mirror($packagePath, $this->formTargetPath(), null, ['override' => true]);
+            $this->getFileSystem()->mirror(
+                $this->formSourcePath($packagePath),
+                $this->formTargetPath(),
+                null,
+                ['override' => true]
+            );
         }
+    }
+
+    /**
+     * If module source directory option provided add it's relative path.
+     * Otherwise return plain package path.
+     *
+     * @param string $packagePath
+     *
+     * @return string
+     */
+    protected function formSourcePath($packagePath)
+    {
+        $sourceDirectory = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_SOURCE);
+
+        if (empty($sourceDirectory)) {
+            return $packagePath;
+        }
+
+        return $packagePath . "/$sourceDirectory";
     }
 
     /**
