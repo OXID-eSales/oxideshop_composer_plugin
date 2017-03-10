@@ -94,6 +94,33 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         $this->assertFileExists($installedModuleMetadata);
     }
 
+    public function testCheckIfModuleIsInstalledFromProvidedSourceDirectory()
+    {
+        $structure = [
+            'vendor/oxid-esales/erp/copy_this/modules/erp' => [
+                'metadata.php' => '<?php',
+            ]
+        ];
+        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
+
+        $rootPath = vfsStream::url('root/projectRoot');
+        $eshopRootPath = "$rootPath/source";
+        $installedModuleMetadata = "$eshopRootPath/modules/erp/metadata.php";
+
+        $package = new Package('oxid-esales/erp', 'dev', 'dev');
+        $shopPreparator = new ModuleInstaller(new Filesystem(), new NullIO(), $eshopRootPath, $package);
+        $package->setExtra(
+            [ModuleInstaller::EXTRA_PARAMETER_KEY_ROOT => [
+                ModuleInstaller::EXTRA_PARAMETER_KEY_SOURCE => 'copy_this/modules/erp',
+                ModuleInstaller::EXTRA_PARAMETER_KEY_TARGET => 'erp',
+            ]]
+        );
+        $moduleInVendor = "$rootPath/vendor/oxid-esales/erp";
+        $shopPreparator->install($moduleInVendor);
+
+        $this->assertFileExists($installedModuleMetadata);
+    }
+
     /**
      * @return StructurePreparator
      */
