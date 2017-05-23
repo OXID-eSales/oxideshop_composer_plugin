@@ -23,18 +23,25 @@
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
+use Webmozart\PathUtil\Path;
 
 /**
  * @inheritdoc
  */
 class ShopPackageInstaller extends AbstractPackageInstaller
 {
+    const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
+    const SHOP_SOURCE_CONFIGURATION_FILE = 'config.inc.php';
+    const DISTRIBUTION_FILE_EXTENSION_MARK = '.dist';
+    const SHOP_SOURCE_DIRECTORY = 'source';
+    const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
+
     /**
      * @return bool
      */
     public function isInstalled()
     {
-        return file_exists($this->getRootDirectory() .'/index.php');
+        return file_exists(Path::join($this->getRootDirectory(), self::FILE_TO_CHECK_IF_PACKAGE_INSTALLED));
     }
 
     /**
@@ -45,7 +52,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
     public function install($packagePath)
     {
         $this->getIO()->write("Installing shop package.");
-        $this->copyFiles($packagePath);
+        $this->copyPackage($packagePath);
     }
 
     /**
@@ -58,16 +65,16 @@ class ShopPackageInstaller extends AbstractPackageInstaller
         $this->getIO()->write("Installing shop package.");
         if ($this->askQuestionIfNotInstalled('Do you want to overwrite existing OXID eShop files? (Yes/No) ')) {
             $this->getIO()->write("Copying shop files to source directory...");
-            $this->copyFiles($packagePath);
+            $this->copyPackage($packagePath);
         }
     }
 
     /**
      * @param $packagePath
      */
-    protected function copyFiles($packagePath)
+    protected function copyPackage($packagePath)
     {
-        $packagePath = rtrim($packagePath, '/') . '/source';
+        $packagePath = Path::join($packagePath, self::SHOP_SOURCE_DIRECTORY);
         $root = $this->getRootDirectory();
 
         CopyGlobFilteredFileManager::copy(
@@ -76,11 +83,11 @@ class ShopPackageInstaller extends AbstractPackageInstaller
             $this->getBlacklistFilterValue()
         );
 
-        if (file_exists($root.'/config.inc.php.dist') && !file_exists($root.'/config.inc.php')) {
-            CopyGlobFilteredFileManager::copy(
-                $root.'/config.inc.php.dist',
-                $root.'/config.inc.php'
-            );
+        $pathToConfig = Path::join($root, self::SHOP_SOURCE_CONFIGURATION_FILE);
+        $pathToConfigDist = $pathToConfig . self::DISTRIBUTION_FILE_EXTENSION_MARK;
+
+        if (!file_exists($pathToConfig)) {
+            CopyGlobFilteredFileManager::copy($pathToConfigDist, $pathToConfig);
         }
     }
 }

@@ -29,6 +29,9 @@ use Composer\Plugin\PluginInterface;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
 
+/**
+ * Class Plugin.
+ */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
     const ACTION_INSTALL = 'install';
@@ -65,12 +68,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function activate(Composer $composer, IOInterface $io)
     {
-        $installer = new PackageInstallerTrigger($io, $composer);
-        $composer->getInstallationManager()->addInstaller($installer);
+        $packageInstallerTrigger = new PackageInstallerTrigger($io, $composer);
+        $composer->getInstallationManager()->addInstaller($packageInstallerTrigger);
 
         $this->composer = $composer;
         $this->io = $io;
-        $this->packageInstallerTrigger = $installer;
+        $this->packageInstallerTrigger = $packageInstallerTrigger;
 
         $extraSettings = $this->composer->getPackage()->getExtra();
         if (isset($extraSettings[AbstractPackageInstaller::EXTRA_PARAMETER_KEY_ROOT])) {
@@ -94,6 +97,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->executeAction(static::ACTION_UPDATE);
     }
 
+    /**
+     * @param string $actionName
+     */
     protected function executeAction($actionName)
     {
         $repo = $this->composer->getRepositoryManager()->getLocalRepository();

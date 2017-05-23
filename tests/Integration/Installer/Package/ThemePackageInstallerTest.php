@@ -22,8 +22,10 @@
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
+use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Package\Package;
+use Composer\Package\PackageInterface;
 use org\bovigo\vfs\vfsStream;
 use OxidEsales\ComposerPlugin\Installer\Package\ThemePackageInstaller;
 use OxidEsales\ComposerPlugin\Tests\Integration\Installer\StructurePreparator;
@@ -32,6 +34,11 @@ use Webmozart\PathUtil\Path;
 class ThemePackageInstallerTest extends \PHPUnit_Framework_TestCase
 {
     const THEME_NAME_IN_COMPOSER = "oxid-esales/flow-theme";
+
+    protected function getSut(IOInterface $io, $rootPath, PackageInterface $package)
+    {
+        return new ThemePackageInstaller($io, $rootPath, $package);
+    }
 
     public function testChecksIfThemeIsNotInstalled()
     {
@@ -42,7 +49,7 @@ class ThemePackageInstallerTest extends \PHPUnit_Framework_TestCase
         $rootPath = vfsStream::url('root/projectRoot/source');
 
         $package = new Package(static::THEME_NAME_IN_COMPOSER, 'dev', 'dev');
-        $themeInstaller = new ThemePackageInstaller(new NullIO, $rootPath, $package);
+        $themeInstaller = $this->getSut(new NullIO, $rootPath, $package);
         $this->assertFalse($themeInstaller->isInstalled());
     }
 
@@ -56,7 +63,7 @@ class ThemePackageInstallerTest extends \PHPUnit_Framework_TestCase
         $rootPath = vfsStream::url('root/projectRoot/source');
 
         $package = new Package(static::THEME_NAME_IN_COMPOSER, 'dev', 'dev');
-        $shopPreparator = new ThemePackageInstaller(new NullIO(), $rootPath, $package);
+        $shopPreparator = $this->getSut(new NullIO(), $rootPath, $package);
         $this->assertTrue($shopPreparator->isInstalled());
     }
 
@@ -173,7 +180,7 @@ class ThemePackageInstallerTest extends \PHPUnit_Framework_TestCase
         vfsStream::setup('root', 777, ['projectRoot' => $structure]);
 
         $package = new Package(static::THEME_NAME_IN_COMPOSER, 'dev', 'dev');
-        $shopPreparator = new ThemePackageInstaller(new NullIO(), $eshopRootPath, $package);
+        $shopPreparator = $this->getSut(new NullIO(), $eshopRootPath, $package);
         $package->setExtra($composerExtras);
         $themeInVendor = "$rootPath/vendor/" . static::THEME_NAME_IN_COMPOSER;
         $shopPreparator->install($themeInVendor);

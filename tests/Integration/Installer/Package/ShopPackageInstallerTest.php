@@ -22,8 +22,10 @@
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
+use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Package\Package;
+use Composer\Package\PackageInterface;
 use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
 use org\bovigo\vfs\vfsStream;
 use OxidEsales\ComposerPlugin\Tests\Integration\Installer\StructurePreparator;
@@ -31,6 +33,11 @@ use Webmozart\PathUtil\Path;
 
 class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
 {
+    protected function getSut(IOInterface $io, $rootPath, PackageInterface $package)
+    {
+        return new ShopPackageInstaller($io, $rootPath, $package);
+    }
+
     public function testChecksIfPackageIsNotInstalled()
     {
         $structure = [
@@ -39,7 +46,7 @@ class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
         vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $shopPreparator = new ShopPackageInstaller(new NullIO, $rootPath, new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'));
+        $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'));
         $this->assertFalse($shopPreparator->isInstalled());
     }
 
@@ -54,7 +61,7 @@ class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
         vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $shopPreparator = new ShopPackageInstaller(new NullIO, $rootPath, new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'));
+        $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'));
         $this->assertTrue($shopPreparator->isInstalled());
     }
 
@@ -72,7 +79,7 @@ class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
         $rootPath = vfsStream::url('root/projectRoot/source');
         $shopDirectory = "$rootPath/vendor/oxideshop_ce";
 
-        $shopPreparator = new ShopPackageInstaller(new NullIO, $rootPath, new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'));
+        $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'));
         $shopPreparator->install($shopDirectory);
 
         $this->assertFileExists($rootPath . '/index.php');
@@ -92,7 +99,7 @@ class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
         $rootPath = vfsStream::url('root/projectRoot/source');
         $shopDirectory = "$rootPath/vendor/oxideshop_ce";
 
-        $shopPreparator = new ShopPackageInstaller(new NullIO, $rootPath, new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'));
+        $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'));
         $shopPreparator->install($shopDirectory);
 
         $this->assertFileExists($rootPath . '/config.inc.php');
@@ -140,8 +147,8 @@ class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
             ]
         ]);
 
-        $shopPreparator = new ShopPackageInstaller(new NullIO, $rootPath, $package);
-        $shopPreparator->install($shopDirectory);
+        $sut = $this->getSut(new NullIO, $rootPath, $package);
+        $sut->install($shopDirectory);
 
         $this->assertFileExists(Path::join($rootPath, 'Class.php'));
         $this->assertFileNotExists(Path::join($rootPath, 'Core'));

@@ -28,6 +28,7 @@ use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ThemePackageInstaller;
+use Webmozart\PathUtil\Path;
 
 /**
  * Class responsible for triggering installation process.
@@ -63,7 +64,7 @@ class PackageInstallerTrigger extends LibraryInstaller
     }
 
     /**
-     * @param array set additional settings
+     * @param array $settings Set additional settings.
      */
     public function setSettings($settings)
     {
@@ -81,6 +82,9 @@ class PackageInstallerTrigger extends LibraryInstaller
         }
     }
 
+    /**
+     * @param PackageInterface $package
+     */
     public function updatePackage(PackageInterface $package)
     {
         $installer = $this->createInstaller($package);
@@ -94,7 +98,7 @@ class PackageInstallerTrigger extends LibraryInstaller
      */
     public function getShopSourcePath()
     {
-        $shopSource = getcwd() . '/source';
+        $shopSource = Path::join(getcwd(), ShopPackageInstaller::SHOP_SOURCE_DIRECTORY);
 
         if (isset($this->settings[AbstractPackageInstaller::EXTRA_PARAMETER_SOURCE_PATH])) {
             $shopSource = $this->settings[AbstractPackageInstaller::EXTRA_PARAMETER_SOURCE_PATH];

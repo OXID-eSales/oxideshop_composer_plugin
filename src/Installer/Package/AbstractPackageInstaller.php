@@ -63,8 +63,8 @@ abstract class AbstractPackageInstaller
     /**
      * AbstractInstaller constructor.
      *
-     * @param IOInterface $io
-     * @param string $rootDirectory
+     * @param IOInterface      $io
+     * @param string           $rootDirectory
      * @param PackageInterface $package
      */
     public function __construct(IOInterface $io, $rootDirectory, PackageInterface $package)
@@ -123,22 +123,30 @@ abstract class AbstractPackageInstaller
     }
 
     /**
+     * @return string
+     */
+    protected function getPackageName()
+    {
+        return $this->package->getName();
+    }
+
+    /**
      * Search for parameter with specific key in "extra" composer configuration block
      *
      * @param string $extraParameterKey
+     * @param string $defaultValue
+     *
      * @return array|string|null
      */
-    protected function getExtraParameterValueByKey($extraParameterKey)
+    protected function getExtraParameterValueByKey($extraParameterKey, $defaultValue = null)
     {
-        $extraParameterValue = null;
-        $package = $this->getPackage();
-        $extraParameters = $package->getExtra();
-        if (isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT])
-            && isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey])
-        ) {
-            $extraParameterValue = $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey];
-        }
-        return $extraParameterValue;
+        $extraParameters = $this->getPackage()->getExtra();
+
+        $extraParameterValue = isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey])?
+            $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey]:
+            null;
+
+        return (!empty($extraParameterValue)) ? $extraParameterValue : $defaultValue;
     }
 
     /**
@@ -148,7 +156,7 @@ abstract class AbstractPackageInstaller
      */
     protected function getBlacklistFilterValue()
     {
-        return $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_FILTER_BLACKLIST);
+        return $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_FILTER_BLACKLIST, []);
     }
 
     /**
@@ -157,22 +165,33 @@ abstract class AbstractPackageInstaller
      */
     protected function askQuestionIfNotInstalled($messageToAsk)
     {
-        if ($this->isInstalled()) {
-            return $this->askQuestion($messageToAsk);
-        }
-        return true;
+        return $this->isInstalled() ? $this->askQuestion($messageToAsk) : true;
     }
 
     /**
+     * Returns true if the human answer to the given question was answered with a positive value (Yes/yes/Y/y).
+     *
      * @param string $messageToAsk
      * @return bool
      */
     protected function askQuestion($messageToAsk)
     {
-        $response = $this->getIO()->ask($messageToAsk, 'No');
-        if ((strtolower($response) === 'yes' || strtolower($response) === 'y')) {
-            return true;
-        }
-        return false;
+        $userInput = $this->getIO()->ask($messageToAsk, 'No');
+
+        return $this->isPositiveUserInput($userInput);
+    }
+
+    /**
+     * Return true if the input from user is a positive answer (Yes/yes/Y/y)
+     *
+     * @param string $userInput Raw user input
+     *
+     * @return bool
+     */
+    private function isPositiveUserInput($userInput)
+    {
+        $positiveAnswers = ['yes', 'y'];
+
+        return in_array(strtolower(trim($userInput)), $positiveAnswers, true);
     }
 }

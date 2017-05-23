@@ -24,6 +24,7 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
 use Webmozart\PathUtil\Path;
+use Composer\Package\PackageInterface;
 
 /**
  * @inheritdoc
@@ -49,7 +50,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
     public function install($packagePath)
     {
         $this->getIO()->write("Installing {$this->getPackage()->getName()} package");
-        $this->copyFiles($packagePath);
+        $this->copyPackage($packagePath);
     }
 
     /**
@@ -62,14 +63,14 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         if ($this->askQuestionIfNotInstalled("Update operation will overwrite {$this->getPackage()->getName()} files."
             ." Do you want to continue? (Yes/No) ")) {
             $this->getIO()->write("Copying theme {$this->getPackage()->getName()} files...");
-            $this->copyFiles($packagePath);
+            $this->copyPackage($packagePath);
         }
     }
 
     /**
      * @param string $packagePath
      */
-    protected function copyFiles($packagePath)
+    protected function copyPackage($packagePath)
     {
         $filter = [Path::join($this->formAssetsDirectoryName(), AbstractPackageInstaller::BLACKLIST_ALL_FILES)];
         $filterFromExtras = $this->getBlacklistFilterValue();
@@ -118,8 +119,8 @@ class ThemePackageInstaller extends AbstractPackageInstaller
     }
 
     /**
-     * @param $package
-     * @return mixed
+     * @param PackageInterface $package
+     * @return string
      */
     protected function formThemeDirectoryName($package)
     {
