@@ -27,8 +27,8 @@ use Composer\IO\NullIO;
 use Composer\Package\Package;
 use Composer\Package\PackageInterface;
 use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
+use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
 use org\bovigo\vfs\vfsStream;
-use OxidEsales\ComposerPlugin\Tests\Integration\Installer\StructurePreparator;
 use Webmozart\PathUtil\Path;
 
 class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
@@ -40,10 +40,10 @@ class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testChecksIfPackageIsNotInstalled()
     {
-        $structure = [
-            'source/vendor/oxideshop_ce/source/index.php' => '<?php',
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/source/vendor/oxideshop_ce/source/index.php' => '<?php',
+        ]));
+
         $rootPath = vfsStream::url('root/projectRoot/source');
 
         $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'));
@@ -52,13 +52,11 @@ class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testChecksIfPackageInstalled()
     {
-        $structure = [
-            'source' => [
-                'index.php' => '<?php',
-                'vendor/oxideshop_ce/source/index.php' => '<?php',
-            ]
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/source/index.php' => '<?php',
+            'projectRoot/source/vendor/oxideshop_ce/source/index.php' => '<?php',
+        ]));
+
         $rootPath = vfsStream::url('root/projectRoot/source');
 
         $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package('oxid-esales/oxideshop-ce', 'dev', 'dev'));
@@ -67,14 +65,11 @@ class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testInstallationOfPackage()
     {
-        $structure = [
-            'source/vendor/oxideshop_ce/source' => [
-                'index.php' => '<?php',
-                'Application/views/template.tpl' => '<?php',
-                'config.inc.php.dist' => '<?php',
-            ]
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/source/vendor/oxideshop_ce/source/index.php' => '<?php',
+            'projectRoot/source/vendor/oxideshop_ce/source/Application/views/template.tpl' => '<?php',
+            'projectRoot/source/vendor/oxideshop_ce/source/config.inc.php.dist' => '<?php',
+        ]));
 
         $rootPath = vfsStream::url('root/projectRoot/source');
         $shopDirectory = "$rootPath/vendor/oxideshop_ce";
@@ -89,12 +84,9 @@ class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testInstallCreatesConfigInc()
     {
-        $structure = [
-            'source/vendor/oxideshop_ce/source' => [
-                'config.inc.php.dist' => '<?php',
-            ]
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/source/vendor/oxideshop_ce/source/config.inc.php.dist' => '<?php',
+        ]));
 
         $rootPath = vfsStream::url('root/projectRoot/source');
         $shopDirectory = "$rootPath/vendor/oxideshop_ce";
@@ -107,30 +99,12 @@ class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testInstallDoesNotCopyClasses()
     {
-        $structure = [
-            'source' => [
-                'vendor' => [
-                    'oxideshop_ce' => [
-                        'source' => [
-                            'Class.php' => 'Class',
-                            'Core' => [
-                                'Class.php' => 'Class',
-                            ],
-                            'Application' => [
-                                'Model' => [
-                                    'Class.php' => 'Class',
-                                ],
-                                'Controller' => [
-                                    'Class.php' => 'Class'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ];
-
-        vfsStream::setup('root', 777, ['projectRoot' => $structure]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/source/vendor/oxideshop_ce/source/Class.php' => 'Class',
+            'projectRoot/source/vendor/oxideshop_ce/source/Core/Class.php' => 'Class',
+            'projectRoot/source/vendor/oxideshop_ce/source/Application/Model/Class.php' => 'Class',
+            'projectRoot/source/vendor/oxideshop_ce/source/Application/Controller/Class.php' => 'Class',
+        ]));
 
         $rootPath = vfsStream::url('root/projectRoot/source');
         $shopDirectory = "$rootPath/vendor/oxideshop_ce";
@@ -157,13 +131,5 @@ class ShopPackageInstallerTest extends \PHPUnit_Framework_TestCase
         $this->assertFileNotExists(Path::join($rootPath, 'Application', 'Model', 'Class.php'));
         $this->assertFileNotExists(Path::join($rootPath, 'Application', 'Controller'));
         $this->assertFileNotExists(Path::join($rootPath, 'Application', 'Controller', 'Class.php'));
-    }
-
-    /**
-     * @return StructurePreparator
-     */
-    public function getStructurePreparator()
-    {
-        return new StructurePreparator();
     }
 }

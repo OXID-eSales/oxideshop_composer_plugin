@@ -28,13 +28,11 @@ use Composer\Package\Package;
 use Composer\Package\PackageInterface;
 use org\bovigo\vfs\vfsStream;
 use OxidEsales\ComposerPlugin\Installer\Package\ThemePackageInstaller;
-use OxidEsales\ComposerPlugin\Tests\Integration\Installer\StructurePreparator;
+use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
 use Webmozart\PathUtil\Path;
 
 class ThemePackageInstallerTest extends \PHPUnit_Framework_TestCase
 {
-    const THEME_NAME_IN_COMPOSER = "oxid-esales/flow-theme";
-
     protected function getSut(IOInterface $io, $rootPath, PackageInterface $package)
     {
         return new ThemePackageInstaller($io, $rootPath, $package);
@@ -42,27 +40,27 @@ class ThemePackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testChecksIfThemeIsNotInstalled()
     {
-        $structure = [
-            'vendor/'.static::THEME_NAME_IN_COMPOSER.'/theme.php' => '<?php',
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/vendor/'."oxid-esales/flow-theme".'/theme.php' => '<?php'
+        ]));
+
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $package = new Package(static::THEME_NAME_IN_COMPOSER, 'dev', 'dev');
+        $package = new Package("oxid-esales/flow-theme", 'dev', 'dev');
         $themeInstaller = $this->getSut(new NullIO, $rootPath, $package);
         $this->assertFalse($themeInstaller->isInstalled());
     }
 
     public function testChecksIfThemeIsInstalled()
     {
-        $structure = [
-            'source/Application/views/flow-theme/theme.php' => '<?php',
-            'vendor/'.static::THEME_NAME_IN_COMPOSER.'/theme.php' => '<?php'
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/source/Application/views/flow-theme/theme.php' => '<?php',
+            'projectRoot/vendor/oxid-esales/flow-theme/theme.php' => '<?php'
+        ]));
+
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $package = new Package(static::THEME_NAME_IN_COMPOSER, 'dev', 'dev');
+        $package = new Package("oxid-esales/flow-theme", 'dev', 'dev');
         $shopPreparator = $this->getSut(new NullIO(), $rootPath, $package);
         $this->assertTrue($shopPreparator->isInstalled());
     }
@@ -143,46 +141,23 @@ class ThemePackageInstallerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return StructurePreparator
-     */
-    protected function getStructurePreparator()
-    {
-        return new StructurePreparator();
-    }
-
-    /**
      * @param $composerExtras
      * @return string
      */
     protected function simulateInstallation($composerExtras, $rootPath, $eshopRootPath)
     {
-        $vendorName = explode("/", static::THEME_NAME_IN_COMPOSER)[0];
-        $packageName = explode("/", static::THEME_NAME_IN_COMPOSER)[1];
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/vendor/oxid-esales/flow-theme/theme.php' => '<?php',
+            'projectRoot/vendor/oxid-esales/flow-theme/readme.txt' => 'readme',
+            'projectRoot/vendor/oxid-esales/flow-theme/out/style.css' => '.class {}',
+            'projectRoot/vendor/oxid-esales/flow-theme/out/readme.pdf' => 'PDF',
+            'projectRoot/vendor/oxid-esales/flow-theme/custom_directory_name/custom_style.css' => '.class {}',
+        ]));
 
-        $structure = [
-            'vendor' => [
-                $vendorName => [
-                    $packageName => [
-                        'theme.php' => '<?php',
-                        'readme.txt' => 'readme',
-                        'out' => [
-                            'style.css' => '.class {}',
-                            'readme.pdf' => 'PDF',
-                        ],
-                        'custom_directory_name' => [
-                            'custom_style.css' => '.class {}',
-                        ]
-                    ]
-                ]
-            ]
-        ];
-
-        vfsStream::setup('root', 777, ['projectRoot' => $structure]);
-
-        $package = new Package(static::THEME_NAME_IN_COMPOSER, 'dev', 'dev');
+        $package = new Package("oxid-esales/flow-theme", 'dev', 'dev');
         $shopPreparator = $this->getSut(new NullIO(), $eshopRootPath, $package);
         $package->setExtra($composerExtras);
-        $themeInVendor = "$rootPath/vendor/" . static::THEME_NAME_IN_COMPOSER;
+        $themeInVendor = "$rootPath/vendor/oxid-esales/flow-theme";
         $shopPreparator->install($themeInVendor);
     }
 

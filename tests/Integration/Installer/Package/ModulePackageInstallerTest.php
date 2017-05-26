@@ -27,14 +27,12 @@ use Composer\IO\NullIO;
 use Composer\Package\Package;
 use Composer\Package\PackageInterface;
 use OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller;
+use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
 use org\bovigo\vfs\vfsStream;
-use OxidEsales\ComposerPlugin\Tests\Integration\Installer\StructurePreparator;
 use Webmozart\PathUtil\Path;
 
 class ModulePackageInstallerTest extends \PHPUnit_Framework_TestCase
 {
-    const PRODUCT_NAME_IN_COMPOSER_FILE = "oxid-esales/paypal-module";
-
     protected function getSut(IOInterface $io, $rootPath, PackageInterface $package)
     {
         return new ModulePackageInstaller($io, $rootPath, $package);
@@ -42,26 +40,26 @@ class ModulePackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testChecksIfModuleIsNotInstalled()
     {
-        $structure = [
-            'vendor/'.static::PRODUCT_NAME_IN_COMPOSER_FILE.'/metadata.php' => '<?php',
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/vendor/oxid-esales/paypal-module/metadata.php' => '<?php',
+        ]));
+
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
+        $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package('oxid-esales/paypal-module', 'dev', 'dev'));
         $this->assertFalse($shopPreparator->isInstalled());
     }
 
     public function testChecksIfModuleIsInstalled()
     {
-        $structure = [
-            'source/modules/oxid-esales/paypal-module/metadata.php' => '<?php',
-            'vendor/oxid-esales/paypal-module/metadata.php' => '<?php'
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/source/modules/oxid-esales/paypal-module/metadata.php' => '<?php',
+            'projectRoot/vendor/oxid-esales/paypal-module/metadata.php' => '<?php'
+        ]));
+
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
+        $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package('oxid-esales/paypal-module', 'dev', 'dev'));
         $this->assertTrue($shopPreparator->isInstalled());
     }
 
@@ -82,21 +80,18 @@ class ModulePackageInstallerTest extends \PHPUnit_Framework_TestCase
      */
     public function testChecksIfModuleFilesExistsAfterInstallation($composerExtras, $installedModuleMetadata)
     {
-        $structure = [
-            'vendor/oxid-esales/paypal-module' => [
-                'metadata.php' => '<?php',
-            ]
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/vendor/oxid-esales/paypal-module/metadata.php' => '<?php',
+        ]));
 
         $rootPath = vfsStream::url('root/projectRoot');
         $eshopRootPath = "$rootPath/source";
         $installedModuleMetadata = "$eshopRootPath/$installedModuleMetadata";
 
-        $package = new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev');
+        $package = new Package('oxid-esales/paypal-module', 'dev', 'dev');
         $shopPreparator = $this->getSut(new NullIO(), $eshopRootPath, $package);
         $package->setExtra($composerExtras);
-        $moduleInVendor = "$rootPath/vendor/" . static::PRODUCT_NAME_IN_COMPOSER_FILE . "";
+        $moduleInVendor = "$rootPath/vendor/oxid-esales/paypal-module";
         $shopPreparator->install($moduleInVendor);
 
         $this->assertFileExists($installedModuleMetadata);
@@ -104,12 +99,9 @@ class ModulePackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testCheckIfModuleIsInstalledFromProvidedSourceDirectory()
     {
-        $structure = [
-            'vendor/oxid-esales/erp/copy_this/modules/erp' => [
-                'metadata.php' => '<?php',
-            ]
-        ];
-        vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/vendor/oxid-esales/erp/copy_this/modules/erp/metadata.php' => '<?php',
+        ]));
 
         $rootPath = vfsStream::url('root/projectRoot');
         $eshopRootPath = "$rootPath/source";
@@ -129,29 +121,13 @@ class ModulePackageInstallerTest extends \PHPUnit_Framework_TestCase
         $this->assertFileExists($installedModuleMetadata);
     }
 
-    /**
-     * @return StructurePreparator
-     */
-    public function getStructurePreparator()
-    {
-        return new StructurePreparator();
-    }
-
     public function testBlacklistedFilesArePresentWhenNoBlacklistFilterIsDefined()
     {
-        $structure = [
-            'vendor' => [
-                'test-vendor' => [
-                    'test-package' => [
-                        'metadata.php' => 'meta data',
-                        'module.php' => 'module',
-                        'readme.txt' => 'readme',
-                    ]
-                ]
-            ]
-        ];
-
-        vfsStream::setup('root', 777, ['projectRoot' => $structure]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/vendor/test-vendor/test-package/metadata.php' => 'meta data',
+            'projectRoot/vendor/test-vendor/test-package/module.php' => 'module',
+            'projectRoot/vendor/test-vendor/test-package/readme.txt' => 'readme',
+        ]));
 
         $rootPath = vfsStream::url('root/projectRoot');
         $shopRootPath = Path::join($rootPath, 'source');
@@ -169,19 +145,11 @@ class ModulePackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testBlacklistedFilesArePresentWhenEmptyBlacklistFilterIsDefined()
     {
-        $structure = [
-            'vendor' => [
-                'test-vendor' => [
-                    'test-package' => [
-                        'metadata.php' => 'meta data',
-                        'module.php' => 'module',
-                        'readme.txt' => 'readme',
-                    ]
-                ]
-            ]
-        ];
-
-        vfsStream::setup('root', 777, ['projectRoot' => $structure]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/vendor/test-vendor/test-package/metadata.php' => 'meta data',
+            'projectRoot/vendor/test-vendor/test-package/module.php' => 'module',
+            'projectRoot/vendor/test-vendor/test-package/readme.txt' => 'readme',
+        ]));
 
         $rootPath = vfsStream::url('root/projectRoot');
         $shopRootPath = Path::join($rootPath, 'source');
@@ -204,19 +172,11 @@ class ModulePackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testBlacklistedFilesArePresentWhenDifferentBlacklistFilterIsDefined()
     {
-        $structure = [
-            'vendor' => [
-                'test-vendor' => [
-                    'test-package' => [
-                        'metadata.php' => 'meta data',
-                        'module.php' => 'module',
-                        'readme.txt' => 'readme',
-                    ]
-                ]
-            ]
-        ];
-
-        vfsStream::setup('root', 777, ['projectRoot' => $structure]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/vendor/test-vendor/test-package/metadata.php' => 'meta data',
+            'projectRoot/vendor/test-vendor/test-package/module.php' => 'module',
+            'projectRoot/vendor/test-vendor/test-package/readme.txt' => 'readme',
+        ]));
 
         $rootPath = vfsStream::url('root/projectRoot');
         $shopRootPath = Path::join($rootPath, 'source');
@@ -241,19 +201,11 @@ class ModulePackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testBlacklistedFilesAreSkippedWhenABlacklistFilterIsDefined()
     {
-        $structure = [
-            'vendor' => [
-                'test-vendor' => [
-                    'test-package' => [
-                        'metadata.php' => 'meta data',
-                        'module.php' => 'module',
-                        'readme.txt' => 'readme',
-                    ]
-                ]
-            ]
-        ];
-
-        vfsStream::setup('root', 777, ['projectRoot' => $structure]);
+        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
+            'projectRoot/vendor/test-vendor/test-package/metadata.php' => 'meta data',
+            'projectRoot/vendor/test-vendor/test-package/module.php' => 'module',
+            'projectRoot/vendor/test-vendor/test-package/readme.txt' => 'readme',
+        ]));
 
         $rootPath = vfsStream::url('root/projectRoot');
         $shopRootPath = Path::join($rootPath, 'source');
