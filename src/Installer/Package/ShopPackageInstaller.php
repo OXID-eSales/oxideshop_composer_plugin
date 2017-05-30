@@ -20,14 +20,14 @@
  * @version   OXID eShop Composer plugin
  */
 
-namespace OxidEsales\ComposerPlugin\Installer;
+namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
 
 /**
  * @inheritdoc
  */
-class ShopInstaller extends AbstractInstaller
+class ShopPackageInstaller extends AbstractPackageInstaller
 {
     /**
      * @return bool

@@ -20,7 +20,7 @@
  * @version   OXID eShop Composer plugin
  */
 
-namespace OxidEsales\ComposerPlugin\Installer;
+namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
@@ -29,7 +29,7 @@ use Composer\Package\PackageInterface;
  * Class is responsible for preparing project structure.
  * It copies necessary files to specific directories.
  */
-abstract class AbstractInstaller
+abstract class AbstractPackageInstaller
 {
     const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
 

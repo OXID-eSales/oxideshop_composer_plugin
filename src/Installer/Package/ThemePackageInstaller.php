@@ -20,7 +20,7 @@
  * @version   OXID eShop Composer plugin
  */
 
-namespace OxidEsales\ComposerPlugin\Installer;
+namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
 use Webmozart\PathUtil\Path;
@@ -28,7 +28,7 @@ use Webmozart\PathUtil\Path;
 /**
  * @inheritdoc
  */
-class ThemeInstaller extends AbstractInstaller
+class ThemePackageInstaller extends AbstractPackageInstaller
 {
     const METADATA_FILE_NAME = 'theme.php';
     const PATH_TO_THEMES = "Application/views";
@@ -71,7 +71,7 @@ class ThemeInstaller extends AbstractInstaller
      */
     protected function copyFiles($packagePath)
     {
-        $filter = [Path::join($this->formAssetsDirectoryName(), AbstractInstaller::BLACKLIST_ALL_FILES)];
+        $filter = [Path::join($this->formAssetsDirectoryName(), AbstractPackageInstaller::BLACKLIST_ALL_FILES)];
         $filterFromExtras = $this->getBlacklistFilterValue();
 
         if (is_array($filterFromExtras)) {

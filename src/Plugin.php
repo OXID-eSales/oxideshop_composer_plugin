@@ -26,8 +26,8 @@ use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
-use OxidEsales\ComposerPlugin\Installer\AbstractInstaller;
-use OxidEsales\ComposerPlugin\Installer\PackagesInstaller;
+use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
+use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
@@ -41,8 +41,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /** @var IOInterface */
     private $io;
 
-    /** @var PackagesInstaller */
-    private $packageInstaller;
+    /** @var PackageInstallerTrigger */
+    private $packageInstallerTrigger;
 
     /**
      * Register events.
@@ -65,16 +65,16 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function activate(Composer $composer, IOInterface $io)
     {
-        $installer = new PackagesInstaller($io, $composer);
+        $installer = new PackageInstallerTrigger($io, $composer);
         $composer->getInstallationManager()->addInstaller($installer);
 
         $this->composer = $composer;
         $this->io = $io;
-        $this->packageInstaller = $installer;
+        $this->packageInstallerTrigger = $installer;
 
         $extraSettings = $this->composer->getPackage()->getExtra();
-        if (isset($extraSettings[AbstractInstaller::EXTRA_PARAMETER_KEY_ROOT])) {
-            $this->packageInstaller->setSettings($extraSettings[AbstractInstaller::EXTRA_PARAMETER_KEY_ROOT]);
+        if (isset($extraSettings[AbstractPackageInstaller::EXTRA_PARAMETER_KEY_ROOT])) {
+            $this->packageInstallerTrigger->setSettings($extraSettings[AbstractPackageInstaller::EXTRA_PARAMETER_KEY_ROOT]);
         }
     }
 
@@ -99,12 +99,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $repo = $this->composer->getRepositoryManager()->getLocalRepository();
 
         foreach ($repo->getPackages() as $package) {
-            if ($this->packageInstaller->supports($package->getType())) {
+            if ($this->packageInstallerTrigger->supports($package->getType())) {
                 if ($actionName === static::ACTION_INSTALL) {
-                    $this->packageInstaller->installPackage($package);
+                    $this->packageInstallerTrigger->installPackage($package);
                 }
                 if ($actionName === static::ACTION_UPDATE) {
-                    $this->packageInstaller->updatePackage($package);
+                    $this->packageInstallerTrigger->updatePackage($package);
                 }
             }
         }

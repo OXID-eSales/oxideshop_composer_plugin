@@ -20,15 +20,16 @@
  * @version   OXID eShop Composer plugin
  */
 
-namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer;
+namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
 use Composer\IO\NullIO;
 use Composer\Package\Package;
-use OxidEsales\ComposerPlugin\Installer\ModuleInstaller;
+use OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller;
 use org\bovigo\vfs\vfsStream;
+use OxidEsales\ComposerPlugin\Tests\Integration\Installer\StructurePreparator;
 use Webmozart\PathUtil\Path;
 
-class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
+class ModulePackageInstallerTest extends \PHPUnit_Framework_TestCase
 {
     const PRODUCT_NAME_IN_COMPOSER_FILE = "oxid-esales/paypal-module";
 
@@ -40,7 +41,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $shopPreparator = new ModuleInstaller(new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
+        $shopPreparator = new ModulePackageInstaller(new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
         $this->assertFalse($shopPreparator->isInstalled());
     }
 
@@ -53,15 +54,15 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $shopPreparator = new ModuleInstaller(new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
+        $shopPreparator = new ModulePackageInstaller(new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
         $this->assertTrue($shopPreparator->isInstalled());
     }
 
     public function providerChecksIfModuleFilesExistsAfterInstallation()
     {
         return [
-            [[ModuleInstaller::EXTRA_PARAMETER_KEY_ROOT => [ModuleInstaller::EXTRA_PARAMETER_KEY_TARGET => 'oe/paypal']], 'modules/oe/paypal/metadata.php'],
-            [[ModuleInstaller::EXTRA_PARAMETER_KEY_ROOT => [ModuleInstaller::EXTRA_PARAMETER_KEY_TARGET => 'paypal']], 'modules/paypal/metadata.php'],
+            [[ModulePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [ModulePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'oe/paypal']], 'modules/oe/paypal/metadata.php'],
+            [[ModulePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [ModulePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'paypal']], 'modules/paypal/metadata.php'],
             [[], 'modules/oxid-esales/paypal-module/metadata.php']
         ];
     }
@@ -86,7 +87,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         $installedModuleMetadata = "$eshopRootPath/$installedModuleMetadata";
 
         $package = new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev');
-        $shopPreparator = new ModuleInstaller(new NullIO(), $eshopRootPath, $package);
+        $shopPreparator = new ModulePackageInstaller(new NullIO(), $eshopRootPath, $package);
         $package->setExtra($composerExtras);
         $moduleInVendor = "$rootPath/vendor/" . static::PRODUCT_NAME_IN_COMPOSER_FILE . "";
         $shopPreparator->install($moduleInVendor);
@@ -108,11 +109,11 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         $installedModuleMetadata = "$eshopRootPath/modules/erp/metadata.php";
 
         $package = new Package('oxid-esales/erp', 'dev', 'dev');
-        $shopPreparator = new ModuleInstaller(new NullIO(), $eshopRootPath, $package);
+        $shopPreparator = new ModulePackageInstaller(new NullIO(), $eshopRootPath, $package);
         $package->setExtra(
-            [ModuleInstaller::EXTRA_PARAMETER_KEY_ROOT => [
-                ModuleInstaller::EXTRA_PARAMETER_KEY_SOURCE => 'copy_this/modules/erp',
-                ModuleInstaller::EXTRA_PARAMETER_KEY_TARGET => 'erp',
+            [ModulePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [
+                ModulePackageInstaller::EXTRA_PARAMETER_KEY_SOURCE => 'copy_this/modules/erp',
+                ModulePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'erp',
             ]]
         );
         $moduleInVendor = "$rootPath/vendor/oxid-esales/erp";
@@ -151,7 +152,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         $moduleSourcePath = Path::join($rootPath, 'vendor', 'test-vendor', 'test-package');
 
         $package = new Package('test-vendor/test-package', 'dev', 'dev');
-        $moduleInstaller = new ModuleInstaller(new NullIO(), $shopRootPath, $package);
+        $moduleInstaller = new ModulePackageInstaller(new NullIO(), $shopRootPath, $package);
         $moduleInstaller->install($moduleSourcePath);
 
         $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));
@@ -186,7 +187,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
                'blacklist-filter' => [],
            ]
         ]);
-        $moduleInstaller = new ModuleInstaller(new NullIO(), $shopRootPath, $package);
+        $moduleInstaller = new ModulePackageInstaller(new NullIO(), $shopRootPath, $package);
         $moduleInstaller->install($moduleSourcePath);
 
         $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));
@@ -223,7 +224,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
                 ],
             ]
         ]);
-        $moduleInstaller = new ModuleInstaller(new NullIO(), $shopRootPath, $package);
+        $moduleInstaller = new ModulePackageInstaller(new NullIO(), $shopRootPath, $package);
         $moduleInstaller->install($moduleSourcePath);
 
         $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));
@@ -260,7 +261,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
                 ],
             ]
         ]);
-        $moduleInstaller = new ModuleInstaller(new NullIO(), $shopRootPath, $package);
+        $moduleInstaller = new ModulePackageInstaller(new NullIO(), $shopRootPath, $package);
         $moduleInstaller->install($moduleSourcePath);
 
         $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));

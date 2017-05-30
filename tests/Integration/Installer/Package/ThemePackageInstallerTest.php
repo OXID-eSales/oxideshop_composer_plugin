@@ -20,15 +20,16 @@
  * @version   OXID eShop Composer plugin
  */
 
-namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer;
+namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
 use Composer\IO\NullIO;
 use Composer\Package\Package;
 use org\bovigo\vfs\vfsStream;
-use OxidEsales\ComposerPlugin\Installer\ThemeInstaller;
+use OxidEsales\ComposerPlugin\Installer\Package\ThemePackageInstaller;
+use OxidEsales\ComposerPlugin\Tests\Integration\Installer\StructurePreparator;
 use Webmozart\PathUtil\Path;
 
-class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
+class ThemePackageInstallerTest extends \PHPUnit_Framework_TestCase
 {
     const THEME_NAME_IN_COMPOSER = "oxid-esales/flow-theme";
 
@@ -41,7 +42,7 @@ class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
         $rootPath = vfsStream::url('root/projectRoot/source');
 
         $package = new Package(static::THEME_NAME_IN_COMPOSER, 'dev', 'dev');
-        $themeInstaller = new ThemeInstaller(new NullIO, $rootPath, $package);
+        $themeInstaller = new ThemePackageInstaller(new NullIO, $rootPath, $package);
         $this->assertFalse($themeInstaller->isInstalled());
     }
 
@@ -55,7 +56,7 @@ class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
         $rootPath = vfsStream::url('root/projectRoot/source');
 
         $package = new Package(static::THEME_NAME_IN_COMPOSER, 'dev', 'dev');
-        $shopPreparator = new ThemeInstaller(new NullIO(), $rootPath, $package);
+        $shopPreparator = new ThemePackageInstaller(new NullIO(), $rootPath, $package);
         $this->assertTrue($shopPreparator->isInstalled());
     }
 
@@ -66,7 +67,7 @@ class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                [ThemeInstaller::EXTRA_PARAMETER_KEY_ROOT => [ThemeInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow']],
+                [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [ThemePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow']],
                 'Application/views/flow/theme.php',
                 'out/flow/style.css'
             ],
@@ -76,14 +77,14 @@ class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
                 'out/flow-theme/style.css'
             ],
             [
-                [ThemeInstaller::EXTRA_PARAMETER_KEY_ROOT => [ThemeInstaller::EXTRA_PARAMETER_KEY_ASSETS => 'custom_directory_name']],
+                [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ASSETS => 'custom_directory_name']],
                 'Application/views/flow-theme/theme.php',
                 'out/flow-theme/custom_style.css'
             ],
             [
-                [ThemeInstaller::EXTRA_PARAMETER_KEY_ROOT => [
-                    ThemeInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow',
-                    ThemeInstaller::EXTRA_PARAMETER_KEY_ASSETS => 'custom_directory_name',
+                [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [
+                    ThemePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow',
+                    ThemePackageInstaller::EXTRA_PARAMETER_KEY_ASSETS => 'custom_directory_name',
                 ]],
                 'Application/views/flow/theme.php',
                 'out/flow/custom_style.css'
@@ -111,9 +112,9 @@ class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testChecksIfAssetFileDoesNotExist()
     {
-        $composerExtras = [ThemeInstaller::EXTRA_PARAMETER_KEY_ROOT => [
-            ThemeInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow',
-            ThemeInstaller::EXTRA_PARAMETER_KEY_ASSETS => 'non_existing_directory',
+        $composerExtras = [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [
+            ThemePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow',
+            ThemePackageInstaller::EXTRA_PARAMETER_KEY_ASSETS => 'non_existing_directory',
         ]];
 
         $rootPath = vfsStream::url('root/projectRoot');
@@ -124,8 +125,8 @@ class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
 
     public function testChecksIfAssetsDirectoryWasNotCopied()
     {
-        $composerExtras = [ThemeInstaller::EXTRA_PARAMETER_KEY_ROOT => [
-            ThemeInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow'
+        $composerExtras = [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [
+            ThemePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow'
         ]];
 
         $rootPath = vfsStream::url('root/projectRoot');
@@ -172,7 +173,7 @@ class ThemeInstallerTest extends \PHPUnit_Framework_TestCase
         vfsStream::setup('root', 777, ['projectRoot' => $structure]);
 
         $package = new Package(static::THEME_NAME_IN_COMPOSER, 'dev', 'dev');
-        $shopPreparator = new ThemeInstaller(new NullIO(), $eshopRootPath, $package);
+        $shopPreparator = new ThemePackageInstaller(new NullIO(), $eshopRootPath, $package);
         $package->setExtra($composerExtras);
         $themeInVendor = "$rootPath/vendor/" . static::THEME_NAME_IN_COMPOSER;
         $shopPreparator->install($themeInVendor);
