@@ -22,6 +22,8 @@
 
 namespace OxidEsales\ComposerPlugin\Installer;
 
+use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
+
 /**
  * @inheritdoc
  */
@@ -45,7 +47,12 @@ class ModuleInstaller extends AbstractInstaller
     public function install($packagePath)
     {
         $this->getIO()->write("Installing module {$this->getPackage()->getName()} package.");
-        $this->getFileSystem()->mirror($this->formSourcePath($packagePath), $this->formTargetPath());
+
+        CopyGlobFilteredFileManager::copy(
+            $this->formSourcePath($packagePath),
+            $this->formTargetPath(),
+            $this->getBlacklistFilterValue()
+        );
     }
 
     /**
@@ -58,11 +65,11 @@ class ModuleInstaller extends AbstractInstaller
         if ($this->askQuestionIfNotInstalled("Update operation will overwrite {$this->getPackage()->getName()} files."
             ." Do you want to continue? (Yes/No) ")) {
             $this->getIO()->write("Copying module {$this->getPackage()->getName()} files...");
-            $this->getFileSystem()->mirror(
+
+            CopyGlobFilteredFileManager::copy(
                 $this->formSourcePath($packagePath),
                 $this->formTargetPath(),
-                null,
-                ['override' => true]
+                $this->getBlacklistFilterValue()
             );
         }
     }

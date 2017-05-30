@@ -26,7 +26,7 @@ use Composer\IO\NullIO;
 use Composer\Package\Package;
 use OxidEsales\ComposerPlugin\Installer\ModuleInstaller;
 use org\bovigo\vfs\vfsStream;
-use Symfony\Component\Filesystem\Filesystem;
+use Webmozart\PathUtil\Path;
 
 class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,7 +40,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $shopPreparator = new ModuleInstaller(new Filesystem(), new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
+        $shopPreparator = new ModuleInstaller(new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
         $this->assertFalse($shopPreparator->isInstalled());
     }
 
@@ -53,7 +53,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         vfsStream::setup('root', 777, ['projectRoot' => $this->getStructurePreparator()->prepareStructure($structure)]);
         $rootPath = vfsStream::url('root/projectRoot/source');
 
-        $shopPreparator = new ModuleInstaller(new Filesystem(), new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
+        $shopPreparator = new ModuleInstaller(new NullIO, $rootPath, new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev'));
         $this->assertTrue($shopPreparator->isInstalled());
     }
 
@@ -86,7 +86,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         $installedModuleMetadata = "$eshopRootPath/$installedModuleMetadata";
 
         $package = new Package(static::PRODUCT_NAME_IN_COMPOSER_FILE, 'dev', 'dev');
-        $shopPreparator = new ModuleInstaller(new Filesystem(), new NullIO(), $eshopRootPath, $package);
+        $shopPreparator = new ModuleInstaller(new NullIO(), $eshopRootPath, $package);
         $package->setExtra($composerExtras);
         $moduleInVendor = "$rootPath/vendor/" . static::PRODUCT_NAME_IN_COMPOSER_FILE . "";
         $shopPreparator->install($moduleInVendor);
@@ -108,7 +108,7 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
         $installedModuleMetadata = "$eshopRootPath/modules/erp/metadata.php";
 
         $package = new Package('oxid-esales/erp', 'dev', 'dev');
-        $shopPreparator = new ModuleInstaller(new Filesystem(), new NullIO(), $eshopRootPath, $package);
+        $shopPreparator = new ModuleInstaller(new NullIO(), $eshopRootPath, $package);
         $package->setExtra(
             [ModuleInstaller::EXTRA_PARAMETER_KEY_ROOT => [
                 ModuleInstaller::EXTRA_PARAMETER_KEY_SOURCE => 'copy_this/modules/erp',
@@ -127,5 +127,144 @@ class ModuleInstallerTest extends \PHPUnit_Framework_TestCase
     public function getStructurePreparator()
     {
         return new StructurePreparator();
+    }
+
+    public function testBlacklistedFilesArePresentWhenNoBlacklistFilterIsDefined()
+    {
+        $structure = [
+            'vendor' => [
+                'test-vendor' => [
+                    'test-package' => [
+                        'metadata.php' => 'meta data',
+                        'module.php' => 'module',
+                        'readme.txt' => 'readme',
+                    ]
+                ]
+            ]
+        ];
+
+        vfsStream::setup('root', 777, ['projectRoot' => $structure]);
+
+        $rootPath = vfsStream::url('root/projectRoot');
+        $shopRootPath = Path::join($rootPath, 'source');
+        $installedModulePath = Path::join($shopRootPath, 'modules', 'test-vendor', 'test-package');
+        $moduleSourcePath = Path::join($rootPath, 'vendor', 'test-vendor', 'test-package');
+
+        $package = new Package('test-vendor/test-package', 'dev', 'dev');
+        $moduleInstaller = new ModuleInstaller(new NullIO(), $shopRootPath, $package);
+        $moduleInstaller->install($moduleSourcePath);
+
+        $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));
+        $this->assertFileExists(Path::join($installedModulePath, 'module.php'));
+        $this->assertFileExists(Path::join($installedModulePath, 'readme.txt'));
+    }
+
+    public function testBlacklistedFilesArePresentWhenEmptyBlacklistFilterIsDefined()
+    {
+        $structure = [
+            'vendor' => [
+                'test-vendor' => [
+                    'test-package' => [
+                        'metadata.php' => 'meta data',
+                        'module.php' => 'module',
+                        'readme.txt' => 'readme',
+                    ]
+                ]
+            ]
+        ];
+
+        vfsStream::setup('root', 777, ['projectRoot' => $structure]);
+
+        $rootPath = vfsStream::url('root/projectRoot');
+        $shopRootPath = Path::join($rootPath, 'source');
+        $installedModulePath = Path::join($shopRootPath, 'modules', 'test-vendor', 'test-package');
+        $moduleSourcePath = Path::join($rootPath, 'vendor', 'test-vendor', 'test-package');
+
+        $package = new Package('test-vendor/test-package', 'dev', 'dev');
+        $package->setExtra([
+           'oxideshop' => [
+               'blacklist-filter' => [],
+           ]
+        ]);
+        $moduleInstaller = new ModuleInstaller(new NullIO(), $shopRootPath, $package);
+        $moduleInstaller->install($moduleSourcePath);
+
+        $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));
+        $this->assertFileExists(Path::join($installedModulePath, 'module.php'));
+        $this->assertFileExists(Path::join($installedModulePath, 'readme.txt'));
+    }
+
+    public function testBlacklistedFilesArePresentWhenDifferentBlacklistFilterIsDefined()
+    {
+        $structure = [
+            'vendor' => [
+                'test-vendor' => [
+                    'test-package' => [
+                        'metadata.php' => 'meta data',
+                        'module.php' => 'module',
+                        'readme.txt' => 'readme',
+                    ]
+                ]
+            ]
+        ];
+
+        vfsStream::setup('root', 777, ['projectRoot' => $structure]);
+
+        $rootPath = vfsStream::url('root/projectRoot');
+        $shopRootPath = Path::join($rootPath, 'source');
+        $installedModulePath = Path::join($shopRootPath, 'modules', 'test-vendor', 'test-package');
+        $moduleSourcePath = Path::join($rootPath, 'vendor', 'test-vendor', 'test-package');
+
+        $package = new Package('test-vendor/test-package', 'dev', 'dev');
+        $package->setExtra([
+            'oxideshop' => [
+                'blacklist-filter' => [
+                    "**/*.pdf",
+                ],
+            ]
+        ]);
+        $moduleInstaller = new ModuleInstaller(new NullIO(), $shopRootPath, $package);
+        $moduleInstaller->install($moduleSourcePath);
+
+        $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));
+        $this->assertFileExists(Path::join($installedModulePath, 'module.php'));
+        $this->assertFileExists(Path::join($installedModulePath, 'readme.txt'));
+    }
+
+    public function testBlacklistedFilesAreSkippedWhenABlacklistFilterIsDefined()
+    {
+        $structure = [
+            'vendor' => [
+                'test-vendor' => [
+                    'test-package' => [
+                        'metadata.php' => 'meta data',
+                        'module.php' => 'module',
+                        'readme.txt' => 'readme',
+                    ]
+                ]
+            ]
+        ];
+
+        vfsStream::setup('root', 777, ['projectRoot' => $structure]);
+
+        $rootPath = vfsStream::url('root/projectRoot');
+        $shopRootPath = Path::join($rootPath, 'source');
+        $installedModulePath = Path::join($shopRootPath, 'modules', 'test-vendor', 'test-package');
+        $moduleSourcePath = Path::join($rootPath, 'vendor', 'test-vendor', 'test-package');
+
+        $package = new Package('test-vendor/test-package', 'dev', 'dev');
+        $package->setExtra([
+            'oxideshop' => [
+                'blacklist-filter' => [
+                    "**/*.txt",
+                ],
+            ]
+        ]);
+        $moduleInstaller = new ModuleInstaller(new NullIO(), $shopRootPath, $package);
+        $moduleInstaller->install($moduleSourcePath);
+
+        $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));
+        $this->assertFileExists(Path::join($installedModulePath, 'module.php'));
+        $this->assertFileNotExists(Path::join($installedModulePath, 'readme.txt'));
     }
 }

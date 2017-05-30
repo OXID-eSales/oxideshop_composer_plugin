@@ -25,11 +25,7 @@ namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer;
 use Composer\Composer;
 use Composer\Config;
 use Composer\IO\NullIO;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamWrapper;
-use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 use OxidEsales\ComposerPlugin\Installer\PackagesInstaller;
-use Symfony\Component\Filesystem\Filesystem;
 
 class PackagesInstallerTest extends \PHPUnit_Framework_TestCase
 {

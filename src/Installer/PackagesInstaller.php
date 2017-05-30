@@ -24,7 +24,6 @@ namespace OxidEsales\ComposerPlugin\Installer;
 
 use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class responsible for triggering installation process.
@@ -108,6 +107,6 @@ class PackagesInstaller extends LibraryInstaller
      */
     protected function createInstaller(PackageInterface $package)
     {
-        return new $this->installers[$package->getType()](new Filesystem(), $this->io, $this->getShopSourcePath(), $package);
+        return new $this->installers[$package->getType()]($this->io, $this->getShopSourcePath(), $package);
     }
 }

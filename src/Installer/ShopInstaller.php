@@ -22,19 +22,13 @@
 
 namespace OxidEsales\ComposerPlugin\Installer;
 
+use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
+
 /**
  * @inheritdoc
  */
 class ShopInstaller extends AbstractInstaller
 {
-    /** @var array Directories which shouldn't be copied. */
-    private $directoriesToSkip = [
-        'Application/Component',
-        'Application/Controller',
-        'Application/Model',
-        'Core'
-    ];
-
     /**
      * @return bool
      */
@@ -64,33 +58,29 @@ class ShopInstaller extends AbstractInstaller
         $this->getIO()->write("Installing shop package.");
         if ($this->askQuestionIfNotInstalled('Do you want to overwrite existing OXID eShop files? (Yes/No) ')) {
             $this->getIO()->write("Copying shop files to source directory...");
-            $this->copyFiles($packagePath, ['override' => true]);
+            $this->copyFiles($packagePath);
         }
     }
 
     /**
-     * @return DirectoriesSkipIteratorBuilder
-     */
-    protected function getDirectoriesToSkipIteratorBuilder()
-    {
-        return new DirectoriesSkipIteratorBuilder();
-    }
-
-    /**
      * @param $packagePath
-     * @param array $options
      */
-    protected function copyFiles($packagePath, $options = [])
+    protected function copyFiles($packagePath)
     {
         $packagePath = rtrim($packagePath, '/') . '/source';
         $root = $this->getRootDirectory();
 
-        $iterator = $this->getDirectoriesToSkipIteratorBuilder();
-        $fileSystem = $this->getFileSystem();
-        $fileSystem->mirror($packagePath, $root, $iterator->build($packagePath, $this->directoriesToSkip), $options);
+        CopyGlobFilteredFileManager::copy(
+            $packagePath,
+            $root,
+            $this->getBlacklistFilterValue()
+        );
 
         if (file_exists($root.'/config.inc.php.dist') && !file_exists($root.'/config.inc.php')) {
-            $fileSystem->copy($root.'/config.inc.php.dist', $root.'/config.inc.php');
+            CopyGlobFilteredFileManager::copy(
+                $root.'/config.inc.php.dist',
+                $root.'/config.inc.php'
+            );
         }
     }
 }

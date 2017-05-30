@@ -24,7 +24,6 @@ namespace OxidEsales\ComposerPlugin\Installer;
 
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class is responsible for preparing project structure.
@@ -46,8 +45,11 @@ abstract class AbstractInstaller
     /** Used to decide what the shop source directory is. */
     const EXTRA_PARAMETER_SOURCE_PATH = 'source-path';
 
-    /** @var Filesystem */
-    private $fileSystem;
+    /** List of glob expressions used to blacklist files being copied. */
+    const EXTRA_PARAMETER_FILTER_BLACKLIST = 'blacklist-filter';
+
+    /** Glob expression to filter all files, might be used to filter whole directory. */
+    const BLACKLIST_ALL_FILES = '**/*.*';
 
     /** @var IOInterface */
     private $io;
@@ -61,14 +63,12 @@ abstract class AbstractInstaller
     /**
      * AbstractInstaller constructor.
      *
-     * @param Filesystem $fileSystem
      * @param IOInterface $io
      * @param string $rootDirectory
      * @param PackageInterface $package
      */
-    public function __construct(Filesystem $fileSystem, IOInterface $io, $rootDirectory, PackageInterface $package)
+    public function __construct(IOInterface $io, $rootDirectory, PackageInterface $package)
     {
-        $this->fileSystem = $fileSystem;
         $this->io = $io;
         $this->rootDirectory = $rootDirectory;
         $this->package = $package;
@@ -99,14 +99,6 @@ abstract class AbstractInstaller
     }
 
     /**
-     * @return Filesystem
-     */
-    protected function getFileSystem()
-    {
-        return $this->fileSystem;
-    }
-
-    /**
      * @return IOInterface
      */
     protected function getIO()
@@ -134,7 +126,7 @@ abstract class AbstractInstaller
      * Search for parameter with specific key in "extra" composer configuration block
      *
      * @param string $extraParameterKey
-     * @return null|string
+     * @return array|string|null
      */
     protected function getExtraParameterValueByKey($extraParameterKey)
     {
@@ -147,6 +139,16 @@ abstract class AbstractInstaller
             $extraParameterValue = $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey];
         }
         return $extraParameterValue;
+    }
+
+    /**
+     * Return the value defined in composer extra parameters for blacklist filtering.
+     *
+     * @return array
+     */
+    protected function getBlacklistFilterValue()
+    {
+        return $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_FILTER_BLACKLIST);
     }
 
     /**
