@@ -31,209 +31,381 @@ use OxidEsales\ComposerPlugin\Installer\Package\ThemePackageInstaller;
 use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
 use Webmozart\PathUtil\Path;
 
-class ThemePackageInstallerTest extends \PHPUnit_Framework_TestCase
+class ThemePackageInstallerTest extends AbstractPackageInstallerTest
 {
-    protected function getSut(IOInterface $io, $rootPath, PackageInterface $package)
+    protected function getPackageInstaller($packageName, $version = '1.0.0', $extra = [])
     {
-        return new ThemePackageInstaller($io, $rootPath, $package);
+        $package = new Package($packageName, $version, $version);
+        $package->setExtra($extra);
+
+        return new ThemePackageInstaller(
+            new NullIO(),
+            $this->getVirtualShopSourcePath(),
+            $package
+        );
     }
 
-    public function testChecksIfThemeIsNotInstalled()
+    public function testThemeNotInstalledByDefault()
     {
-        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
-            'projectRoot/vendor/'."oxid-esales/flow-theme".'/theme.php' => '<?php'
-        ]));
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
 
-        $rootPath = vfsStream::url('root/projectRoot/source');
-
-        $package = new Package("oxid-esales/flow-theme", 'dev', 'dev');
-        $themeInstaller = $this->getSut(new NullIO, $rootPath, $package);
-        $this->assertFalse($themeInstaller->isInstalled());
+        $this->assertFalse($installer->isInstalled());
     }
 
-    public function testChecksIfThemeIsInstalled()
+    public function testThemeIsInstalledIfAlreadyExistsInShop()
     {
-        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
-            'projectRoot/source/Application/views/flow-theme/theme.php' => '<?php',
-            'projectRoot/vendor/oxid-esales/flow-theme/theme.php' => '<?php'
-        ]));
+        $this->setupVirtualProjectRoot('source/Application/views/test-package', [
+            'theme.php' => '<?php'
+        ]);
 
-        $rootPath = vfsStream::url('root/projectRoot/source');
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
 
-        $package = new Package("oxid-esales/flow-theme", 'dev', 'dev');
-        $shopPreparator = $this->getSut(new NullIO(), $rootPath, $package);
-        $this->assertTrue($shopPreparator->isInstalled());
+        $this->assertTrue($installer->isInstalled());
     }
 
-    /**
-     * @return array
-     */
-    public function providerChecksIfThemeFilesExistsAfterInstallation()
+    public function testThemeIsInstalledAfterInstallProcess()
     {
-        return [
-            [
-                [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [ThemePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow']],
-                'Application/views/flow/theme.php',
-                'out/flow/style.css'
-            ],
-            [
-                [],
-                'Application/views/flow-theme/theme.php',
-                'out/flow-theme/style.css'
-            ],
-            [
-                [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ASSETS => 'custom_directory_name']],
-                'Application/views/flow-theme/theme.php',
-                'out/flow-theme/custom_style.css'
-            ],
-            [
-                [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [
-                    ThemePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow',
-                    ThemePackageInstaller::EXTRA_PARAMETER_KEY_ASSETS => 'custom_directory_name',
-                ]],
-                'Application/views/flow/theme.php',
-                'out/flow/custom_style.css'
-            ],
-        ];
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertTrue($installer->isInstalled());
     }
 
-    /**
-     * @param $composerExtras
-     * @param $installedThemeMetadata
-     * @param $assetsFile
-     * @dataProvider providerChecksIfThemeFilesExistsAfterInstallation
-     */
-    public function testChecksIfThemeFilesExistsAfterInstallation($composerExtras, $installedThemeMetadata, $assetsFile)
+    public function testThemeFilesAreCopiedAfterInstallProcess()
     {
-        $rootPath = vfsStream::url('root/projectRoot');
-        $eshopRootPath = "$rootPath/source";
-        $this->simulateInstallation($composerExtras, $rootPath, $eshopRootPath);
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php'
+        ]);
 
-        $installedThemeMetadata = "$eshopRootPath/$installedThemeMetadata";
-        $assetsFile = "$eshopRootPath/$assetsFile";
-        $this->assertFileExists($installedThemeMetadata);
-        $this->assertFileExists($assetsFile);
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/theme.php',
+            'source/Application/views/test-package/theme.php'
+        );
     }
 
-    public function testChecksIfAssetFileDoesNotExist()
+    public function testThemeFilesAreCopiedAfterInstallProcessWithSameTargetDirectory()
     {
-        $composerExtras = [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [
-            ThemePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow',
-            ThemePackageInstaller::EXTRA_PARAMETER_KEY_ASSETS => 'non_existing_directory',
-        ]];
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php'
+        ]);
 
-        $rootPath = vfsStream::url('root/projectRoot');
-        $eshopRootPath = "$rootPath/source";
-        $this->simulateInstallation($composerExtras, $rootPath, $eshopRootPath);
-        $this->assertFileNotExists($eshopRootPath.'/out/non_existing_directory');
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'target-directory' => 'test-package',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/theme.php',
+            'source/Application/views/test-package/theme.php'
+        );
     }
 
-    public function testChecksIfAssetsDirectoryWasNotCopied()
+    public function testThemeFilesAreCopiedAfterInstallProcessWithCustomTargetDirectory()
     {
-        $composerExtras = [ThemePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [
-            ThemePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'flow'
-        ]];
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php'
+        ]);
 
-        $rootPath = vfsStream::url('root/projectRoot');
-        $eshopRootPath = "$rootPath/source";
-        $this->simulateInstallation($composerExtras, $rootPath, $eshopRootPath);
-        $this->assertFileNotExists($eshopRootPath . '/Application/views/flow/out/style.css');
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'target-directory' => 'custom-package',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/theme.php',
+            'source/Application/views/custom-package/theme.php'
+        );
     }
 
-    /**
-     * @param $composerExtras
-     * @return string
-     */
-    protected function simulateInstallation($composerExtras, $rootPath, $eshopRootPath)
+    public function testThemeAssetsAreCopiedAfterInstallProcess()
     {
-        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
-            'projectRoot/vendor/oxid-esales/flow-theme/theme.php' => '<?php',
-            'projectRoot/vendor/oxid-esales/flow-theme/readme.txt' => 'readme',
-            'projectRoot/vendor/oxid-esales/flow-theme/out/style.css' => '.class {}',
-            'projectRoot/vendor/oxid-esales/flow-theme/out/readme.pdf' => 'PDF',
-            'projectRoot/vendor/oxid-esales/flow-theme/custom_directory_name/custom_style.css' => '.class {}',
-        ]));
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'out/style.css' => 'css',
+        ]);
 
-        $package = new Package("oxid-esales/flow-theme", 'dev', 'dev');
-        $shopPreparator = $this->getSut(new NullIO(), $eshopRootPath, $package);
-        $package->setExtra($composerExtras);
-        $themeInVendor = "$rootPath/vendor/oxid-esales/flow-theme";
-        $shopPreparator->install($themeInVendor);
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/out/style.css',
+            'source/out/test-package/style.css'
+        );
+    }
+
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithSameAssetsDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'out/style.css' => 'css',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'assets-directory' => 'out',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/out/style.css',
+            'source/out/test-package/style.css'
+        );
+    }
+
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithSameTargetDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'out/style.css' => 'css',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'target-directory' => 'test-package',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/out/style.css',
+            'source/out/test-package/style.css'
+        );
+    }
+
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithSameAssetsDirectoryAndSameTargetDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'out/style.css' => 'css',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'assets-directory' => 'out',
+                'target-directory' => 'test-package',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/out/style.css',
+            'source/out/test-package/style.css'
+        );
+    }
+
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithCustomAssetsDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'custom_assets/custom_style.css' => 'css',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'assets-directory' => 'custom_assets',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/custom_assets/custom_style.css',
+            'source/out/test-package/custom_style.css'
+        );
+    }
+
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithCustomTargetDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'out/style.css' => 'css',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'target-directory' => 'custom-package',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/out/style.css',
+            'source/out/custom-package/style.css'
+        );
+    }
+
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithCustomAssetsDirectoryAndCustomTargetDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'custom_assets/custom_style.css' => 'css',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'assets-directory' => 'custom_assets',
+                'target-directory' => 'custom-package',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/custom_assets/custom_style.css',
+            'source/out/custom-package/custom_style.css'
+        );
+    }
+
+    public function testThemeAssetsAreNotCopiedAfterInstallProcessWithNonExistingCustomAssetsDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'assets-directory' => 'custom_assets',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileNotExists('source/out/test-package/custom_style.css');
     }
 
     public function testBlacklistedFilesArePresentWhenNoBlacklistFilterIsDefined()
     {
-        $composerExtraParameters = [
-            'oxideshop' => [
-                'target-directory' => 'flow',
-            ]
-        ];
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'theme.txt' => 'txt',
+            'out/style.css' => 'css',
+            'out/style.pdf' => 'PDF',
+        ]);
 
-        $rootPath = vfsStream::url('root/projectRoot');
-        $shopRootPath = Path::join($rootPath, 'source');
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $this->simulateInstallation($composerExtraParameters, $rootPath, $shopRootPath);
-
-        $this->assertFileExists(Path::join($shopRootPath, 'Application', 'views', 'flow', 'readme.txt'));
-        $this->assertFileExists(Path::join($shopRootPath, 'out', 'flow', 'readme.pdf'));
+        $this->assertVirtualFileExists('source/Application/views/test-package/theme.php');
+        $this->assertVirtualFileExists('source/Application/views/test-package/theme.txt');
+        $this->assertVirtualFileExists('source/out/test-package/style.css');
+        $this->assertVirtualFileExists('source/out/test-package/style.pdf');
     }
 
     public function testBlacklistedFilesArePresentWhenEmptyBlacklistFilterIsDefined()
     {
-        $composerExtraParameters = [
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'theme.txt' => 'txt',
+            'out/style.css' => 'css',
+            'out/style.pdf' => 'PDF',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
             'oxideshop' => [
-                'target-directory' => 'flow',
-                'blacklist-filter' => [],
+                'blacklist-filter' => []
             ]
-        ];
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $rootPath = vfsStream::url('root/projectRoot');
-        $shopRootPath = Path::join($rootPath, 'source');
-
-        $this->simulateInstallation($composerExtraParameters, $rootPath, $shopRootPath);
-
-        $this->assertFileExists(Path::join($shopRootPath, 'Application', 'views', 'flow', 'readme.txt'));
-        $this->assertFileExists(Path::join($shopRootPath, 'out', 'flow', 'readme.pdf'));
+        $this->assertVirtualFileExists('source/Application/views/test-package/theme.php');
+        $this->assertVirtualFileExists('source/Application/views/test-package/theme.txt');
+        $this->assertVirtualFileExists('source/out/test-package/style.css');
+        $this->assertVirtualFileExists('source/out/test-package/style.pdf');
     }
 
     public function testBlacklistedFilesArePresentWhenDifferentBlacklistFilterIsDefined()
     {
-        $composerExtraParameters = [
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'theme.txt' => 'txt',
+            'out/style.css' => 'css',
+            'out/style.pdf' => 'PDF',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
             'oxideshop' => [
-                'target-directory' => 'flow',
                 'blacklist-filter' => [
                     '**/*.doc'
-                ],
+                ]
             ]
-        ];
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $rootPath = vfsStream::url('root/projectRoot');
-        $shopRootPath = Path::join($rootPath, 'source');
-
-        $this->simulateInstallation($composerExtraParameters, $rootPath, $shopRootPath);
-
-        $this->assertFileExists(Path::join($shopRootPath, 'Application', 'views', 'flow', 'readme.txt'));
-        $this->assertFileExists(Path::join($shopRootPath, 'out', 'flow', 'readme.pdf'));
+        $this->assertVirtualFileExists('source/Application/views/test-package/theme.php');
+        $this->assertVirtualFileExists('source/Application/views/test-package/theme.txt');
+        $this->assertVirtualFileExists('source/out/test-package/style.css');
+        $this->assertVirtualFileExists('source/out/test-package/style.pdf');
     }
 
     public function testBlacklistedFilesAreSkippedWhenABlacklistFilterIsDefined()
     {
-        $composerExtraParameters = [
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'theme.txt' => 'txt',
+            'out/style.css' => 'css',
+            'out/style.pdf' => 'PDF',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
             'oxideshop' => [
-                'target-directory' => 'flow',
                 'blacklist-filter' => [
-                    "**/*.txt",
-                    "**/*.pdf",
-                ],
+                    '**/*.txt',
+                    '**/*.pdf',
+                ]
             ]
-        ];
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $rootPath = vfsStream::url('root/projectRoot');
-        $shopRootPath = Path::join($rootPath, 'source');
+        $this->assertVirtualFileExists('source/Application/views/test-package/theme.php');
+        $this->assertVirtualFileNotExists('source/Application/views/test-package/theme.txt');
+        $this->assertVirtualFileExists('source/out/test-package/style.css');
+        $this->assertVirtualFileNotExists('source/out/test-package/style.pdf');
+    }
 
-        $this->simulateInstallation($composerExtraParameters, $rootPath, $shopRootPath);
+    public function testComplexCase()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'theme.txt' => 'txt',
+            'out/style.css' => 'css',
+            'out/style.pdf' => 'PDF',
+            'custom_assets/custom_style.css' => 'css',
+            'custom_assets/custom_style.pdf' => 'PDF',
+        ]);
 
-        $this->assertFileNotExists(Path::join($shopRootPath, 'Application', 'views', 'flow', 'readme.txt'));
-        $this->assertFileNotExists(Path::join($shopRootPath, 'out', 'flow', 'readme.pdf'));
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'assets-directory' => 'custom_assets',
+                'target-directory' => 'custom-package',
+                'blacklist-filter' => [
+                    '**/*.txt',
+                    '**/*.pdf',
+                ]
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertTrue($installer->isInstalled());
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/theme.php',
+            'source/Application/views/custom-package/theme.php'
+        );
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/custom_assets/custom_style.css',
+            'source/out/custom-package/custom_style.css'
+        );
+        $this->assertVirtualFileNotExists('source/Application/views/custom-package/theme.txt');
+        $this->assertVirtualFileNotExists('source/out/custom-package/style.css');
+        $this->assertVirtualFileNotExists('source/out/custom-package/style.pdf');
+        $this->assertVirtualFileNotExists('source/out/custom-package/custom_style.pdf');
     }
 }

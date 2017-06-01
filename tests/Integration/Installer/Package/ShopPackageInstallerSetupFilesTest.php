@@ -31,7 +31,7 @@ use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
 use org\bovigo\vfs\vfsStream;
 use Webmozart\PathUtil\Path;
 
-class ShopPackageInstallerTest extends AbstractPackageInstallerTest
+class ShopPackageInstallerSetupFilesTest extends AbstractPackageInstallerTest
 {
     protected function getPackageInstaller($packageName, $version = '1.0.0', $extra = [])
     {
@@ -51,119 +51,145 @@ class ShopPackageInstallerTest extends AbstractPackageInstallerTest
         );
     }
 
-    public function testShopNotInstalledByDefault()
-    {
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
-
-        $this->assertFalse($installer->isInstalled());
-    }
-
-    public function testShopIsInstalledIfSourceFilesAlreadyExist()
-    {
-        $this->setupVirtualProjectRoot('source/', [
-            'index.php' => '<?php'
-        ]);
-
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
-
-        $this->assertTrue($installer->isInstalled());
-        $this->assertVirtualFileExists('source/index.php');
-    }
-
-    public function testShopIsInstalledAfterInstallProcess()
+    public function testShopInstallProcessCopiesSetupFilesIfShopConfigIsMissing()
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
-        ]);
-
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
-        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
-
-        $this->assertTrue($installer->isInstalled());
-    }
-
-    public function testShopFilesAreCopiedAfterInstallProcess()
-    {
-        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
-            'index.php' => '<?php',
-            'Application/views/template.tpl' => 'tpl',
             'config.inc.php.dist' => 'dist',
+            'Setup/index.php' => '<?php'
         ]);
 
         $installer = $this->getPackageInstaller('test-vendor/test-package');
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileEquals(
-            'vendor/test-vendor/test-package/source/index.php',
-            'source/index.php'
-        );
-        $this->assertVirtualFileEquals(
-            'vendor/test-vendor/test-package/source/Application/views/template.tpl',
-            'source/Application/views/template.tpl'
-        );
-        $this->assertVirtualFileEquals(
-            'vendor/test-vendor/test-package/source/config.inc.php.dist',
-            'source/config.inc.php.dist'
+            "vendor/test-vendor/test-package/source/Setup/index.php",
+            "source/Setup/index.php"
         );
     }
 
-    public function testShopInstallProcessCopiesConfigFileIfItDoesNotExist()
+    public function testShopInstallProcessOverwritesSetupFilesIfShopConfigIsMissing()
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
             'config.inc.php.dist' => 'dist',
-        ]);
-
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
-        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
-
-        $this->assertVirtualFileEquals(
-            'vendor/test-vendor/test-package/source/config.inc.php.dist',
-            'source/config.inc.php'
-        );
-    }
-
-    public function testShopInstallProcessDoesNotCopyConfigFileIfItAlreadyExists()
-    {
-        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
-            'index.php' => '<?php',
-            'config.inc.php.dist' => 'dist',
+            'Setup/index.php' => '<?php'
         ]);
         $this->setupVirtualProjectRoot('source', [
-            'config.inc.php' => 'old',
+            'Setup/index.php' => 'Old index file'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            "vendor/test-vendor/test-package/source/Setup/index.php",
+            "source/Setup/index.php"
+        );
+    }
+
+    public function testShopInstallProcessCopiesSetupFilesIfShopConfigIsNotConfigured()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
+            'index.php' => '<?php',
+            'Setup/index.php' => '<?php'
+        ]);
+        $this->setupVirtualProjectRoot('source', [
+            'config.inc.php' => $this->getNonConfiguredConfigFileContents(),
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            "vendor/test-vendor/test-package/source/Setup/index.php",
+            "source/Setup/index.php"
+        );
+    }
+
+    public function testShopInstallProcessOverwritesSetupFilesIfShopConfigIsNotConfigured()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
+            'index.php' => '<?php',
+            'Setup/index.php' => '<?php'
+        ]);
+        $this->setupVirtualProjectRoot('source', [
+            'config.inc.php' => $this->getNonConfiguredConfigFileContents(),
+            'Setup/index.php' => 'Old index file'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            "vendor/test-vendor/test-package/source/Setup/index.php",
+            "source/Setup/index.php"
+        );
+    }
+
+    public function testShopInstallProcessDoesNotCopySetupFilesIfShopConfigIsConfigured()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
+            'index.php' => '<?php',
+            'Setup/index.php' => '<?php'
+        ]);
+        $this->setupVirtualProjectRoot('source', [
+            'config.inc.php' => $this->getConfiguredConfigFileContents(),
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileNotExists('source/Setup/index.php');
+    }
+
+    public function testShopInstallProcessDoesNotOverwriteSetupFilesIfShopConfigIsConfigured()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
+            'index.php' => '<?php',
+            'Setup/index.php' => '<?php'
+        ]);
+        $this->setupVirtualProjectRoot('source', [
+            'config.inc.php' => $this->getConfiguredConfigFileContents(),
+            'Setup/index.php' => 'Old index file'
         ]);
 
         $installer = $this->getPackageInstaller('test-vendor/test-package');
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileNotEquals(
-            'vendor/test-vendor/test-package/source/config.inc.php.dist',
-            'source/config.inc.php'
+            "vendor/test-vendor/test-package/source/Setup/index.php",
+            "source/Setup/index.php"
         );
     }
 
-    public function testShopInstallProcessDoesNotCopyFilteredClasses()
+    protected function getNonConfiguredConfigFileContents()
     {
-        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
-            'index.php' => '<?php',
-            'Class.php' => '<?php',
-            'Core/Class.php' => '<?php',
-            'Application/Model/Class.php' => '<?php',
-            'Application/Controller/Class.php' => '<?php',
-            'Application/Component/Class.php' => '<?php',
-            'config.inc.php.dist' => 'dist',
-        ]);
+        return  <<<'EOT'
+    $this->dbType = 'pdo_mysql';
+    $this->dbHost = '<dbHost>';
+    $this->dbPort  = 3306;
+    $this->dbName = '<dbName>';
+    $this->dbUser = '<dbUser>';
+    $this->dbPwd  = '<dbPwd>';
+    $this->sShopURL     = '<sShopURL>';
+    $this->sShopDir     = '<sShopDir>';
+    $this->sCompileDir  = '<sCompileDir>';
+EOT;
+    }
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
-        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
-
-        $this->assertVirtualFileEquals(
-            'vendor/test-vendor/test-package/source/Class.php',
-            'source/Class.php'
-        );
-        $this->assertVirtualFileNotExists('source/Core/Class.php');
-        $this->assertVirtualFileNotExists('source/Application/Model/Class.php');
-        $this->assertVirtualFileNotExists('source/Application/Controller/Class.php');
-        $this->assertVirtualFileNotExists('source/Application/Component/Class.php');
+    protected function getConfiguredConfigFileContents()
+    {
+        return <<<'EOT'
+    $this->dbType = 'pdo_mysql';
+    $this->dbHost = 'test_host';
+    $this->dbPort  = 3306;
+    $this->dbName = 'test_db';
+    $this->dbUser = 'test_user';
+    $this->dbPwd  = 'test_password';
+    $this->sShopURL     = 'http://test.url/';
+    $this->sShopDir     = '/var/www/test/dir';
+    $this->sCompileDir  = '/var/www/test/dir/tmp';
+EOT;
     }
 }

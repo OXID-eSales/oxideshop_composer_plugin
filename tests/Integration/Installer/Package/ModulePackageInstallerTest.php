@@ -26,205 +26,309 @@ use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Package\Package;
 use Composer\Package\PackageInterface;
+use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller;
 use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
 use org\bovigo\vfs\vfsStream;
 use Webmozart\PathUtil\Path;
 
-class ModulePackageInstallerTest extends \PHPUnit_Framework_TestCase
+class ModulePackageInstallerTest extends AbstractPackageInstallerTest
 {
-    protected function getSut(IOInterface $io, $rootPath, PackageInterface $package)
+    protected function getPackageInstaller($packageName, $version = '1.0.0', $extra = [])
     {
-        return new ModulePackageInstaller($io, $rootPath, $package);
-    }
+        $package = new Package($packageName, $version, $version);
+        $package->setExtra($extra);
 
-    public function testChecksIfModuleIsNotInstalled()
-    {
-        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
-            'projectRoot/vendor/oxid-esales/paypal-module/metadata.php' => '<?php',
-        ]));
-
-        $rootPath = vfsStream::url('root/projectRoot/source');
-
-        $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package('oxid-esales/paypal-module', 'dev', 'dev'));
-        $this->assertFalse($shopPreparator->isInstalled());
-    }
-
-    public function testChecksIfModuleIsInstalled()
-    {
-        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
-            'projectRoot/source/modules/oxid-esales/paypal-module/metadata.php' => '<?php',
-            'projectRoot/vendor/oxid-esales/paypal-module/metadata.php' => '<?php'
-        ]));
-
-        $rootPath = vfsStream::url('root/projectRoot/source');
-
-        $shopPreparator = $this->getSut(new NullIO, $rootPath, new Package('oxid-esales/paypal-module', 'dev', 'dev'));
-        $this->assertTrue($shopPreparator->isInstalled());
-    }
-
-    public function providerChecksIfModuleFilesExistsAfterInstallation()
-    {
-        return [
-            [[ModulePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [ModulePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'oe/paypal']], 'modules/oe/paypal/metadata.php'],
-            [[ModulePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [ModulePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'paypal']], 'modules/paypal/metadata.php'],
-            [[], 'modules/oxid-esales/paypal-module/metadata.php']
-        ];
-    }
-
-    /**
-     * @param $composerExtras
-     * @param $installedModuleMetadata
-     *
-     * @dataProvider providerChecksIfModuleFilesExistsAfterInstallation
-     */
-    public function testChecksIfModuleFilesExistsAfterInstallation($composerExtras, $installedModuleMetadata)
-    {
-        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
-            'projectRoot/vendor/oxid-esales/paypal-module/metadata.php' => '<?php',
-        ]));
-
-        $rootPath = vfsStream::url('root/projectRoot');
-        $eshopRootPath = "$rootPath/source";
-        $installedModuleMetadata = "$eshopRootPath/$installedModuleMetadata";
-
-        $package = new Package('oxid-esales/paypal-module', 'dev', 'dev');
-        $shopPreparator = $this->getSut(new NullIO(), $eshopRootPath, $package);
-        $package->setExtra($composerExtras);
-        $moduleInVendor = "$rootPath/vendor/oxid-esales/paypal-module";
-        $shopPreparator->install($moduleInVendor);
-
-        $this->assertFileExists($installedModuleMetadata);
-    }
-
-    public function testCheckIfModuleIsInstalledFromProvidedSourceDirectory()
-    {
-        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
-            'projectRoot/vendor/oxid-esales/erp/copy_this/modules/erp/metadata.php' => '<?php',
-        ]));
-
-        $rootPath = vfsStream::url('root/projectRoot');
-        $eshopRootPath = "$rootPath/source";
-        $installedModuleMetadata = "$eshopRootPath/modules/erp/metadata.php";
-
-        $package = new Package('oxid-esales/erp', 'dev', 'dev');
-        $shopPreparator = $this->getSut(new NullIO(), $eshopRootPath, $package);
-        $package->setExtra(
-            [ModulePackageInstaller::EXTRA_PARAMETER_KEY_ROOT => [
-                ModulePackageInstaller::EXTRA_PARAMETER_KEY_SOURCE => 'copy_this/modules/erp',
-                ModulePackageInstaller::EXTRA_PARAMETER_KEY_TARGET => 'erp',
-            ]]
+        return new ModulePackageInstaller(
+            new NullIO(),
+            $this->getVirtualShopSourcePath(),
+            $package
         );
-        $moduleInVendor = "$rootPath/vendor/oxid-esales/erp";
-        $shopPreparator->install($moduleInVendor);
+    }
+    
+    public function testModuleNotInstalledByDefault()
+    {
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
 
-        $this->assertFileExists($installedModuleMetadata);
+        $this->assertFalse($installer->isInstalled());
+    }
+
+    public function testModuleIsInstalledIfAlreadyExistsInShop()
+    {
+        $this->setupVirtualProjectRoot('source/modules/test-vendor/test-package', [
+            'metadata.php' => '<?php'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+
+        $this->assertTrue($installer->isInstalled());
+    }
+
+    public function testModuleIsInstalledAfterInstallProcess()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'metadata.php' => '<?php'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertTrue($installer->isInstalled());
+    }
+
+    public function testModuleFilesAreCopiedAfterInstallProcess()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'metadata.php' => '<?php'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/metadata.php',
+            'source/modules/test-vendor/test-package/metadata.php'
+        );
+    }
+
+    public function testModuleFilesAreCopiedAfterInstallProcessWithSameSourceDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'metadata.php' => '<?php'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'source-directory' => ''
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/metadata.php',
+            'source/modules/test-vendor/test-package/metadata.php'
+        );
+    }
+
+    public function testModuleFilesAreCopiedAfterInstallProcessWithSameTargetDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'metadata.php' => '<?php'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'target-directory' => 'test-vendor/test-package'
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/metadata.php',
+            'source/modules/test-vendor/test-package/metadata.php'
+        );
+    }
+
+    public function testModuleFilesAreCopiedAfterInstallProcessWithSameSourceDirectoryAndSameTargetDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'metadata.php' => '<?php'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'source-directory' => '',
+                'target-directory' => 'test-vendor/test-package'
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/metadata.php',
+            'source/modules/test-vendor/test-package/metadata.php'
+        );
+    }
+
+    public function testModuleFilesAreCopiedAfterInstallProcessWithCustomSourceDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/custom-root', [
+            'metadata.php' => '<?php'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'source-directory' => 'custom-root',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/custom-root/metadata.php',
+            'source/modules/test-vendor/test-package/metadata.php'
+        );
+    }
+
+    public function testModuleFilesAreCopiedAfterInstallProcessWithCustomTargetDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'metadata.php' => '<?php'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'target-directory' => 'custom-vendor/custom-package',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/metadata.php',
+            'source/modules/custom-vendor/custom-package/metadata.php'
+        );
+    }
+
+    public function testModuleFilesAreCopiedAfterInstallProcessWithCustomSourceDirectoryAndCustomTargetDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/custom-root', [
+            'metadata.php' => '<?php'
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'source-directory' => 'custom-root',
+                'target-directory' => 'custom-vendor/custom-package',
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/custom-root/metadata.php',
+            'source/modules/custom-vendor/custom-package/metadata.php'
+        );
     }
 
     public function testBlacklistedFilesArePresentWhenNoBlacklistFilterIsDefined()
     {
-        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
-            'projectRoot/vendor/test-vendor/test-package/metadata.php' => 'meta data',
-            'projectRoot/vendor/test-vendor/test-package/module.php' => 'module',
-            'projectRoot/vendor/test-vendor/test-package/readme.txt' => 'readme',
-        ]));
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'metadata.php' => '<?php',
+            'module.php' => '<?php',
+            'readme.txt' => 'readme',
+        ]);
 
-        $rootPath = vfsStream::url('root/projectRoot');
-        $shopRootPath = Path::join($rootPath, 'source');
-        $installedModulePath = Path::join($shopRootPath, 'modules', 'test-vendor', 'test-package');
-        $moduleSourcePath = Path::join($rootPath, 'vendor', 'test-vendor', 'test-package');
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $package = new Package('test-vendor/test-package', 'dev', 'dev');
-        $sut = $this->getSut(new NullIO(), $shopRootPath, $package);
-        $sut->install($moduleSourcePath);
-
-        $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));
-        $this->assertFileExists(Path::join($installedModulePath, 'module.php'));
-        $this->assertFileExists(Path::join($installedModulePath, 'readme.txt'));
+        $this->assertVirtualFileExists('source/modules/test-vendor/test-package/metadata.php');
+        $this->assertVirtualFileExists('source/modules/test-vendor/test-package/module.php');
+        $this->assertVirtualFileExists('source/modules/test-vendor/test-package/readme.txt');
     }
 
     public function testBlacklistedFilesArePresentWhenEmptyBlacklistFilterIsDefined()
     {
-        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
-            'projectRoot/vendor/test-vendor/test-package/metadata.php' => 'meta data',
-            'projectRoot/vendor/test-vendor/test-package/module.php' => 'module',
-            'projectRoot/vendor/test-vendor/test-package/readme.txt' => 'readme',
-        ]));
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'metadata.php' => '<?php',
+            'module.php' => '<?php',
+            'readme.txt' => 'readme',
+        ]);
 
-        $rootPath = vfsStream::url('root/projectRoot');
-        $shopRootPath = Path::join($rootPath, 'source');
-        $installedModulePath = Path::join($shopRootPath, 'modules', 'test-vendor', 'test-package');
-        $moduleSourcePath = Path::join($rootPath, 'vendor', 'test-vendor', 'test-package');
-
-        $package = new Package('test-vendor/test-package', 'dev', 'dev');
-        $package->setExtra([
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
             'oxideshop' => [
-                'blacklist-filter' => [],
+                'blacklist-filter' => []
             ]
         ]);
-        $sut = $this->getSut(new NullIO(), $shopRootPath, $package);
-        $sut->install($moduleSourcePath);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));
-        $this->assertFileExists(Path::join($installedModulePath, 'module.php'));
-        $this->assertFileExists(Path::join($installedModulePath, 'readme.txt'));
+        $this->assertVirtualFileExists('source/modules/test-vendor/test-package/metadata.php');
+        $this->assertVirtualFileExists('source/modules/test-vendor/test-package/module.php');
+        $this->assertVirtualFileExists('source/modules/test-vendor/test-package/readme.txt');
     }
 
     public function testBlacklistedFilesArePresentWhenDifferentBlacklistFilterIsDefined()
     {
-        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
-            'projectRoot/vendor/test-vendor/test-package/metadata.php' => 'meta data',
-            'projectRoot/vendor/test-vendor/test-package/module.php' => 'module',
-            'projectRoot/vendor/test-vendor/test-package/readme.txt' => 'readme',
-        ]));
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'metadata.php' => '<?php',
+            'module.php' => '<?php',
+            'readme.txt' => 'readme',
+        ]);
 
-        $rootPath = vfsStream::url('root/projectRoot');
-        $shopRootPath = Path::join($rootPath, 'source');
-        $installedModulePath = Path::join($shopRootPath, 'modules', 'test-vendor', 'test-package');
-        $moduleSourcePath = Path::join($rootPath, 'vendor', 'test-vendor', 'test-package');
-
-        $package = new Package('test-vendor/test-package', 'dev', 'dev');
-        $package->setExtra([
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
             'oxideshop' => [
                 'blacklist-filter' => [
-                    "**/*.pdf",
-                ],
+                    '**/*.pdf'
+                ]
             ]
         ]);
-        $sut = $this->getSut(new NullIO(), $shopRootPath, $package);
-        $sut->install($moduleSourcePath);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));
-        $this->assertFileExists(Path::join($installedModulePath, 'module.php'));
-        $this->assertFileExists(Path::join($installedModulePath, 'readme.txt'));
+        $this->assertVirtualFileExists('source/modules/test-vendor/test-package/metadata.php');
+        $this->assertVirtualFileExists('source/modules/test-vendor/test-package/module.php');
+        $this->assertVirtualFileExists('source/modules/test-vendor/test-package/readme.txt');
     }
 
     public function testBlacklistedFilesAreSkippedWhenABlacklistFilterIsDefined()
     {
-        vfsStream::setup('root', 777, VfsFileStructureOperator::nest([
-            'projectRoot/vendor/test-vendor/test-package/metadata.php' => 'meta data',
-            'projectRoot/vendor/test-vendor/test-package/module.php' => 'module',
-            'projectRoot/vendor/test-vendor/test-package/readme.txt' => 'readme',
-        ]));
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'metadata.php' => '<?php',
+            'module.php' => '<?php',
+            'readme.txt' => 'readme',
+        ]);
 
-        $rootPath = vfsStream::url('root/projectRoot');
-        $shopRootPath = Path::join($rootPath, 'source');
-        $installedModulePath = Path::join($shopRootPath, 'modules', 'test-vendor', 'test-package');
-        $moduleSourcePath = Path::join($rootPath, 'vendor', 'test-vendor', 'test-package');
-
-        $package = new Package('test-vendor/test-package', 'dev', 'dev');
-        $package->setExtra([
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
             'oxideshop' => [
                 'blacklist-filter' => [
-                    "**/*.txt",
-                ],
+                    '**/*.txt'
+                ]
             ]
         ]);
-        $sut = $this->getSut(new NullIO(), $shopRootPath, $package);
-        $sut->install($moduleSourcePath);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $this->assertFileExists(Path::join($installedModulePath, 'metadata.php'));
-        $this->assertFileExists(Path::join($installedModulePath, 'module.php'));
-        $this->assertFileNotExists(Path::join($installedModulePath, 'readme.txt'));
+        $this->assertVirtualFileExists('source/modules/test-vendor/test-package/metadata.php');
+        $this->assertVirtualFileExists('source/modules/test-vendor/test-package/module.php');
+        $this->assertVirtualFileNotExists('source/modules/test-vendor/test-package/readme.txt');
+    }
+
+    public function testComplexCase()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/custom-root', [
+            'metadata.php' => '<?php',
+            'module.php' => '<?php',
+            'readme.txt' => 'readme',
+            'readme.pdf' => 'PDF',
+            'documentation/readme.txt' => 'readme',
+            'documentation/example.php' => '<?php',
+            'model/model.php' => '<?php',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'source-directory' => 'custom-root',
+                'target-directory' => 'custom-out',
+                'blacklist-filter' => [
+                    '**/*.txt',
+                    '**/*.pdf',
+                    'documentation/**/*.*',
+                ]
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertTrue($installer->isInstalled());
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/custom-root/metadata.php',
+            'source/modules/custom-out/metadata.php'
+        );
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/custom-root/module.php',
+            'source/modules/custom-out/module.php'
+        );
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/custom-root/model/model.php',
+            'source/modules/custom-out/model/model.php'
+        );
+        $this->assertVirtualFileNotExists('source/modules/custom-out/readme.txt');
+        $this->assertVirtualFileNotExists('source/modules/custom-out/readme.pdf');
+        $this->assertVirtualFileNotExists('source/modules/custom-out/documentation');
+        $this->assertVirtualFileNotExists('source/modules/custom-out/documentation/readme.txt');
+        $this->assertVirtualFileNotExists('source/modules/custom-out/documentation/example.php');
     }
 }
