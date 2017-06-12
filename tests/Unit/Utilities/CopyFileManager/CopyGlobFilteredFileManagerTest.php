@@ -39,7 +39,7 @@ use Webmozart\PathUtil\Path;
 class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
 {
     /** @var array */
-    private $filter;
+    private $filter = [];
 
     public function testBasicFileCopyOperation()
     {
@@ -161,21 +161,6 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
         $this->prepareVirtualFileSystem($inputFiles, []);
 
         $this->setFilter(["*.txt"]);
-        $this->simulateCopyWithFilter('module.txt', 'module.txt');
-
-        $this->assertFilesExistInSource(['module.txt']);
-        $this->assertFilesNotExistInDestination(['modules.txt']);
-    }
-
-    public function testSingleFileCopyFilteringOperationWhenNoFilterIsDefined()
-    {
-        $inputFiles = [
-            "module.txt" => "TXT_1",
-        ];
-
-        $this->prepareVirtualFileSystem($inputFiles, []);
-
-        $this->setFilter(null);
         $this->simulateCopyWithFilter('module.txt', 'module.txt');
 
         $this->assertFilesExistInSource(['module.txt']);

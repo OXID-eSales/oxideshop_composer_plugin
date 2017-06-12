@@ -37,16 +37,16 @@ class CopyGlobFilteredFileManager
     /**
      * Copy files/directories from source to destination.
      *
-     * @param string     $sourcePath         Absolute path to file or directory.
-     * @param string     $destinationPath    Absolute path to file or directory.
-     * @param array|null $globExpressionList List of glob expressions, e.g. ["*.txt", "*.pdf"].
+     * @param string $sourcePath         Absolute path to file or directory.
+     * @param string $destinationPath    Absolute path to file or directory.
+     * @param array  $globExpressionList List of glob expressions, e.g. ["*.txt", "*.pdf"].
      *
      * @throws \InvalidArgumentException If given $sourcePath is not a string.
      * @throws \InvalidArgumentException If given $destinationPath is not a string.
      *
      * @return null
      */
-    public static function copy($sourcePath, $destinationPath, $globExpressionList = null)
+    public static function copy($sourcePath, $destinationPath, $globExpressionList = [])
     {
         if (!is_string($sourcePath)) {
             $message = "Given value \"$sourcePath\" is not a valid source path entry. ".
