@@ -37,10 +37,10 @@ class ShopPackageInstallerTest extends AbstractPackageInstallerTest
     {
         $package = new Package($packageName, $version, $version);
         $extra['oxideshop']['blacklist-filter'] = [
-            "Application/Component/**/*.*",
-            "Application/Controller/**/*.*",
-            "Application/Model/**/*.*",
-            "Core/**/*.*"
+            "Application/Component/**/*",
+            "Application/Controller/**/*",
+            "Application/Model/**/*",
+            "Core/**/*"
         ];
         $package->setExtra($extra);
 
@@ -165,5 +165,28 @@ class ShopPackageInstallerTest extends AbstractPackageInstallerTest
         $this->assertVirtualFileNotExists('source/Application/Model/Class.php');
         $this->assertVirtualFileNotExists('source/Application/Controller/Class.php');
         $this->assertVirtualFileNotExists('source/Application/Component/Class.php');
+    }
+
+    public function testShopInstallProcessDoesNotCopyVCSFiles()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
+            'index.php' => '<?php',
+            '.git/HEAD' => 'HEAD',
+            '.git/index' => 'index',
+            '.git/objects/ff/fftest' => 'blob',
+            '.gitignore' => 'git ignore',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/source/index.php',
+            'source/index.php'
+        );
+        $this->assertVirtualFileNotExists('source/.git/HEAD');
+        $this->assertVirtualFileNotExists('source/.git/index');
+        $this->assertVirtualFileNotExists('source/.git/objects/ff/fftest');
+        $this->assertVirtualFileNotExists('source/.gitignore');
     }
 }

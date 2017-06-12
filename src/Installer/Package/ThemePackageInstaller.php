@@ -72,17 +72,16 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     protected function copyPackage($packagePath)
     {
-        $filter = [Path::join($this->formAssetsDirectoryName(), AbstractPackageInstaller::BLACKLIST_ALL_FILES)];
-        $filterFromExtras = $this->getBlacklistFilterValue();
-
-        if (is_array($filterFromExtras)) {
-            $filter = array_merge($filter, $filterFromExtras);
-        }
+        $filtersToApply = [
+            [Path::join($this->formAssetsDirectoryName(), AbstractPackageInstaller::BLACKLIST_ALL_FILES)],
+            $this->getBlacklistFilterValue(),
+            $this->getVCSFilter(),
+        ];
 
         CopyGlobFilteredFileManager::copy(
             $packagePath,
             $this->formThemeTargetPath(),
-            $filter
+            $this->getCombinedFilters($filtersToApply)
         );
 
         $this->installAssets($packagePath);

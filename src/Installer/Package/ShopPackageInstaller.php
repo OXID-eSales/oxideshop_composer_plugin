@@ -37,7 +37,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
     const SHOP_SOURCE_DIRECTORY = 'source';
     const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
     const HTACCESS_FILTER = '**/.htaccess';
-    const SETUP_FILES_FILTER = self::SHOP_SOURCE_SETUP_DIRECTORY . '/**/*.*';
+    const SETUP_FILES_FILTER = self::SHOP_SOURCE_SETUP_DIRECTORY . AbstractPackageInstaller::BLACKLIST_ALL_FILES;
 
     /**
      * @return bool
@@ -92,15 +92,17 @@ class ShopPackageInstaller extends AbstractPackageInstaller
      */
     private function copyShopSourceFromPackageToTarget($packagePath)
     {
-        $blacklistFilterWithHtAccess = array_merge(
+        $filtersToApply = [
             $this->getBlacklistFilterValue(),
-            [self::HTACCESS_FILTER, self::SETUP_FILES_FILTER]
-        );
+            [self::HTACCESS_FILTER],
+            [self::SETUP_FILES_FILTER],
+            $this->getVCSFilter(),
+        ];
 
         CopyGlobFilteredFileManager::copy(
             $this->getPackageDirectoryOfShopSource($packagePath),
             $this->getTargetDirectoryOfShopSource(),
-            $blacklistFilterWithHtAccess
+            $this->getCombinedFilters($filtersToApply)
         );
     }
 

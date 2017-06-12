@@ -371,6 +371,59 @@ class ThemePackageInstallerTest extends AbstractPackageInstallerTest
         $this->assertVirtualFileNotExists('source/out/test-package/style.pdf');
     }
 
+    public function testVCSFilesAreSkippedWhenNoBlacklistFilterIsDefined()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            '.git/HEAD' => 'HEAD',
+            '.git/index' => 'index',
+            '.git/objects/ff/fftest' => 'blob',
+            '.gitignore' => 'git ignore',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0');
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileExists('source/Application/views/test-package/theme.php');
+        $this->assertVirtualFileNotExists('source/Application/views/test-package/.git/HEAD');
+        $this->assertVirtualFileNotExists('source/Application/views/test-package/.git/index');
+        $this->assertVirtualFileNotExists('source/Application/views/test-package/.git/objects/ff/fftest');
+        $this->assertVirtualFileNotExists('source/Application/views/test-package/.gitignore');
+    }
+
+    public function testVCSFilesAreSkippedWhenABlacklistFilterIsDefined()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'theme.php' => '<?php',
+            'theme.txt' => 'txt',
+            '.git/HEAD' => 'HEAD',
+            '.git/index' => 'index',
+            '.git/objects/ff/fftest' => 'blob',
+            '.gitignore' => 'git ignore',
+            'out/style.css' => 'css',
+            'out/style.pdf' => 'PDF',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'blacklist-filter' => [
+                    '**/*.txt',
+                    '**/*.pdf',
+                ]
+            ]
+        ]);
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileExists('source/Application/views/test-package/theme.php');
+        $this->assertVirtualFileNotExists('source/Application/views/test-package/theme.txt');
+        $this->assertVirtualFileExists('source/out/test-package/style.css');
+        $this->assertVirtualFileNotExists('source/out/test-package/style.pdf');
+        $this->assertVirtualFileNotExists('source/Application/views/test-package/.git/HEAD');
+        $this->assertVirtualFileNotExists('source/Application/views/test-package/.git/index');
+        $this->assertVirtualFileNotExists('source/Application/views/test-package/.git/objects/ff/fftest');
+        $this->assertVirtualFileNotExists('source/Application/views/test-package/.gitignore');
+    }
+
     public function testComplexCase()
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [

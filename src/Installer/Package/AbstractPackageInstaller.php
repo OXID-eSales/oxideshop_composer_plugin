@@ -49,7 +49,16 @@ abstract class AbstractPackageInstaller
     const EXTRA_PARAMETER_FILTER_BLACKLIST = 'blacklist-filter';
 
     /** Glob expression to filter all files, might be used to filter whole directory. */
-    const BLACKLIST_ALL_FILES = '**/*.*';
+    const BLACKLIST_ALL_FILES = '**/*';
+
+    /** Name of directory to be excluded for VCS */
+    const BLACKLIST_VCS_DIRECTORY = '.git';
+
+    /** Name of ignore files to be excluded for VCS */
+    const BLACKLIST_VCS_IGNORE_FILE = '.gitignore';
+
+    /** Glob filter expression to exclude VCS files */
+    const BLACKLIST_VCS_DIRECTORY_FILTER = self::BLACKLIST_VCS_DIRECTORY . DIRECTORY_SEPARATOR . self::BLACKLIST_ALL_FILES;
 
     /** @var IOInterface */
     private $io;
@@ -157,6 +166,33 @@ abstract class AbstractPackageInstaller
     protected function getBlacklistFilterValue()
     {
         return $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_FILTER_BLACKLIST, []);
+    }
+
+    /**
+     * Get VCS glob filter expression
+     *
+     * @return array
+     */
+    protected function getVCSFilter()
+    {
+        return [self::BLACKLIST_VCS_DIRECTORY_FILTER, self::BLACKLIST_VCS_IGNORE_FILE];
+    }
+
+    /**
+     * Combine multiple glob expression lists into one list
+     *
+     * @param array $listOfGlobExpressionLists E.g. [["*.txt", "*.pdf"], ["*.md"]]
+     *
+     * @return array
+     */
+    protected function getCombinedFilters($listOfGlobExpressionLists)
+    {
+        $filters = [];
+        foreach ($listOfGlobExpressionLists as $filter) {
+            $filters = array_merge($filters, $filter);
+        }
+
+        return $filters;
     }
 
     /**
