@@ -20,12 +20,16 @@
  * @version   OXID eShop Composer plugin
  */
 
-namespace OxidEsales\ComposerPlugin\Installer;
+namespace OxidEsales\ComposerPlugin\Installer\Package;
+
+use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
+use Webmozart\PathUtil\Path;
+use Composer\Package\PackageInterface;
 
 /**
  * @inheritdoc
  */
-class ThemeInstaller extends AbstractInstaller
+class ThemePackageInstaller extends AbstractPackageInstaller
 {
     const METADATA_FILE_NAME = 'theme.php';
     const PATH_TO_THEMES = "Application/views";
@@ -46,7 +50,7 @@ class ThemeInstaller extends AbstractInstaller
     public function install($packagePath)
     {
         $this->getIO()->write("Installing {$this->getPackage()->getName()} package");
-        $this->copyFiles($packagePath);
+        $this->copyPackage($packagePath);
     }
 
     /**
@@ -59,21 +63,28 @@ class ThemeInstaller extends AbstractInstaller
         if ($this->askQuestionIfNotInstalled("Update operation will overwrite {$this->getPackage()->getName()} files."
             ." Do you want to continue? (Yes/No) ")) {
             $this->getIO()->write("Copying theme {$this->getPackage()->getName()} files...");
-            $this->copyFiles($packagePath, ['override' => true]);
+            $this->copyPackage($packagePath);
         }
     }
 
     /**
      * @param string $packagePath
-     * @param array $options
      */
-    protected function copyFiles($packagePath, $options = [])
+    protected function copyPackage($packagePath)
     {
-        $iterator = $this->getDirectoriesToSkipIteratorBuilder()
-            ->build($packagePath, [$this->formAssetsDirectoryName()]);
-        $fileSystem = $this->getFileSystem();
-        $fileSystem->mirror($packagePath, $this->formThemeTargetPath(), $iterator, $options);
-        $this->installAssets($packagePath, $options);
+        $filtersToApply = [
+            [Path::join($this->formAssetsDirectoryName(), AbstractPackageInstaller::BLACKLIST_ALL_FILES)],
+            $this->getBlacklistFilterValue(),
+            $this->getVCSFilter(),
+        ];
+
+        CopyGlobFilteredFileManager::copy(
+            $packagePath,
+            $this->formThemeTargetPath(),
+            $this->getCombinedFilters($filtersToApply)
+        );
+
+        $this->installAssets($packagePath);
     }
 
     /**
@@ -88,9 +99,8 @@ class ThemeInstaller extends AbstractInstaller
 
     /**
      * @param string $packagePath
-     * @param array $options
      */
-    protected function installAssets($packagePath, $options)
+    protected function installAssets($packagePath)
     {
         $package = $this->getPackage();
         $target = $this->getRootDirectory() . '/out/' . $this->formThemeDirectoryName($package);
@@ -98,15 +108,18 @@ class ThemeInstaller extends AbstractInstaller
         $assetsDirectory = $this->formAssetsDirectoryName();
         $source = $packagePath . '/' . $assetsDirectory;
 
-        $fileSystem = $this->getFileSystem();
         if (file_exists($source)) {
-            $fileSystem->mirror($source, $target, null, $options);
+            CopyGlobFilteredFileManager::copy(
+                $source,
+                $target,
+                $this->getBlacklistFilterValue()
+            );
         }
     }
 
     /**
-     * @param $package
-     * @return mixed
+     * @param PackageInterface $package
+     * @return string
      */
     protected function formThemeDirectoryName($package)
     {
@@ -127,13 +140,5 @@ class ThemeInstaller extends AbstractInstaller
             $assetsDirectory = 'out';
         }
         return $assetsDirectory;
-    }
-
-    /**
-     * @return DirectoriesSkipIteratorBuilder
-     */
-    protected function getDirectoriesToSkipIteratorBuilder()
-    {
-        return new DirectoriesSkipIteratorBuilder();
     }
 }

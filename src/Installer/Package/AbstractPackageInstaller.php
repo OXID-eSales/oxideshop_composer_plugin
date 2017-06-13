@@ -20,17 +20,16 @@
  * @version   OXID eShop Composer plugin
  */
 
-namespace OxidEsales\ComposerPlugin\Installer;
+namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class is responsible for preparing project structure.
  * It copies necessary files to specific directories.
  */
-abstract class AbstractInstaller
+abstract class AbstractPackageInstaller
 {
     const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
 
@@ -46,8 +45,20 @@ abstract class AbstractInstaller
     /** Used to decide what the shop source directory is. */
     const EXTRA_PARAMETER_SOURCE_PATH = 'source-path';
 
-    /** @var Filesystem */
-    private $fileSystem;
+    /** List of glob expressions used to blacklist files being copied. */
+    const EXTRA_PARAMETER_FILTER_BLACKLIST = 'blacklist-filter';
+
+    /** Glob expression to filter all files, might be used to filter whole directory. */
+    const BLACKLIST_ALL_FILES = '**/*';
+
+    /** Name of directory to be excluded for VCS */
+    const BLACKLIST_VCS_DIRECTORY = '.git';
+
+    /** Name of ignore files to be excluded for VCS */
+    const BLACKLIST_VCS_IGNORE_FILE = '.gitignore';
+
+    /** Glob filter expression to exclude VCS files */
+    const BLACKLIST_VCS_DIRECTORY_FILTER = self::BLACKLIST_VCS_DIRECTORY . DIRECTORY_SEPARATOR . self::BLACKLIST_ALL_FILES;
 
     /** @var IOInterface */
     private $io;
@@ -61,14 +72,12 @@ abstract class AbstractInstaller
     /**
      * AbstractInstaller constructor.
      *
-     * @param Filesystem $fileSystem
-     * @param IOInterface $io
-     * @param string $rootDirectory
+     * @param IOInterface      $io
+     * @param string           $rootDirectory
      * @param PackageInterface $package
      */
-    public function __construct(Filesystem $fileSystem, IOInterface $io, $rootDirectory, PackageInterface $package)
+    public function __construct(IOInterface $io, $rootDirectory, PackageInterface $package)
     {
-        $this->fileSystem = $fileSystem;
         $this->io = $io;
         $this->rootDirectory = $rootDirectory;
         $this->package = $package;
@@ -99,14 +108,6 @@ abstract class AbstractInstaller
     }
 
     /**
-     * @return Filesystem
-     */
-    protected function getFileSystem()
-    {
-        return $this->fileSystem;
-    }
-
-    /**
      * @return IOInterface
      */
     protected function getIO()
@@ -131,22 +132,67 @@ abstract class AbstractInstaller
     }
 
     /**
+     * @return string
+     */
+    protected function getPackageName()
+    {
+        return $this->package->getName();
+    }
+
+    /**
      * Search for parameter with specific key in "extra" composer configuration block
      *
      * @param string $extraParameterKey
-     * @return null|string
+     * @param string $defaultValue
+     *
+     * @return array|string|null
      */
-    protected function getExtraParameterValueByKey($extraParameterKey)
+    protected function getExtraParameterValueByKey($extraParameterKey, $defaultValue = null)
     {
-        $extraParameterValue = null;
-        $package = $this->getPackage();
-        $extraParameters = $package->getExtra();
-        if (isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT])
-            && isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey])
-        ) {
-            $extraParameterValue = $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey];
+        $extraParameters = $this->getPackage()->getExtra();
+
+        $extraParameterValue = isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey])?
+            $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey]:
+            null;
+
+        return (!empty($extraParameterValue)) ? $extraParameterValue : $defaultValue;
+    }
+
+    /**
+     * Return the value defined in composer extra parameters for blacklist filtering.
+     *
+     * @return array
+     */
+    protected function getBlacklistFilterValue()
+    {
+        return $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_FILTER_BLACKLIST, []);
+    }
+
+    /**
+     * Get VCS glob filter expression
+     *
+     * @return array
+     */
+    protected function getVCSFilter()
+    {
+        return [self::BLACKLIST_VCS_DIRECTORY_FILTER, self::BLACKLIST_VCS_IGNORE_FILE];
+    }
+
+    /**
+     * Combine multiple glob expression lists into one list
+     *
+     * @param array $listOfGlobExpressionLists E.g. [["*.txt", "*.pdf"], ["*.md"]]
+     *
+     * @return array
+     */
+    protected function getCombinedFilters($listOfGlobExpressionLists)
+    {
+        $filters = [];
+        foreach ($listOfGlobExpressionLists as $filter) {
+            $filters = array_merge($filters, $filter);
         }
-        return $extraParameterValue;
+
+        return $filters;
     }
 
     /**
@@ -155,22 +201,33 @@ abstract class AbstractInstaller
      */
     protected function askQuestionIfNotInstalled($messageToAsk)
     {
-        if ($this->isInstalled()) {
-            return $this->askQuestion($messageToAsk);
-        }
-        return true;
+        return $this->isInstalled() ? $this->askQuestion($messageToAsk) : true;
     }
 
     /**
+     * Returns true if the human answer to the given question was answered with a positive value (Yes/yes/Y/y).
+     *
      * @param string $messageToAsk
      * @return bool
      */
     protected function askQuestion($messageToAsk)
     {
-        $response = $this->getIO()->ask($messageToAsk, 'No');
-        if ((strtolower($response) === 'yes' || strtolower($response) === 'y')) {
-            return true;
-        }
-        return false;
+        $userInput = $this->getIO()->ask($messageToAsk, 'No');
+
+        return $this->isPositiveUserInput($userInput);
+    }
+
+    /**
+     * Return true if the input from user is a positive answer (Yes/yes/Y/y)
+     *
+     * @param string $userInput Raw user input
+     *
+     * @return bool
+     */
+    private function isPositiveUserInput($userInput)
+    {
+        $positiveAnswers = ['yes', 'y'];
+
+        return in_array(strtolower(trim($userInput)), $positiveAnswers, true);
     }
 }

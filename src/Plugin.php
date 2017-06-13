@@ -26,9 +26,12 @@ use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
-use OxidEsales\ComposerPlugin\Installer\AbstractInstaller;
-use OxidEsales\ComposerPlugin\Installer\PackagesInstaller;
+use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
+use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
 
+/**
+ * Class Plugin.
+ */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
     const ACTION_INSTALL = 'install';
@@ -41,8 +44,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /** @var IOInterface */
     private $io;
 
-    /** @var PackagesInstaller */
-    private $packageInstaller;
+    /** @var PackageInstallerTrigger */
+    private $packageInstallerTrigger;
 
     /**
      * Register events.
@@ -65,16 +68,16 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function activate(Composer $composer, IOInterface $io)
     {
-        $installer = new PackagesInstaller($io, $composer);
-        $composer->getInstallationManager()->addInstaller($installer);
+        $packageInstallerTrigger = new PackageInstallerTrigger($io, $composer);
+        $composer->getInstallationManager()->addInstaller($packageInstallerTrigger);
 
         $this->composer = $composer;
         $this->io = $io;
-        $this->packageInstaller = $installer;
+        $this->packageInstallerTrigger = $packageInstallerTrigger;
 
         $extraSettings = $this->composer->getPackage()->getExtra();
-        if (isset($extraSettings[AbstractInstaller::EXTRA_PARAMETER_KEY_ROOT])) {
-            $this->packageInstaller->setSettings($extraSettings[AbstractInstaller::EXTRA_PARAMETER_KEY_ROOT]);
+        if (isset($extraSettings[AbstractPackageInstaller::EXTRA_PARAMETER_KEY_ROOT])) {
+            $this->packageInstallerTrigger->setSettings($extraSettings[AbstractPackageInstaller::EXTRA_PARAMETER_KEY_ROOT]);
         }
     }
 
@@ -94,17 +97,20 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->executeAction(static::ACTION_UPDATE);
     }
 
+    /**
+     * @param string $actionName
+     */
     protected function executeAction($actionName)
     {
         $repo = $this->composer->getRepositoryManager()->getLocalRepository();
 
         foreach ($repo->getPackages() as $package) {
-            if ($this->packageInstaller->supports($package->getType())) {
+            if ($this->packageInstallerTrigger->supports($package->getType())) {
                 if ($actionName === static::ACTION_INSTALL) {
-                    $this->packageInstaller->installPackage($package);
+                    $this->packageInstallerTrigger->installPackage($package);
                 }
                 if ($actionName === static::ACTION_UPDATE) {
-                    $this->packageInstaller->updatePackage($package);
+                    $this->packageInstallerTrigger->updatePackage($package);
                 }
             }
         }

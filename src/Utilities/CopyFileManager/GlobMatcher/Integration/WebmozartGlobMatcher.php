@@ -16,34 +16,31 @@
  * along with OXID eShop Composer plugin.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @link      http://www.oxid-esales.com
- * @copyright (C) OXID eSales AG 2003-2016
+ * @copyright (C) OXID eSales AG 2003-2017
  * @version   OXID eShop Composer plugin
  */
 
-namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer;
+namespace OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Integration;
+
+use Webmozart\Glob\Glob;
 
 /**
- * Makes a structure for vfsStream.
+ * Class WebmozartGlobMatcher.
+ *
+ * An integration of "webmozart/glob" package to match AbstractGlobMatcher.
  */
-class StructurePreparator
+class WebmozartGlobMatcher extends AbstractGlobMatcher
 {
     /**
-     * @param array $structure
+     * Check if given path matches provided glob expression using "webmozart/glob" package.
      *
-     * @return array
+     * @param string $relativePath
+     * @param string $globExpression Glob filter expressions, e.g. "*.txt" or "*.pdf".
+     *
+     * @return bool True in case the path matches the given glob expression.
      */
-    public function prepareStructure($structure)
+    protected function isGlobMatch($relativePath, $globExpression)
     {
-        $newStructure = [];
-        foreach ($structure as $path => $element) {
-            $position = &$newStructure;
-            foreach (explode('/', $path) as $part) {
-                $position[$part] = [];
-                $position = &$position[$part];
-            }
-            $position = strpos($path, '/') === false ? [] : $position;
-            $position = is_array($element) ? $this->prepareStructure($element) : $element;
-        }
-        return $newStructure;
+        return Glob::match("/$relativePath", "/$globExpression");
     }
 }

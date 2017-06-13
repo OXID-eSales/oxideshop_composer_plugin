@@ -24,12 +24,16 @@ namespace OxidEsales\ComposerPlugin\Installer;
 
 use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
-use Symfony\Component\Filesystem\Filesystem;
+use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
+use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
+use OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller;
+use OxidEsales\ComposerPlugin\Installer\Package\ThemePackageInstaller;
+use Webmozart\PathUtil\Path;
 
 /**
  * Class responsible for triggering installation process.
  */
-class PackagesInstaller extends LibraryInstaller
+class PackageInstallerTrigger extends LibraryInstaller
 {
     const TYPE_ESHOP = 'oxideshop';
     const TYPE_MODULE = 'oxideshop-module';
@@ -38,9 +42,9 @@ class PackagesInstaller extends LibraryInstaller
 
     /** @var array Available installers for packages. */
     private $installers = [
-        self::TYPE_ESHOP => ShopInstaller::class,
-        self::TYPE_MODULE => ModuleInstaller::class,
-        self::TYPE_THEME => ThemeInstaller::class,
+        self::TYPE_ESHOP => ShopPackageInstaller::class,
+        self::TYPE_MODULE => ModulePackageInstaller::class,
+        self::TYPE_THEME => ThemePackageInstaller::class,
     ];
 
     /**
@@ -60,7 +64,7 @@ class PackagesInstaller extends LibraryInstaller
     }
 
     /**
-     * @param array set additional settings
+     * @param array $settings Set additional settings.
      */
     public function setSettings($settings)
     {
@@ -78,6 +82,9 @@ class PackagesInstaller extends LibraryInstaller
         }
     }
 
+    /**
+     * @param PackageInterface $package
+     */
     public function updatePackage(PackageInterface $package)
     {
         $installer = $this->createInstaller($package);
@@ -91,10 +98,10 @@ class PackagesInstaller extends LibraryInstaller
      */
     public function getShopSourcePath()
     {
-        $shopSource = getcwd() . '/source';
+        $shopSource = Path::join(getcwd(), ShopPackageInstaller::SHOP_SOURCE_DIRECTORY);
 
-        if (isset($this->settings[AbstractInstaller::EXTRA_PARAMETER_SOURCE_PATH])) {
-            $shopSource = $this->settings[AbstractInstaller::EXTRA_PARAMETER_SOURCE_PATH];
+        if (isset($this->settings[AbstractPackageInstaller::EXTRA_PARAMETER_SOURCE_PATH])) {
+            $shopSource = $this->settings[AbstractPackageInstaller::EXTRA_PARAMETER_SOURCE_PATH];
         }
 
         return $shopSource;
@@ -104,10 +111,10 @@ class PackagesInstaller extends LibraryInstaller
      * Creates package installer.
      *
      * @param PackageInterface $package
-     * @return AbstractInstaller
+     * @return AbstractPackageInstaller
      */
     protected function createInstaller(PackageInterface $package)
     {
-        return new $this->installers[$package->getType()](new Filesystem(), $this->io, $this->getShopSourcePath(), $package);
+        return new $this->installers[$package->getType()]($this->io, $this->getShopSourcePath(), $package);
     }
 }

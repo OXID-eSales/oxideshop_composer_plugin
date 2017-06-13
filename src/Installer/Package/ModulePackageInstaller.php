@@ -20,21 +20,25 @@
  * @version   OXID eShop Composer plugin
  */
 
-namespace OxidEsales\ComposerPlugin\Installer;
+namespace OxidEsales\ComposerPlugin\Installer\Package;
+
+use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
+use Webmozart\PathUtil\Path;
 
 /**
  * @inheritdoc
  */
-class ModuleInstaller extends AbstractInstaller
+class ModulePackageInstaller extends AbstractPackageInstaller
 {
     const METADATA_FILE_NAME = 'metadata.php';
+    const MODULES_DIRECTORY = 'modules';
 
     /**
      * @return bool
      */
     public function isInstalled()
     {
-        return file_exists($this->formTargetPath() . '/' . static::METADATA_FILE_NAME . '');
+        return file_exists(Path::join($this->formTargetPath(), static::METADATA_FILE_NAME));
     }
 
     /**
@@ -44,8 +48,8 @@ class ModuleInstaller extends AbstractInstaller
      */
     public function install($packagePath)
     {
-        $this->getIO()->write("Installing module {$this->getPackage()->getName()} package.");
-        $this->getFileSystem()->mirror($this->formSourcePath($packagePath), $this->formTargetPath());
+        $this->getIO()->write("Installing module {$this->getPackageName()} package.");
+        $this->copyPackage($packagePath);
     }
 
     /**
@@ -55,16 +59,30 @@ class ModuleInstaller extends AbstractInstaller
      */
     public function update($packagePath)
     {
-        if ($this->askQuestionIfNotInstalled("Update operation will overwrite {$this->getPackage()->getName()} files."
+        if ($this->askQuestionIfNotInstalled("Update operation will overwrite {$this->getPackageName()} files."
             ." Do you want to continue? (Yes/No) ")) {
-            $this->getIO()->write("Copying module {$this->getPackage()->getName()} files...");
-            $this->getFileSystem()->mirror(
-                $this->formSourcePath($packagePath),
-                $this->formTargetPath(),
-                null,
-                ['override' => true]
-            );
+            $this->getIO()->write("Copying module {$this->getPackageName()} files...");
+            $this->copyPackage($packagePath);
         }
+    }
+
+    /**
+     * Copy files from package source to defined target path.
+     *
+     * @param string $packagePath Absolute path to the package.
+     */
+    protected function copyPackage($packagePath)
+    {
+        $filtersToApply = [
+            $this->getBlacklistFilterValue(),
+            $this->getVCSFilter(),
+        ];
+
+        CopyGlobFilteredFileManager::copy(
+            $this->formSourcePath($packagePath),
+            $this->formTargetPath(),
+            $this->getCombinedFilters($filtersToApply)
+        );
     }
 
     /**
@@ -79,11 +97,9 @@ class ModuleInstaller extends AbstractInstaller
     {
         $sourceDirectory = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_SOURCE);
 
-        if (empty($sourceDirectory)) {
-            return $packagePath;
-        }
-
-        return $packagePath . "/$sourceDirectory";
+        return !empty($sourceDirectory)?
+            Path::join($packagePath, $sourceDirectory):
+            $packagePath;
     }
 
     /**
@@ -91,12 +107,11 @@ class ModuleInstaller extends AbstractInstaller
      */
     protected function formTargetPath()
     {
-        $package = $this->getPackage();
-        $targetDirectory =  $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_TARGET);
-        if (is_null($targetDirectory)) {
-            $targetDirectory = $package->getName();
-        }
-        $targetDirectory = $this->getRootDirectory() . "/modules/$targetDirectory";
-        return $targetDirectory;
+        $targetDirectory = $this->getExtraParameterValueByKey(
+            static::EXTRA_PARAMETER_KEY_TARGET,
+            $this->getPackage()->getName()
+        );
+
+        return Path::join($this->getRootDirectory(), static::MODULES_DIRECTORY, $targetDirectory);
     }
 }

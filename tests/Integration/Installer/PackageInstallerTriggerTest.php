@@ -25,13 +25,9 @@ namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer;
 use Composer\Composer;
 use Composer\Config;
 use Composer\IO\NullIO;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamWrapper;
-use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
-use OxidEsales\ComposerPlugin\Installer\PackagesInstaller;
-use Symfony\Component\Filesystem\Filesystem;
+use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
 
-class PackagesInstallerTest extends \PHPUnit_Framework_TestCase
+class PackageInstallerTriggerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * The composer.json file already in source for 5.3.
@@ -42,7 +38,7 @@ class PackagesInstallerTest extends \PHPUnit_Framework_TestCase
         $composerMock = $this->getMock(Composer::class);
         $composerMock->method('getConfig')->withAnyParameters()->willReturn($composerConfigMock);
 
-        $packageInstallerStub = new PackagesInstaller(new NullIO(), $composerMock);
+        $packageInstallerStub = new PackageInstallerTrigger(new NullIO(), $composerMock);
         $packageInstallerStub->setSettings([
             'source-path' => 'some/path/to/source'
         ]);
@@ -58,7 +54,7 @@ class PackagesInstallerTest extends \PHPUnit_Framework_TestCase
         $composerMock = $this->getMock(Composer::class);
         $composerMock->method('getConfig')->withAnyParameters()->willReturn($composerConfigMock);
 
-        $packageInstallerStub = new PackagesInstaller(new NullIO(), $composerMock);
+        $packageInstallerStub = new PackageInstallerTrigger(new NullIO(), $composerMock);
         $result = $packageInstallerStub->getShopSourcePath();
 
         $this->assertEquals($result, getcwd() . '/source');
