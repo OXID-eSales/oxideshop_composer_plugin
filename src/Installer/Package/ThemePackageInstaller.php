@@ -60,8 +60,10 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        if ($this->askQuestionIfNotInstalled("Update operation will overwrite {$this->getPackage()->getName()} files."
-            ." Do you want to continue? (Yes/No) ")) {
+        $packageName = $this->getPackage()->getName();
+        $question = "Update operation will overwrite $packageName files. Do you want to continue? (y/N) ";
+
+        if ($this->askQuestionIfNotInstalled($question)) {
             $this->getIO()->write("Copying theme {$this->getPackage()->getName()} files...");
             $this->copyPackage($packagePath);
         }

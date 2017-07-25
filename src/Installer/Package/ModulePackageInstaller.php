@@ -60,7 +60,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     public function update($packagePath)
     {
         if ($this->askQuestionIfNotInstalled("Update operation will overwrite {$this->getPackageName()} files."
-            ." Do you want to continue? (Yes/No) ")) {
+            ." Do you want to continue? (y/N) ")) {
             $this->getIO()->write("Copying module {$this->getPackageName()} files...");
             $this->copyPackage($packagePath);
         }

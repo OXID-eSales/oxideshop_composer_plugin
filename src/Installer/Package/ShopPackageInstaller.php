@@ -68,7 +68,8 @@ class ShopPackageInstaller extends AbstractPackageInstaller
     public function update($packagePath)
     {
         $this->getIO()->write("Installing shop package.");
-        if ($this->askQuestionIfNotInstalled('Do you want to overwrite existing OXID eShop files? (Yes/No) ')) {
+
+        if ($this->askQuestionIfNotInstalled('Do you want to overwrite existing OXID eShop files? (y/N) ')) {
             $this->getIO()->write("Copying shop files to source directory...");
             $this->copyPackage($packagePath);
         }

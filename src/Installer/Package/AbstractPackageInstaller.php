@@ -212,7 +212,7 @@ abstract class AbstractPackageInstaller
      */
     protected function askQuestion($messageToAsk)
     {
-        $userInput = $this->getIO()->ask($messageToAsk, 'No');
+        $userInput = $this->getIO()->ask($messageToAsk, 'N');
 
         return $this->isPositiveUserInput($userInput);
     }
