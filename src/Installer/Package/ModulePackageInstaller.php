@@ -30,7 +30,6 @@ use Webmozart\PathUtil\Path;
  */
 class ModulePackageInstaller extends AbstractPackageInstaller
 {
-    const METADATA_FILE_NAME = 'metadata.php';
     const MODULES_DIRECTORY = 'modules';
 
     /**
@@ -38,7 +37,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function isInstalled()
     {
-        return file_exists(Path::join($this->formTargetPath(), static::METADATA_FILE_NAME));
+        return file_exists($this->formTargetPath());
     }
 
     /**
