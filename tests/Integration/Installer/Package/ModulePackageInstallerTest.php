@@ -22,15 +22,9 @@
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Package\Package;
-use Composer\Package\PackageInterface;
-use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller;
-use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
-use org\bovigo\vfs\vfsStream;
-use Webmozart\PathUtil\Path;
 
 class ModulePackageInstallerTest extends AbstractPackageInstallerTest
 {

@@ -22,55 +22,51 @@
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-class ShopPackageInstallerHtaccessFilesTest extends AbstractShopPackageInstallerTest
+class ShopPackageInstallerRobotsExclusionFilesTest extends AbstractShopPackageInstallerTest
 {
     /**
-     * @dataProvider providerHtaccessFiles
+     * @dataProvider providerFiles
      */
-    public function testShopInstallProcessCopiesHtaccessFilesIfTheyAreMissing($htaccessFile)
+    public function testShopInstallProcessCopiesRobotsExclusionFilesIfTheyAreMissing($file)
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
-            $htaccessFile => 'Original htaccess',
+            $file => 'Disallow: /agb/',
         ]);
 
         $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $this->assertVirtualFileEquals("vendor/test-vendor/test-package/source/$htaccessFile", "source/$htaccessFile");
+        $this->assertVirtualFileEquals("vendor/test-vendor/test-package/source/$file", "source/$file");
     }
 
     /**
-     * @dataProvider providerHtaccessFiles
+     * @dataProvider providerFiles
      */
-    public function testShopInstallProcessDoesNotCopyHtaccessFilesIfTheyAreAlreadyPresent($htaccessFile)
+    public function testShopInstallProcessDoesNotCopyRobotsExclusioIfTheyAreAlreadyPresent($file)
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
-            $htaccessFile => 'Original htaccess',
+            $file => 'Disallow: /agb/',
         ]);
         $this->setupVirtualProjectRoot('source', [
-            $htaccessFile => 'Old',
+            $file => 'Old',
         ]);
 
         $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileNotEquals(
-            "vendor/test-vendor/test-package/source/$htaccessFile",
-            "source/$htaccessFile"
+            "vendor/test-vendor/test-package/source/$file",
+            "source/$file"
         );
     }
 
-    public function providerHtaccessFiles()
+    public function providerFiles()
     {
         return [
-            ['.htaccess'],
-            ['bin/.htaccess'],
-            ['cache/.htaccess'],
-            ['out/downloads/.htaccess'],
-            ['Application/views/admin/tpl/.htaccess'],
-            ['test/.htaccess'],
+            ['robots.txt'],
+            ['bin/robots.txt'],
         ];
     }
 }

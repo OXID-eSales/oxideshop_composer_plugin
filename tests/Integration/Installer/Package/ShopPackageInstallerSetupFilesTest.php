@@ -22,35 +22,8 @@
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-use Composer\IO\IOInterface;
-use Composer\IO\NullIO;
-use Composer\Package\Package;
-use Composer\Package\PackageInterface;
-use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
-use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
-use org\bovigo\vfs\vfsStream;
-use Webmozart\PathUtil\Path;
-
-class ShopPackageInstallerSetupFilesTest extends AbstractPackageInstallerTest
+class ShopPackageInstallerSetupFilesTest extends AbstractShopPackageInstallerTest
 {
-    protected function getPackageInstaller($packageName, $version = '1.0.0', $extra = [])
-    {
-        $package = new Package($packageName, $version, $version);
-        $extra['oxideshop']['blacklist-filter'] = [
-            "Application/Component/**/*.*",
-            "Application/Controller/**/*.*",
-            "Application/Model/**/*.*",
-            "Core/**/*.*"
-        ];
-        $package->setExtra($extra);
-
-        return new ShopPackageInstaller(
-            new NullIO(),
-            $this->getVirtualShopSourcePath(),
-            $package
-        );
-    }
-
     public function testShopInstallProcessCopiesSetupFilesIfShopConfigIsMissing()
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
@@ -59,7 +32,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractPackageInstallerTest
             'Setup/index.php' => '<?php'
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileEquals(
@@ -79,7 +52,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractPackageInstallerTest
             'Setup/index.php' => 'Old index file'
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileEquals(
@@ -98,7 +71,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractPackageInstallerTest
             'config.inc.php' => $this->getNonConfiguredConfigFileContents(),
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileEquals(
@@ -118,7 +91,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractPackageInstallerTest
             'Setup/index.php' => 'Old index file'
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileEquals(
@@ -137,7 +110,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractPackageInstallerTest
             'config.inc.php' => $this->getConfiguredConfigFileContents(),
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileNotExists('source/Setup/index.php');
@@ -154,7 +127,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractPackageInstallerTest
             'Setup/index.php' => 'Old index file'
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileNotEquals(

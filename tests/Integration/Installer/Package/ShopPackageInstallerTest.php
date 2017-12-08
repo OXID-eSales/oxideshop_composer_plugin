@@ -22,38 +22,11 @@
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-use Composer\IO\IOInterface;
-use Composer\IO\NullIO;
-use Composer\Package\Package;
-use Composer\Package\PackageInterface;
-use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
-use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
-use org\bovigo\vfs\vfsStream;
-use Webmozart\PathUtil\Path;
-
-class ShopPackageInstallerTest extends AbstractPackageInstallerTest
+class ShopPackageInstallerTest extends AbstractShopPackageInstallerTest
 {
-    protected function getPackageInstaller($packageName, $version = '1.0.0', $extra = [])
-    {
-        $package = new Package($packageName, $version, $version);
-        $extra['oxideshop']['blacklist-filter'] = [
-            "Application/Component/**/*",
-            "Application/Controller/**/*",
-            "Application/Model/**/*",
-            "Core/**/*"
-        ];
-        $package->setExtra($extra);
-
-        return new ShopPackageInstaller(
-            new NullIO(),
-            $this->getVirtualShopSourcePath(),
-            $package
-        );
-    }
-
     public function testShopNotInstalledByDefault()
     {
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
 
         $this->assertFalse($installer->isInstalled());
     }
@@ -64,7 +37,7 @@ class ShopPackageInstallerTest extends AbstractPackageInstallerTest
             'index.php' => '<?php'
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
 
         $this->assertTrue($installer->isInstalled());
         $this->assertVirtualFileExists('source/index.php');
@@ -76,7 +49,7 @@ class ShopPackageInstallerTest extends AbstractPackageInstallerTest
             'index.php' => '<?php',
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertTrue($installer->isInstalled());
@@ -90,7 +63,7 @@ class ShopPackageInstallerTest extends AbstractPackageInstallerTest
             'config.inc.php.dist' => 'dist',
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileEquals(
@@ -114,7 +87,7 @@ class ShopPackageInstallerTest extends AbstractPackageInstallerTest
             'config.inc.php.dist' => 'dist',
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileEquals(
@@ -133,7 +106,7 @@ class ShopPackageInstallerTest extends AbstractPackageInstallerTest
             'config.inc.php' => 'old',
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileNotEquals(
@@ -154,7 +127,7 @@ class ShopPackageInstallerTest extends AbstractPackageInstallerTest
             'config.inc.php.dist' => 'dist',
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileEquals(
@@ -177,7 +150,7 @@ class ShopPackageInstallerTest extends AbstractPackageInstallerTest
             '.gitignore' => 'git ignore',
         ]);
 
-        $installer = $this->getPackageInstaller('test-vendor/test-package');
+        $installer = $this->getPackageInstaller();
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
         $this->assertVirtualFileEquals(
