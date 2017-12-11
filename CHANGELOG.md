@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 
 ### Fixed
-- [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
 ### Security
+
+## [2.0.2] - 11-12-2017
+
+### Fixed
+- [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
