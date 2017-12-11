@@ -8,6 +8,14 @@ namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
 class ShopPackageInstallerRobotsExclusionFilesTest extends AbstractShopPackageInstallerTest
 {
+    public function providerFiles()
+    {
+        return [
+            ['robots.txt'],
+            ['bin/robots.txt'],
+        ];
+    }
+
     /**
      * @dataProvider providerFiles
      */
@@ -44,13 +52,5 @@ class ShopPackageInstallerRobotsExclusionFilesTest extends AbstractShopPackageIn
             "vendor/test-vendor/test-package/source/$file",
             "source/$file"
         );
-    }
-
-    public function providerFiles()
-    {
-        return [
-            ['robots.txt'],
-            ['bin/robots.txt'],
-        ];
     }
 }

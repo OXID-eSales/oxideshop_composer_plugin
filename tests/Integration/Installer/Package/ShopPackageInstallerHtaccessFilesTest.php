@@ -8,6 +8,18 @@ namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
 class ShopPackageInstallerHtaccessFilesTest extends AbstractShopPackageInstallerTest
 {
+    public function providerHtaccessFiles()
+    {
+        return [
+            ['.htaccess'],
+            ['bin/.htaccess'],
+            ['cache/.htaccess'],
+            ['out/downloads/.htaccess'],
+            ['Application/views/admin/tpl/.htaccess'],
+            ['test/.htaccess'],
+        ];
+    }
+
     /**
      * @dataProvider providerHtaccessFiles
      */
@@ -44,17 +56,5 @@ class ShopPackageInstallerHtaccessFilesTest extends AbstractShopPackageInstaller
             "vendor/test-vendor/test-package/source/$htaccessFile",
             "source/$htaccessFile"
         );
-    }
-
-    public function providerHtaccessFiles()
-    {
-        return [
-            ['.htaccess'],
-            ['bin/.htaccess'],
-            ['cache/.htaccess'],
-            ['out/downloads/.htaccess'],
-            ['Application/views/admin/tpl/.htaccess'],
-            ['test/.htaccess'],
-        ];
     }
 }
