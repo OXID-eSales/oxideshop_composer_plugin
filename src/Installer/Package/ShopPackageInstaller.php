@@ -112,7 +112,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
      */
     private function copyHtaccessFiles($packagePath)
     {
-        $this->copyFilesFromSourceToInstallation(
+        $this->copyFilesFromSourceToInstallationByFilter(
             $packagePath,
             self::HTACCESS_FILTER
         );
@@ -125,7 +125,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
      */
     private function copyRobotsExclusionFiles($packagePath)
     {
-        $this->copyFilesFromSourceToInstallation(
+        $this->copyFilesFromSourceToInstallationByFilter(
             $packagePath,
             self::ROBOTS_EXCLUSION_FILTER
         );
@@ -207,12 +207,12 @@ class ShopPackageInstaller extends AbstractPackageInstaller
     }
 
     /**
-     * Copy files from source to installation.
+     * Copy files from source to installation by filter.
      *
      * @param string $packagePath
      * @param string $filter
      */
-    private function copyFilesFromSourceToInstallation($packagePath, $filter)
+    private function copyFilesFromSourceToInstallationByFilter($packagePath, $filter)
     {
         $sourceDirectory    = $this->getPackageDirectoryOfShopSource($packagePath);
         $filteredFiles      = $this->getFilteredFiles($sourceDirectory, $filter);
