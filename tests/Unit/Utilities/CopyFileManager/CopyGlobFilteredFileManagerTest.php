@@ -46,6 +46,20 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertFilesNotExistInDestination(['module.php']);
     }
 
+    public function testNoExceptionThrownWhenDestionationFileDoesNotExist()
+    {
+        $inputFiles = [
+            "a/module.php" => "PHP_1",
+        ];
+
+        $this->prepareVirtualFileSystem($inputFiles, []);
+
+        $this->simulateCopyWithFilter('a/module.php', 'b/module.php');
+
+        $this->assertFilesExistInDestination(['b/module.php']);
+        $this->assertFileEquals($this->getSourcePath('a/module.php'), $this->getDestinationPath('b/module.php'));
+    }
+
     public function testThrowsExceptionWhenSourceValueIsInvalid()
     {
         $inputFiles = [
@@ -62,6 +76,22 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
 
         $destinationPath = $this->getSourcePath('module.php');
         CopyGlobFilteredFileManager::copy(1, $destinationPath);
+    }
+
+    public function testNoExceptionThrownWhenSourceAndDestinationAreIdentical()
+    {
+        $inputFiles = [
+            "module.php" => "PHP_1",
+            "module_backup.php" => "PHP_1",
+        ];
+
+        $this->prepareVirtualFileSystem($inputFiles, []);
+
+        $this->simulateCopyWithFilter('module.php', '../src/module.php');
+
+        $this->assertFilesExistInSource(['module.php']);
+        $this->assertFilesNotExistInDestination(['module.php']);
+        $this->assertFileEquals($this->getSourcePath('module.php'), $this->getSourcePath('module_backup.php'));
     }
 
     public function testThrowsExceptionWhenDestinationValueIsInvalid()

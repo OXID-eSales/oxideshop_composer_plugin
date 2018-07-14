@@ -50,6 +50,16 @@ class CopyGlobFilteredFileManager
             return;
         }
 
+        // Do not copy a directory onto itself. This is not handled by the underlying copy
+        // library.
+        // realpath() is required here because Path does not resolve symlinks, meaning
+        // we can't be sure the paths whether the paths are actually relative or not.
+        // Checking for the destination path existance is required to prevent realpath()
+        // from returning false.
+        if (file_exists($destinationPath) && !Path::makeRelative(static::realpath($sourcePath), static::realpath($destinationPath))) {
+            return;
+        }
+
         if (is_dir($sourcePath)) {
             self::copyDirectory($sourcePath, $destinationPath, $globExpressionList);
         } else {
@@ -142,6 +152,15 @@ class CopyGlobFilteredFileManager
 
         if (!GlobMatcher::matchAny($relativeSourcePath, $globExpressionList)) {
             $filesystem->copy($sourcePathOfFile, $destinationPath, ["override" => true]);
+        }
+    }
+
+    private static function realpath($path)
+    {
+        if (defined('OXID_PHP_UNIT')) {
+            return $path;
+        } else {
+            return realpath($path);
         }
     }
 }
