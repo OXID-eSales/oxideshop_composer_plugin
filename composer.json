@@ -13,7 +13,8 @@
     "composer-plugin-api": "^1.0",
     "symfony/filesystem": "^3.0",
     "webmozart/glob": "^4.1",
-    "webmozart/path-util": "^2.3"
+    "webmozart/path-util": "^2.3",
+    "oxid-esales/di-configuration-service": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "^4.8",
@@ -28,5 +29,11 @@
   },
   "extra": {
     "class": "OxidEsales\\ComposerPlugin\\Plugin"
-  }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+    "url": "file:///home/michael/workspace/DI_configuration_service"
+    }
+  ]
 }

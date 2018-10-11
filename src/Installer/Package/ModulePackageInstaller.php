@@ -7,6 +7,8 @@
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
+use OxidEsales\DI\Service\ProjectYamlConfigurationService;
+use OxidEsales\Facts\Facts;
 use Webmozart\PathUtil\Path;
 
 /**
@@ -33,6 +35,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     {
         $this->getIO()->write("Installing module {$this->getPackageName()} package.");
         $this->copyPackage($packagePath);
+        $this->addServices($packagePath);
     }
 
     /**
@@ -47,6 +50,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
             $this->getIO()->write("Copying module {$this->getPackageName()} files...");
             $this->copyPackage($packagePath);
         }
+        $this->addServices($packagePath);
     }
 
     /**
@@ -96,5 +100,16 @@ class ModulePackageInstaller extends AbstractPackageInstaller
         );
 
         return Path::join($this->getRootDirectory(), static::MODULES_DIRECTORY, $targetDirectory);
+    }
+
+    /**
+     * @param string $modulePath The path to the module directory
+     */
+    protected function addServices($modulePath)
+    {
+        if (file_exists($modulePath . DIRECTORY_SEPARATOR . 'services.yaml')) {
+            $configService = new ProjectYamlConfigurationService(new Facts());
+            $configService->addImport($modulePath);
+        }
     }
 }
