@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.0.0] Unreleased
 
+### Removed
+- Support for PHP 5.6
+
 ### Added
 - New installer type - `oxideshop-component`, which will trigger service registration to OXID eShop DI container.
 
