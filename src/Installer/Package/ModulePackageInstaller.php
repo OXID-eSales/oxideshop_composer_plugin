@@ -42,10 +42,19 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        if ($this->askQuestionIfNotInstalled("Update operation will overwrite {$this->getPackageName()} files."
-            ." Do you want to continue? (y/N) ")) {
-            $this->getIO()->write("Copying module {$this->getPackageName()} files...");
+        $package = $this->getPackage();
+        $this->getIO()->write("Updating module package {$package->getName()}");
+
+        $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
+                    '- ' . $this->formTargetPath() . PHP_EOL .
+                    'Do you want to overwrite them? (y/N) ';
+
+        if ($this->askQuestionIfNotInstalled($question)) {
+            $this->getIO()->write('Copying files ...');
             $this->copyPackage($packagePath);
+            $this->getIO()->write('Done');
+        } else {
+            $this->getIO()->write('Skipped');
         }
     }
 
