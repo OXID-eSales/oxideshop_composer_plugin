@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Exclude non-essential files from dist package [PR-12](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/12)
-- Clarified CLI messages during composer install and composer update
+- Clarified and unified CLI messages during composer install and composer update
 
 ## [2.0.3] - 2018-07-18
 

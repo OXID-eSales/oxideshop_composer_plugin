@@ -43,13 +43,13 @@ class ComponentInstaller extends AbstractPackageInstaller
 
     public function install($packagePath)
     {
-        $this->getIO()->write("Installing component {$this->getPackageName()} package.");
+        $this->getIO()->write($this->getPrefix() . "Installing component {$this->getPackageName()} package.");
         $this->importServiceFile($packagePath);
     }
 
     public function update($packagePath)
     {
-        $this->getIO()->write("Updating component {$this->getPackageName()} package.");
+        $this->getIO()->write($this->getPrefix() . "Updating component {$this->getPackageName()} package.");
         $this->importServiceFile($packagePath);
     }
 

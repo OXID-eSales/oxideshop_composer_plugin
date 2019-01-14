@@ -41,8 +41,10 @@ class ShopPackageInstaller extends AbstractPackageInstaller
      */
     public function install($packagePath)
     {
-        $this->getIO()->write("Installing shop package.");
+        $this->getIO()->write($this->getPrefix() . "Installing OXID eShop package {$this->getPackage()->getName()}");
+        $this->getIO()->write('Copying files ...');
         $this->copyPackage($packagePath);
+        $this->getIO()->write('Done');
     }
 
     /**
@@ -52,8 +54,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        $package = $this->getPackage();
-        $this->getIO()->write("Updating OXID eShop package {$package->getName()}");
+        $this->getIO()->write($this->getPrefix() . "Updating OXID eShop package {$this->getPackage()->getName()}");
 
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
                     '- ' . $this->getTargetDirectoryOfShopSource() . PHP_EOL .

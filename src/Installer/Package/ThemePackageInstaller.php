@@ -6,9 +6,9 @@
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
+use Composer\Package\PackageInterface;
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
 use Webmozart\PathUtil\Path;
-use Composer\Package\PackageInterface;
 
 /**
  * @inheritdoc
@@ -33,8 +33,10 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function install($packagePath)
     {
-        $this->getIO()->write("Installing {$this->getPackage()->getName()} package");
+        $this->getIO()->write($this->getPrefix() . "Installing theme package {$this->getPackage()->getName()}");
+        $this->getIO()->write('Copying files ...');
         $this->copyPackage($packagePath);
+        $this->getIO()->write('Done');
     }
 
     /**
@@ -44,8 +46,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        $package = $this->getPackage();
-        $this->getIO()->write("Updating theme package {$package->getName()}");
+        $this->getIO()->write($this->getPrefix() . "Updating theme package {$this->getPackage()->getName()}");
 
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
                     '- ' . $this->formThemeTargetPath() . PHP_EOL .

@@ -31,8 +31,10 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function install($packagePath)
     {
-        $this->getIO()->write("Installing module {$this->getPackageName()} package.");
+        $this->getIO()->write($this->getPrefix() . "Installing module package {$this->getPackage()->getName()}");
+        $this->getIO()->write('Copying files ...');
         $this->copyPackage($packagePath);
+        $this->getIO()->write('Done');
     }
 
     /**
@@ -42,8 +44,8 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        $package = $this->getPackage();
-        $this->getIO()->write("Updating module package {$package->getName()}");
+
+        $this->getIO()->write($this->getPrefix() . "Updating module package {$this->getPackage()->getName()}");
 
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
                     '- ' . $this->formTargetPath() . PHP_EOL .

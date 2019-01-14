@@ -15,6 +15,8 @@ use Composer\Package\PackageInterface;
  */
 abstract class AbstractPackageInstaller
 {
+    const PACKAGE_NAME = 'oxid-esales/oxideshop-composer-plugin';
+
     const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
 
     /** Used to determine third party package internal source path. */
@@ -199,6 +201,11 @@ abstract class AbstractPackageInstaller
         $userInput = $this->getIO()->ask($messageToAsk, 'N');
 
         return $this->isPositiveUserInput($userInput);
+    }
+
+    protected function getPrefix(): string
+    {
+        return '<info>'. self::PACKAGE_NAME .':</info> ';
     }
 
     /**
