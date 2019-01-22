@@ -86,6 +86,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected function executeAction($actionName)
     {
+        $this->autoloadInstalledPackages();
         $repo = $this->composer->getRepositoryManager()->getLocalRepository();
 
         foreach ($repo->getPackages() as $package) {
@@ -98,5 +99,15 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 }
             }
         }
+    }
+
+    /**
+     * Composer autoloads classes needed for its own tasks only. Classes of other packages installed need to be loaded
+     * separately.
+     */
+    private function autoloadInstalledPackages()
+    {
+        $vendorDir = $this->composer->getConfig()->get('vendor-dir');
+        require_once($vendorDir . '/autoload.php');
     }
 }
