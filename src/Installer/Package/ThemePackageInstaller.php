@@ -33,7 +33,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function install($packagePath)
     {
-        $this->writeInstallingMessage('theme package');
+        $this->writeInstallingMessage($this->getPackageTypeDescription());
         $this->writeCopyingMessage();
         $this->copyPackage($packagePath);
         $this->writeDoneMessage();
@@ -46,7 +46,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        $this->writeUpdatingMessage('theme package');
+        $this->writeUpdatingMessage($this->getPackageTypeDescription());
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
                     '- ' . $this->formThemeTargetPath() . PHP_EOL .
                     '- ' . Path::join($this->getRootDirectory(), $this->formAssetsDirectoryName()) . PHP_EOL .
@@ -134,5 +134,13 @@ class ThemePackageInstaller extends AbstractPackageInstaller
             $assetsDirectory = 'out';
         }
         return $assetsDirectory;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPackageTypeDescription(): string
+    {
+        return 'theme package';
     }
 }

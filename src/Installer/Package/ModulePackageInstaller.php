@@ -31,7 +31,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function install($packagePath)
     {
-        $this->writeInstallingMessage("module package");
+        $this->writeInstallingMessage($this->getPackageTypeDescription());
         $this->writeCopyingMessage();
         $this->copyPackage($packagePath);
         $this->writeDoneMessage();
@@ -44,7 +44,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        $this->writeUpdatingMessage("module package");
+        $this->writeUpdatingMessage($this->getPackageTypeDescription());
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
                     '- ' . $this->formTargetPath() . PHP_EOL .
                     'Do you want to overwrite them? (y/N) ';
@@ -105,5 +105,13 @@ class ModulePackageInstaller extends AbstractPackageInstaller
         );
 
         return Path::join($this->getRootDirectory(), static::MODULES_DIRECTORY, $targetDirectory);
+    }
+
+    /**
+     * @return string
+     */
+    private function getPackageTypeDescription(): string
+    {
+        return 'module package';
     }
 }

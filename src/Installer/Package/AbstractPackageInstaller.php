@@ -15,8 +15,6 @@ use Composer\Package\PackageInterface;
  */
 abstract class AbstractPackageInstaller
 {
-    const PACKAGE_NAME = 'oxid-esales/oxideshop-composer-plugin';
-
     const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
 
     /** Used to determine third party package internal source path. */
@@ -96,7 +94,7 @@ abstract class AbstractPackageInstaller
      */
     protected function getPackageName()
     {
-        return $this->package->getName();
+        return $this->getPackage()->getName();
     }
 
     /**
@@ -121,9 +119,7 @@ abstract class AbstractPackageInstaller
     {
         $extraParameters = $this->getPackage()->getExtra();
 
-        $extraParameterValue = isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey]) ?
-            $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey] :
-            null;
+        $extraParameterValue = $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey] ?? null;
 
         return (!empty($extraParameterValue)) ? $extraParameterValue : $defaultValue;
     }
@@ -224,7 +220,7 @@ abstract class AbstractPackageInstaller
      */
     protected function writeInstallingMessage(string $packageType)
     {
-        $this->getIO()->write($this->getInstallingMessages($packageType));
+        $this->getIO()->write($this->getInstallingMessage($packageType));
     }
 
     /**
@@ -232,7 +228,7 @@ abstract class AbstractPackageInstaller
      *
      * @return string
      */
-    protected function getInstallingMessages(string $packageType): string
+    protected function getInstallingMessage(string $packageType): string
     {
         return $this->getMessagePrefix() . "Installing {$packageType} {$this->getPackage()->getName()}";
     }
@@ -242,7 +238,7 @@ abstract class AbstractPackageInstaller
      */
     protected function getMessagePrefix(): string
     {
-        return '<info>' . self::PACKAGE_NAME . ':</info> ';
+        return '<info>oxid-esales/oxideshop-composer-plugin:</info> ';
     }
 
     /**
