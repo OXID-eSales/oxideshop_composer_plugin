@@ -11,7 +11,7 @@ use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
 /**
  * Class FileStructureOperatorTest.
  */
-class VfsFileStructureOperatorTest extends \PHPUnit_Framework_TestCase
+class VfsFileStructureOperatorTest extends \PHPUnit\Framework\TestCase
 {
     public function testReturnEmptyListWhenNoInputIsProvided()
     {
@@ -30,7 +30,8 @@ class VfsFileStructureOperatorTest extends \PHPUnit_Framework_TestCase
 
     public function testThrowAnExceptionIfInputIsNotAnArray()
     {
-        $this->setExpectedException(\InvalidArgumentException::class, "Given input argument must be an array.");
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Given input argument must be an array.");
         VfsFileStructureOperator::nest(1);
     }
 
@@ -69,7 +70,7 @@ class VfsFileStructureOperatorTest extends \PHPUnit_Framework_TestCase
     public function testReturnArrayAsIsWhenMultipleFilesArePresent()
     {
         $input = [
-            'file' => 'Contents',
+            'file'        => 'Contents',
             'second_file' => 'Second Contents'
         ];
 
@@ -79,7 +80,7 @@ class VfsFileStructureOperatorTest extends \PHPUnit_Framework_TestCase
     public function testReturnArrayWithSingleItemWhenSameMultipleFilesArePresentLastOneBeingAsOverrider()
     {
         $input = [
-            'file' => 'Contents',
+            'file'     => 'Contents',
             '  file  ' => 'Second Contents'
         ];
 
@@ -108,7 +109,7 @@ class VfsFileStructureOperatorTest extends \PHPUnit_Framework_TestCase
     public function testReturnNestedArrayWhenLastItemContainsMultiLevelPath()
     {
         $input = [
-            'directory/fake_file' => 'contents',
+            'directory/fake_file'           => 'contents',
             'directory/fake_file/real_file' => 'real contents',
         ];
 
@@ -141,13 +142,13 @@ class VfsFileStructureOperatorTest extends \PHPUnit_Framework_TestCase
     public function testReturnNestedArrayWhenMultipleItemsContainsMultiLevelPathWithSameBase()
     {
         $input = [
-            'directory/file' => 'contents',
+            'directory/file'        => 'contents',
             'directory/second_file' => 'second contents',
         ];
 
         $expectedOutput = [
             'directory' => [
-                'file' => 'contents',
+                'file'        => 'contents',
                 'second_file' => 'second contents',
             ]
         ];
@@ -158,14 +159,14 @@ class VfsFileStructureOperatorTest extends \PHPUnit_Framework_TestCase
     public function testReturnNestedArrayWhenMultipleItemsContainsMultiLevelPathWithSameBaseButWithBreakPointInTheMiddle()
     {
         $input = [
-            'directory/file' => 'contents',
-            'directory_a/file' => 'a contents',
+            'directory/file'        => 'contents',
+            'directory_a/file'      => 'a contents',
             'directory/second_file' => 'second contents',
         ];
 
         $expectedOutput = [
-            'directory' => [
-                'file' => 'contents',
+            'directory'   => [
+                'file'        => 'contents',
                 'second_file' => 'second contents',
             ],
             'directory_a' => [
@@ -196,12 +197,12 @@ class VfsFileStructureOperatorTest extends \PHPUnit_Framework_TestCase
     public function testReturnNestedArrayWhenMultipleItemsContainsMultiLevelPathWithDifferentBase()
     {
         $input = [
-            'directory/file' => 'contents',
+            'directory/file'               => 'contents',
             'second_directory/second_file' => 'second contents',
         ];
 
         $expectedOutput = [
-            'directory' => [
+            'directory'        => [
                 'file' => 'contents',
             ],
             'second_directory' => [
@@ -215,20 +216,20 @@ class VfsFileStructureOperatorTest extends \PHPUnit_Framework_TestCase
     public function testReturnNestedArrayWhenComplexCasePresented()
     {
         $input = [
-            'file' => 'contents',
-            'directory/file' => 'second contents',
+            'file'                                     => 'contents',
+            'directory/file'                           => 'second contents',
             'directory_a/directory_b/directory_c/file' => 'third contents',
-            'directory/file_b' => 'b contents',
-            ' file_c  ' => 'c contents',
-            ' file_c   ' => 'c override contents',
-            'fake_file' => 'fake contents',
-            'fake_file/real_file' => 'real contents',
+            'directory/file_b'                         => 'b contents',
+            ' file_c  '                                => 'c contents',
+            ' file_c   '                               => 'c override contents',
+            'fake_file'                                => 'fake contents',
+            'fake_file/real_file'                      => 'real contents',
         ];
 
         $expectedOutput = [
-            'file' => 'contents',
-            'directory' => [
-                'file' => 'second contents',
+            'file'        => 'contents',
+            'directory'   => [
+                'file'   => 'second contents',
                 'file_b' => 'b contents',
             ],
             'directory_a' => [
@@ -238,8 +239,8 @@ class VfsFileStructureOperatorTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ],
-            'file_c' => 'c override contents',
-            'fake_file' => [
+            'file_c'      => 'c override contents',
+            'fake_file'   => [
                 'real_file' => 'real contents',
             ]
         ];

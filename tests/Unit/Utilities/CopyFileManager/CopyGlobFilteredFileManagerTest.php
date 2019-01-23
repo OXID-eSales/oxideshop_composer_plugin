@@ -20,7 +20,7 @@ use Webmozart\PathUtil\Path;
  * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Integration\WebmozartGlobMatcher
  * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobListMatcher\GlobListMatcher
  */
-class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
+class CopyGlobFilteredFileManagerTest extends \PHPUnit\Framework\TestCase
 {
     /** @var array */
     private $filter = [];
@@ -54,9 +54,9 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
 
         $this->prepareVirtualFileSystem($inputFiles, []);
 
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            "Given value \"1\" is not a valid source path entry. ".
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            "Given value \"1\" is not a valid source path entry. " .
             "Valid entry must be an absolute path to an existing file or directory."
         );
 
@@ -71,10 +71,9 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
         ];
 
         $this->prepareVirtualFileSystem($inputFiles, []);
-
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            "Given value \"1\" is not a valid destination path entry. ".
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            "Given value \"1\" is not a valid destination path entry. " .
             "Valid entry must be an absolute path to an existing directory."
         );
 
@@ -90,9 +89,9 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
 
         $this->prepareVirtualFileSystem($inputFiles, []);
 
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            "Given value \"1\" is not a valid glob expression list. ".
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            "Given value \"1\" is not a valid glob expression list. " .
             "Valid entry must be a list of glob expressions e.g. [\"*.txt\", \"*.pdf\"]."
         );
 
@@ -108,9 +107,9 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
 
         $this->prepareVirtualFileSystem($inputFiles, []);
 
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            "Given value \"1\" is not a valid glob expression. ".
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            "Given value \"1\" is not a valid glob expression. " .
             "Valid expression must be a string e.g. \"*.txt\"."
         );
 
@@ -126,9 +125,9 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
 
         $this->prepareVirtualFileSystem($inputFiles, []);
 
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            "Given value \"/some/absolute/path/*.*\" is an absolute path. ".
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            "Given value \"/some/absolute/path/*.*\" is an absolute path. " .
             "Glob expression can only be accepted if it's a relative path."
         );
 
@@ -185,17 +184,19 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
     {
         $inputFiles = [
             "module.php" => "PHP_1",
-            "readme.md" => "MD_1",
+            "readme.md"  => "MD_1",
         ];
 
         $this->prepareVirtualFileSystem($inputFiles, []);
 
         $this->simulateCopyWithFilter();
 
-        $this->assertFileCopyIsIdentical([
-            "module.php",
-            "readme.md",
-        ]);
+        $this->assertFileCopyIsIdentical(
+            [
+                "module.php",
+                "readme.md",
+            ]
+        );
     }
 
     public function testCopyOverwritesFilesByDefault()
@@ -227,59 +228,65 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
     public function testFilteringFileCopyOperation()
     {
         $inputFiles = [
-            "module.php" => "PHP_1",
-            "readme.md" => "MD_1",
+            "module.php"        => "PHP_1",
+            "readme.md"         => "MD_1",
             "documentation.txt" => "TXT_1",
-            "src" => [
+            "src"               => [
                 "a.php" => "PHP_2",
                 "b.php" => "PHP_3",
                 "c.php" => "PHP_3",
             ],
-            "tests" => [
-                "test.php" => "PHP_4",
-                "unit" => [
+            "tests"             => [
+                "test.php"    => "PHP_4",
+                "unit"        => [
                     "test.php" => "PHP_5",
                 ],
                 "integration" => [
                     "test.php" => "PHP_6",
                 ]
             ],
-            "documentation" => [
+            "documentation"     => [
                 "document_a.pdf" => "PDF_1",
                 "document_b.pdf" => "PDF_2",
-                "index.txt" => "TXT_2",
-                "example.php" => "PHP_7",
+                "index.txt"      => "TXT_2",
+                "example.php"    => "PHP_7",
             ]
         ];
 
         $this->prepareVirtualFileSystem($inputFiles, []);
 
-        $this->setFilter([
-            "**/*.md",
-            "**/*.txt",
-            "tests/**/*.*",
-            "documentation/**/*.pdf",
-        ]);
+        $this->setFilter(
+            [
+                "**/*.md",
+                "**/*.txt",
+                "tests/**/*.*",
+                "documentation/**/*.pdf",
+            ]
+        );
         $this->simulateCopyWithFilter();
 
-        $this->assertFileCopyIsIdentical([
-            "module.php",
-            "src/a.php",
-            "src/b.php",
-            "src/c.php",
-            "documentation/example.php",
-        ]);
+        $this->assertFileCopyIsIdentical(
+            [
+                "module.php",
+                "src/a.php",
+                "src/b.php",
+                "src/c.php",
+                "documentation/example.php",
+            ]
+        );
 
-        $this->assertFilesNotExistInDestination([
-            "readme.md",
-            "documentation.txt",
-            "tests/test.php",
-            "tests/unit/test.php",
-            "tests/integration/test.php",
-            "documentation/document_a.pdf",
-            "documentation/document_b.pdf",
-            "documentation/index.txt",
-        ]);
+        $this->assertFilesNotExistInDestination(
+            [
+                "readme.md",
+                "documentation.txt",
+                "tests/test.php",
+                "tests/unit/test.php",
+                "tests/integration/test.php",
+                "documentation/document_a.pdf",
+                "documentation/document_b.pdf",
+                "documentation/index.txt",
+            ]
+        );
     }
 
     protected function setFilter($filter)
@@ -290,10 +297,12 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit_Framework_TestCase
     protected function prepareVirtualFileSystem($inputStructure, $outputStructure)
     {
         vfsStream::setup('root', 777);
-        vfsStream::create([
-            'src' => $inputStructure,
-            'dest' => $outputStructure,
-        ]);
+        vfsStream::create(
+            [
+                'src'  => $inputStructure,
+                'dest' => $outputStructure,
+            ]
+        );
     }
 
     protected function simulateCopyWithFilter($source = null, $destination = null)

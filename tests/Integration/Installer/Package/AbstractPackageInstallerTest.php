@@ -10,7 +10,7 @@ use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
 use org\bovigo\vfs\vfsStream;
 use Webmozart\PathUtil\Path;
 
-abstract class AbstractPackageInstallerTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractPackageInstallerTest extends \PHPUnit\Framework\TestCase
 {
     public function setUp()
     {
