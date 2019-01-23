@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
@@ -36,12 +36,12 @@ class VfsFileStructureOperatorTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnArrayAsIsWhenOnlyItemIsPresent()
     {
-        $this->assertSame(['abc'], VfsFileStructureOperator::nest(['abc']));
+        $this->assertSame(['vendor' => 'abc'], VfsFileStructureOperator::nest(['vendor' => 'abc']));
     }
 
     public function testReturnArrayAsIsWhenMultipleItemsArePresent()
     {
-        $this->assertSame(['abc', 'def'], VfsFileStructureOperator::nest(['abc', 'def']));
+        $this->assertSame(['foo' => 'abc', 'bar' => 'def'], VfsFileStructureOperator::nest(['foo' => 'abc', 'bar' => 'def']));
     }
 
     public function testReturnArrayAsIsWhenOnlyOneFileIsPresent()

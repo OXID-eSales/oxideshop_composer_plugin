@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
@@ -19,7 +19,9 @@ abstract class AbstractPackageInstallerTest extends \PHPUnit_Framework_TestCase
 
     protected function setupVirtualFileSystem()
     {
-        vfsStream::setup('root', 777,
+        vfsStream::setup(
+            'root',
+            777,
             [
                 'vendor' => [],
                 'source' => [],

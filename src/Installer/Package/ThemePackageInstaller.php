@@ -135,5 +135,4 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         }
         return $assetsDirectory;
     }
-
 }

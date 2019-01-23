@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
@@ -20,11 +20,11 @@ class VfsFileStructureOperator
      */
     public static function nest($flatFileSystemStructure = null)
     {
-        if (!is_null($flatFileSystemStructure) && !is_array($flatFileSystemStructure)) {
+        if (null !== $flatFileSystemStructure && false === is_array($flatFileSystemStructure)) {
             throw new \InvalidArgumentException("Given input argument must be an array.");
         }
 
-        if (is_null($flatFileSystemStructure)) {
+        if (null === $flatFileSystemStructure) {
             return [];
         }
 

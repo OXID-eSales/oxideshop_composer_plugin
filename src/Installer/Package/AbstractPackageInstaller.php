@@ -84,24 +84,6 @@ abstract class AbstractPackageInstaller
     abstract public function update($packagePath);
 
     /**
-     * Check whether given package is already installed.
-     *
-     * @return bool
-     */
-    public function isInstalled()
-    {
-        return false;
-    }
-
-    /**
-     * @return IOInterface
-     */
-    protected function getIO()
-    {
-        return $this->io;
-    }
-
-    /**
      * @return string
      */
     protected function getRootDirectory()
@@ -110,19 +92,21 @@ abstract class AbstractPackageInstaller
     }
 
     /**
-     * @return PackageInterface
-     */
-    public function getPackage()
-    {
-        return $this->package;
-    }
-
-    /**
      * @return string
      */
     protected function getPackageName()
     {
         return $this->package->getName();
+    }
+
+    /**
+     * Return the value defined in composer extra parameters for blacklist filtering.
+     *
+     * @return array
+     */
+    protected function getBlacklistFilterValue()
+    {
+        return $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_FILTER_BLACKLIST, []);
     }
 
     /**
@@ -137,21 +121,19 @@ abstract class AbstractPackageInstaller
     {
         $extraParameters = $this->getPackage()->getExtra();
 
-        $extraParameterValue = isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey])?
-            $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey]:
+        $extraParameterValue = isset($extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey]) ?
+            $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey] :
             null;
 
         return (!empty($extraParameterValue)) ? $extraParameterValue : $defaultValue;
     }
 
     /**
-     * Return the value defined in composer extra parameters for blacklist filtering.
-     *
-     * @return array
+     * @return PackageInterface
      */
-    protected function getBlacklistFilterValue()
+    public function getPackage()
     {
-        return $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_FILTER_BLACKLIST, []);
+        return $this->package;
     }
 
     /**
@@ -183,6 +165,7 @@ abstract class AbstractPackageInstaller
 
     /**
      * @param string $messageToAsk
+     *
      * @return bool
      */
     protected function askQuestionIfNotInstalled($messageToAsk)
@@ -191,9 +174,20 @@ abstract class AbstractPackageInstaller
     }
 
     /**
+     * Check whether given package is already installed.
+     *
+     * @return bool
+     */
+    public function isInstalled()
+    {
+        return false;
+    }
+
+    /**
      * Returns true if the human answer to the given question was answered with a positive value (Yes/yes/Y/y).
      *
      * @param string $messageToAsk
+     *
      * @return bool
      */
     protected function askQuestion($messageToAsk)
@@ -203,9 +197,12 @@ abstract class AbstractPackageInstaller
         return $this->isPositiveUserInput($userInput);
     }
 
-    protected function getPrefix(): string
+    /**
+     * @return IOInterface
+     */
+    protected function getIO()
     {
-        return '<info>'. self::PACKAGE_NAME .':</info> ';
+        return $this->io;
     }
 
     /**
@@ -232,10 +229,38 @@ abstract class AbstractPackageInstaller
 
     /**
      * @param string $packageType
+     *
+     * @return string
+     */
+    protected function getInstallingMessages(string $packageType): string
+    {
+        return $this->getMessagePrefix() . "Installing {$packageType} {$this->getPackage()->getName()}";
+    }
+
+    /**
+     * @return string
+     */
+    protected function getMessagePrefix(): string
+    {
+        return '<info>' . self::PACKAGE_NAME . ':</info> ';
+    }
+
+    /**
+     * @param string $packageType
      */
     protected function writeUpdatingMessage(string $packageType)
     {
         $this->getIO()->write($this->getUpdatingMessage($packageType));
+    }
+
+    /**
+     * @param string $packageType
+     *
+     * @return string
+     */
+    protected function getUpdatingMessage(string $packageType): string
+    {
+        return $this->getMessagePrefix() . "Updating {$packageType} {$this->getPackage()->getName()}";
     }
 
     /**
@@ -247,11 +272,27 @@ abstract class AbstractPackageInstaller
     }
 
     /**
+     * @return string
+     */
+    protected function getCopyingMessage(): string
+    {
+        return 'Copying files ...';
+    }
+
+    /**
      * @return mixed
      */
     protected function writeDoneMessage()
     {
         return $this->getIO()->write($this->getDoneMessage());
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDoneMessage(): string
+    {
+        return 'Done';
     }
 
     /**
@@ -262,41 +303,6 @@ abstract class AbstractPackageInstaller
         return $this->getIO()->write($this->getSkippedMessage());
     }
 
-    /**
-     * @param string $packageType
-     *
-     * @return string
-     */
-    protected function getInstallingMessages(string $packageType): string
-    {
-        return $this->getPrefix() . "Installing {$packageType} {$this->getPackage()->getName()}";
-    }
-
-    /**
-     * @param string $packageType
-     *
-     * @return string
-     */
-    protected function getUpdatingMessage(string $packageType): string
-    {
-        return $this->getPrefix() . "Updating {$packageType} {$this->getPackage()->getName()}";
-    }
-
-    /**
-     * @return string
-     */
-    protected function getCopyingMessage(): string
-    {
-        return 'Copying files ...';
-    }
-
-    /**
-     * @return string
-     */
-    protected function getDoneMessage(): string
-    {
-        return 'Done';
-    }
     /**
      * @return string
      */
