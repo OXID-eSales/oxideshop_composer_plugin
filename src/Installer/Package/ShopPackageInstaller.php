@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
@@ -41,10 +41,10 @@ class ShopPackageInstaller extends AbstractPackageInstaller
      */
     public function install($packagePath)
     {
-        $this->getIO()->write($this->getPrefix() . "Installing OXID eShop package {$this->getPackage()->getName()}");
-        $this->getIO()->write('Copying files ...');
+        $this->writeInstallingMessage('OXID eShop package');
+        $this->writeCopyingMessage();
         $this->copyPackage($packagePath);
-        $this->getIO()->write('Done');
+        $this->writeDoneMessage();
     }
 
     /**
@@ -54,18 +54,17 @@ class ShopPackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        $this->getIO()->write($this->getPrefix() . "Updating OXID eShop package {$this->getPackage()->getName()}");
-
+        $this->writeUpdatingMessage('OXID eShop package');
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
                     '- ' . $this->getTargetDirectoryOfShopSource() . PHP_EOL .
                     'Do you want to overwrite them? (y/N) ';
 
         if ($this->askQuestionIfNotInstalled($question)) {
-            $this->getIO()->write('Copying files ...');
+            $this->writeCopyingMessage();
             $this->copyPackage($packagePath);
-            $this->getIO()->write('Done');
+            $this->writeDoneMessage();
         } else {
-            $this->getIO()->write('Skipped');
+            $this->writeSkippedMessage();
         }
     }
 

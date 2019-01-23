@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
@@ -33,10 +33,10 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function install($packagePath)
     {
-        $this->getIO()->write($this->getPrefix() . "Installing theme package {$this->getPackage()->getName()}");
-        $this->getIO()->write('Copying files ...');
+        $this->writeInstallingMessage('theme package');
+        $this->writeCopyingMessage();
         $this->copyPackage($packagePath);
-        $this->getIO()->write('Done');
+        $this->writeDoneMessage();
     }
 
     /**
@@ -46,19 +46,18 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        $this->getIO()->write($this->getPrefix() . "Updating theme package {$this->getPackage()->getName()}");
-
+        $this->writeUpdatingMessage('theme package');
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
                     '- ' . $this->formThemeTargetPath() . PHP_EOL .
                     '- ' . Path::join($this->getRootDirectory(), $this->formAssetsDirectoryName()) . PHP_EOL .
                     'Do you want to overwrite them? (y/N) ';
 
         if ($this->askQuestionIfNotInstalled($question)) {
-            $this->getIO()->write('Copying files ...');
+            $this->writeCopyingMessage();
             $this->copyPackage($packagePath);
-            $this->getIO()->write('Done');
+            $this->writeDoneMessage();
         } else {
-            $this->getIO()->write('Skipped');
+            $this->writeSkippedMessage();
         }
     }
 
@@ -136,4 +135,5 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         }
         return $assetsDirectory;
     }
+
 }

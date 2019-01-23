@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
@@ -31,10 +31,10 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function install($packagePath)
     {
-        $this->getIO()->write($this->getPrefix() . "Installing module package {$this->getPackage()->getName()}");
-        $this->getIO()->write('Copying files ...');
+        $this->writeInstallingMessage("module package");
+        $this->writeCopyingMessage();
         $this->copyPackage($packagePath);
-        $this->getIO()->write('Done');
+        $this->writeDoneMessage();
     }
 
     /**
@@ -44,19 +44,17 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-
-        $this->getIO()->write($this->getPrefix() . "Updating module package {$this->getPackage()->getName()}");
-
+        $this->writeUpdatingMessage("module package");
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
                     '- ' . $this->formTargetPath() . PHP_EOL .
                     'Do you want to overwrite them? (y/N) ';
 
         if ($this->askQuestionIfNotInstalled($question)) {
-            $this->getIO()->write('Copying files ...');
+            $this->writeCopyingMessage();
             $this->copyPackage($packagePath);
-            $this->getIO()->write('Done');
+            $this->writeDoneMessage();
         } else {
-            $this->getIO()->write('Skipped');
+            $this->writeSkippedMessage();
         }
     }
 
@@ -108,4 +106,5 @@ class ModulePackageInstaller extends AbstractPackageInstaller
 
         return Path::join($this->getRootDirectory(), static::MODULES_DIRECTORY, $targetDirectory);
     }
+
 }

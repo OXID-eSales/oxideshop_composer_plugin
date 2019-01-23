@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
@@ -220,5 +220,88 @@ abstract class AbstractPackageInstaller
         $positiveAnswers = ['yes', 'y'];
 
         return in_array(strtolower(trim($userInput)), $positiveAnswers, true);
+    }
+
+    /**
+     * @param string $packageType
+     */
+    protected function writeInstallingMessage(string $packageType)
+    {
+        $this->getIO()->write($this->getInstallingMessages($packageType));
+    }
+
+    /**
+     * @param string $packageType
+     */
+    protected function writeUpdatingMessage(string $packageType)
+    {
+        $this->getIO()->write($this->getUpdatingMessage($packageType));
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function writeCopyingMessage()
+    {
+        return $this->getIO()->write($this->getCopyingMessage());
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function writeDoneMessage()
+    {
+        return $this->getIO()->write($this->getDoneMessage());
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function writeSkippedMessage()
+    {
+        return $this->getIO()->write($this->getSkippedMessage());
+    }
+
+    /**
+     * @param string $packageType
+     *
+     * @return string
+     */
+    protected function getInstallingMessages(string $packageType): string
+    {
+        return $this->getPrefix() . "Installing {$packageType} {$this->getPackage()->getName()}";
+    }
+
+    /**
+     * @param string $packageType
+     *
+     * @return string
+     */
+    protected function getUpdatingMessage(string $packageType): string
+    {
+        return $this->getPrefix() . "Updating {$packageType} {$this->getPackage()->getName()}";
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCopyingMessage(): string
+    {
+        return 'Copying files ...';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDoneMessage(): string
+    {
+        return 'Done';
+    }
+    /**
+     * @return string
+     */
+    protected function getSkippedMessage(): string
+    {
+        return 'Skipped';
     }
 }
