@@ -12,6 +12,11 @@ use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
+use OxidEsales\EshopCommunity\Internal\Application\BootstrapContainer\BootstrapContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Application\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Application\Utility\BasicContextInterface;
+use OxidEsales\EshopCommunity\Internal\Module\Configuration\Dao\ProjectConfigurationDaoInterface;
+use OxidEsales\Facts\Facts;
 
 /**
  * Class Plugin.
@@ -87,6 +92,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     protected function executeAction($actionName)
     {
         $this->autoloadInstalledPackages();
+        $this->bootstrapOxidShopComponent();
+        $this->generateDefaultProjectConfigurationIfMissing();
+
         $repo = $this->composer->getRepositoryManager()->getLocalRepository();
 
         foreach ($repo->getPackages() as $package) {
@@ -109,5 +117,35 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $vendorDir = $this->composer->getConfig()->get('vendor-dir');
         require_once($vendorDir . '/autoload.php');
+    }
+
+    private function bootstrapOxidShopComponent()
+    {
+        if ($this->isShopSetUp()) {
+            $bootstrapFilePath = (new Facts())->getSourcePath() . DIRECTORY_SEPARATOR. 'bootstrap.php';
+            require_once $bootstrapFilePath;
+        }
+    }
+
+    private function isShopSetUp()
+    {
+        $container = BootstrapContainerFactory::getBootstrapContainer();
+        $context = $container->get(BasicContextInterface::class);
+
+        return $context->isShopSetUp();
+    }
+
+    private function generateDefaultProjectConfigurationIfMissing()
+    {
+        $container = ContainerFactory::getInstance()->getContainer();
+        $projectConfigurationDao = $container->get(ProjectConfigurationDaoInterface::class);
+
+        if ($projectConfigurationDao->isConfigurationEmpty()) {
+            if ($this->isShopSetUp()) {
+                $container->get('oxid_esales.module.install.lanched_shop_default_project_configuration_generator')->generate();
+            } else {
+                $container->get('oxid_esales.module.install.installed_shop_default_project_configuration_generator')->generate();
+            }
+        }
     }
 }
