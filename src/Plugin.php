@@ -142,9 +142,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         if ($projectConfigurationDao->isConfigurationEmpty()) {
             if ($this->isShopSetUp()) {
-                $container->get('oxid_esales.module.install.lanched_shop_default_project_configuration_generator')->generate();
+                $container->get('oxid_esales.module.install.service.lanched_shop_project_configuration_generator')->generate();
             } else {
-                $container->get('oxid_esales.module.install.installed_shop_default_project_configuration_generator')->generate();
+                $container->get('oxid_esales.module.install.service.installed_shop_project_configuration_generator')->generate();
             }
         }
     }
