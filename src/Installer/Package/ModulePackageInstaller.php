@@ -74,12 +74,4 @@ class ModulePackageInstaller extends AbstractPackageInstaller
 
         return Path::join($this->getRootDirectory(), static::MODULES_DIRECTORY, $targetDirectory);
     }
-
-    /**
-     * @return string
-     */
-    private function getPackageTypeDescription(): string
-    {
-        return 'module package';
-    }
 }
