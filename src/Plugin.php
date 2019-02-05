@@ -121,18 +121,18 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     private function bootstrapOxidShopComponent()
     {
-        if ($this->isShopSetUp()) {
+        if ($this->isShopLaunched()) {
             $bootstrapFilePath = (new Facts())->getSourcePath() . DIRECTORY_SEPARATOR. 'bootstrap.php';
             require_once $bootstrapFilePath;
         }
     }
 
-    private function isShopSetUp()
+    private function isShopLaunched()
     {
         $container = BootstrapContainerFactory::getBootstrapContainer();
         $context = $container->get(BasicContextInterface::class);
 
-        return $context->isShopSetUp();
+        return $context->isShopLaunched();
     }
 
     private function generateDefaultProjectConfigurationIfMissing()
@@ -141,7 +141,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $projectConfigurationDao = $container->get(ProjectConfigurationDaoInterface::class);
 
         if ($projectConfigurationDao->isConfigurationEmpty()) {
-            if ($this->isShopSetUp()) {
+            if ($this->isShopLaunched()) {
                 $container->get('oxid_esales.module.install.service.lanched_shop_project_configuration_generator')->generate();
             } else {
                 $container->get('oxid_esales.module.install.service.installed_shop_project_configuration_generator')->generate();

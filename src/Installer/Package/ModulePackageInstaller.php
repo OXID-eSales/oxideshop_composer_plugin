@@ -7,6 +7,8 @@
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
+use OxidEsales\EshopCommunity\Internal\Application\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Module\Install\Service\ModuleInstallerInterface;
 use Webmozart\PathUtil\Path;
 
 /**
@@ -14,8 +16,6 @@ use Webmozart\PathUtil\Path;
  */
 class ModulePackageInstaller extends AbstractPackageInstaller
 {
-    const MODULES_DIRECTORY = 'modules';
-
     /**
      * @return bool
      */
@@ -31,10 +31,10 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function install($packagePath)
     {
-        $this->writeInstallingMessage($this->getPackageTypeDescription());
-        $this->writeCopyingMessage();
-        $this->copyPackage($packagePath);
-        $this->writeDoneMessage();
+        $this->getIO()->write("Installing module {$this->getPackageName()} package.");
+
+        $moduleInstaller = $this->getModuleInstaller();
+        $moduleInstaller->install($packagePath);
     }
 
     /**
@@ -44,54 +44,22 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        $this->writeUpdatingMessage($this->getPackageTypeDescription());
-        $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
-                    '- ' . $this->formTargetPath() . PHP_EOL .
-                    'Do you want to overwrite them? (y/N) ';
+        $moduleInstaller = $this->getModuleInstaller();
 
-        if ($this->askQuestionIfNotInstalled($question)) {
-            $this->writeCopyingMessage();
-            $this->copyPackage($packagePath);
-            $this->writeDoneMessage();
+        if ($moduleInstaller->isInstalled($packagePath)) {
+            if ($this->askQuestion("Update operation will overwrite {$this->getPackageName()} files in the directory source/modules. Do you want to overwrite them? (y/N) ")) {
+                $this->getIO()->write("Updating module {$this->getPackageName()} files...");
+                $moduleInstaller->install($packagePath);
+            }
         } else {
-            $this->writeSkippedMessage();
+            $this->install($packagePath);
         }
     }
 
-    /**
-     * Copy files from package source to defined target path.
-     *
-     * @param string $packagePath Absolute path to the package.
-     */
-    protected function copyPackage($packagePath)
+    private function getModuleInstaller(): ModuleInstallerInterface
     {
-        $filtersToApply = [
-            $this->getBlacklistFilterValue(),
-            $this->getVCSFilter(),
-        ];
-
-        CopyGlobFilteredFileManager::copy(
-            $this->formSourcePath($packagePath),
-            $this->formTargetPath(),
-            $this->getCombinedFilters($filtersToApply)
-        );
-    }
-
-    /**
-     * If module source directory option provided add it's relative path.
-     * Otherwise return plain package path.
-     *
-     * @param string $packagePath
-     *
-     * @return string
-     */
-    protected function formSourcePath($packagePath)
-    {
-        $sourceDirectory = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_SOURCE);
-
-        return !empty($sourceDirectory)?
-            Path::join($packagePath, $sourceDirectory):
-            $packagePath;
+        $container = ContainerFactory::getInstance()->getContainer();
+        return $container->get(ModuleInstallerInterface::class);
     }
 
     /**
