@@ -8,6 +8,7 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
 use OxidEsales\EshopCommunity\Internal\Application\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Module\Install\DataObject\OxidEshopPackage;
 use OxidEsales\EshopCommunity\Internal\Module\Install\Service\ModuleInstallerInterface;
 use Webmozart\PathUtil\Path;
 
@@ -16,6 +17,8 @@ use Webmozart\PathUtil\Path;
  */
 class ModulePackageInstaller extends AbstractPackageInstaller
 {
+    const MODULES_DIRECTORY = 'modules';
+
     /**
      * @return bool
      */
@@ -34,7 +37,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
         $this->getIO()->write("Installing module {$this->getPackageName()} package.");
 
         $moduleInstaller = $this->getModuleInstaller();
-        $moduleInstaller->install($packagePath);
+        $moduleInstaller->install($packagePath, $this->getOxidShopPackage());
     }
 
     /**
@@ -49,7 +52,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
         if ($moduleInstaller->isInstalled($packagePath)) {
             if ($this->askQuestion("Update operation will overwrite {$this->getPackageName()} files in the directory source/modules. Do you want to overwrite them? (y/N) ")) {
                 $this->getIO()->write("Updating module {$this->getPackageName()} files...");
-                $moduleInstaller->install($packagePath);
+                $moduleInstaller->install($packagePath, $this->getOxidShopPackage());
             }
         } else {
             $this->install($packagePath);
@@ -60,6 +63,11 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     {
         $container = ContainerFactory::getInstance()->getContainer();
         return $container->get(ModuleInstallerInterface::class);
+    }
+
+    private function getOxidShopPackage(): OxidEshopPackage
+    {
+        return new OxidEshopPackage('dummy', []);
     }
 
     /**
