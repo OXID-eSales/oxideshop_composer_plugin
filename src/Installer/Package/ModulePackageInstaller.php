@@ -37,7 +37,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
         $this->getIO()->write("Installing module {$this->getPackageName()} package.");
 
         $moduleInstaller = $this->getModuleInstaller();
-        $moduleInstaller->install($packagePath, $this->getOxidShopPackage());
+        $moduleInstaller->install($this->getOxidShopPackage($packagePath));
     }
 
     /**
@@ -69,11 +69,13 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     }
 
     /**
+     * @param string $packagePath
+     *
      * @return OxidEshopPackage
      */
-    private function getOxidShopPackage(): OxidEshopPackage
+    private function getOxidShopPackage(string $packagePath): OxidEshopPackage
     {
-        return new OxidEshopPackage($this->getPackage()->getName(), $this->getPackage()->getExtra());
+        return new OxidEshopPackage($this->getPackage()->getName(), $packagePath, $this->getPackage()->getExtra());
     }
 
     /**
