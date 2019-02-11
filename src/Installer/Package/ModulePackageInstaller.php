@@ -44,10 +44,9 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        die('<pre>' . print_r($this->getPackage()->getArguments(), true));
-        $RootDiscardChanges = $this->getDiscardChanges();
+        $RootConfig = $this->getComposer()->getPackage()->getConfig();
         $RootExtra = $this->getComposer()->getPackage()->getExtra();
-        $DiscardChanges = (!empty($RootDiscardChanges) || $RootExtra['discard-module-changes']);
+        $DiscardChanges = (!empty($RootConfig['discard-changes']) || $RootExtra['discard-module-changes']);
 
         $this->writeUpdatingMessage($this->getPackageTypeDescription());
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
