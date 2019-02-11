@@ -53,6 +53,9 @@ abstract class AbstractPackageInstaller
     /** @var PackageInterface */
     private $package;
 
+    /** @var composer */
+    private $composer;
+
     /**
      * AbstractInstaller constructor.
      *
@@ -60,11 +63,12 @@ abstract class AbstractPackageInstaller
      * @param string           $rootDirectory
      * @param PackageInterface $package
      */
-    public function __construct(IOInterface $io, $rootDirectory, PackageInterface $package)
+    public function __construct(IOInterface $io, $rootDirectory, PackageInterface $package, $composer)
     {
         $this->io = $io;
         $this->rootDirectory = $rootDirectory;
         $this->package = $package;
+        $this->composer = $composer;
     }
 
     /**
@@ -122,6 +126,14 @@ abstract class AbstractPackageInstaller
         $extraParameterValue = $extraParameters[static::EXTRA_PARAMETER_KEY_ROOT][$extraParameterKey] ?? null;
 
         return (!empty($extraParameterValue)) ? $extraParameterValue : $defaultValue;
+    }
+
+    /**
+     * @return Composer
+     */
+    protected function getComposer()
+    {
+        return $this->composer;
     }
 
     /**

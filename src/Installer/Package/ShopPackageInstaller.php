@@ -55,11 +55,21 @@ class ShopPackageInstaller extends AbstractPackageInstaller
     public function update($packagePath)
     {
         $this->writeUpdatingMessage($this->getPackageTypeDescription());
+
+        $this->getIO()->write("Installing shop package.");
+
+        $RootConfig = $this->getComposer()->getPackage()->getConfig();
+        $RootExtra = $this->getComposer()->getPackage()->getExtra();
+        $DiscardChanges = (!empty($RootConfig['discard-changes']) || $RootExtra['discard-shop-changes']);
+
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
                     '- ' . $this->getTargetDirectoryOfShopSource() . PHP_EOL .
                     'Do you want to overwrite them? (y/N) ';
-
-        if ($this->askQuestionIfNotInstalled($question)) {
+        
+        if (
+            !empty($DiscardChanges) ||
+            (empty($DiscardChanges) && $this->askQuestionIfNotInstalled($question))
+        ) {
             $this->writeCopyingMessage();
             $this->copyPackage($packagePath);
             $this->writeDoneMessage();

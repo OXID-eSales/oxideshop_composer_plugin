@@ -102,6 +102,6 @@ class PackageInstallerTrigger extends LibraryInstaller
      */
     protected function createInstaller(PackageInterface $package)
     {
-        return new $this->installers[$package->getType()]($this->io, $this->getShopSourcePath(), $package);
+        return new $this->installers[$package->getType()]($this->io, $this->getShopSourcePath(), $package, $this->composer);
     }
 }

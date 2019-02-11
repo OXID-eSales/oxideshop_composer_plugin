@@ -44,12 +44,20 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
+        die('<pre>' . print_r($this->getPackage()->getArguments(), true));
+        $RootDiscardChanges = $this->getDiscardChanges();
+        $RootExtra = $this->getComposer()->getPackage()->getExtra();
+        $DiscardChanges = (!empty($RootDiscardChanges) || $RootExtra['discard-module-changes']);
+
         $this->writeUpdatingMessage($this->getPackageTypeDescription());
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
                     '- ' . $this->formTargetPath() . PHP_EOL .
                     'Do you want to overwrite them? (y/N) ';
-
-        if ($this->askQuestionIfNotInstalled($question)) {
+        
+        if (
+            !empty($DiscardChanges) ||
+            (empty($DiscardChanges) && $this->askQuestionIfNotInstalled($question))
+        ) {
             $this->writeCopyingMessage();
             $this->copyPackage($packagePath);
             $this->writeDoneMessage();
