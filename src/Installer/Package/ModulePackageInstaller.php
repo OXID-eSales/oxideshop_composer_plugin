@@ -6,6 +6,7 @@
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
+use OxidEsales\EshopCommunity\Internal\Application\BootstrapContainer\BootstrapContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Application\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Module\Install\DataObject\OxidEshopPackage;
 use OxidEsales\EshopCommunity\Internal\Module\Install\Service\ModuleInstallerInterface;
@@ -64,7 +65,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     private function getModuleInstaller(): ModuleInstallerInterface
     {
-        $container = ContainerFactory::getInstance()->getContainer();
+        $container = BootstrapContainerFactory::getBootstrapContainer();
         return $container->get(ModuleInstallerInterface::class);
     }
 

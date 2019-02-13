@@ -137,14 +137,15 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     private function generateDefaultProjectConfigurationIfMissing()
     {
-        $container = ContainerFactory::getInstance()->getContainer();
-        $projectConfigurationDao = $container->get(ProjectConfigurationDaoInterface::class);
+        $bootstrapContainer = BootstrapContainerFactory::getBootstrapContainer();
+        $projectConfigurationDao = $bootstrapContainer->get(ProjectConfigurationDaoInterface::class);
 
         if ($projectConfigurationDao->isConfigurationEmpty()) {
             if ($this->isShopLaunched()) {
+                $container = ContainerFactory::getInstance()->getContainer();
                 $container->get('oxid_esales.module.install.service.lanched_shop_project_configuration_generator')->generate();
             } else {
-                $container->get('oxid_esales.module.install.service.installed_shop_project_configuration_generator')->generate();
+                $bootstrapContainer->get('oxid_esales.module.install.service.installed_shop_project_configuration_generator')->generate();
             }
         }
     }
