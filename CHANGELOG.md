@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Clarified and unified CLI messages during composer install and composer update
 - Updated version of required PHPUnit and fixed tests
 
+### Fixed
+-  Setup folder is copied on every "composer update" although Setup was already executed [#0006793](https://bugs.oxid-esales.com/view.php?id=6793) [PR-13](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/13)
+
 ## [2.0.3] - 2018-07-18
 
 ## [2.0.2] - 2017-12-11
