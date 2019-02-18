@@ -25,6 +25,11 @@ More information how to create module installable via composer: http://oxid-esho
 
 More information how to create themes installable via composer: http://oxid-eshop-developer-documentation.readthedocs.io/en/latest/themes/theme_via_composer.html
 
+Requirements
+------------
+
+* b-2.x branch: OXID eShop compilation v6.0.0 - v6.1.x
+
 Bugs and Issues
 ---------------
 
