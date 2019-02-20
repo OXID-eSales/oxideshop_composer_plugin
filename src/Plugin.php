@@ -88,7 +88,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $repo = $this->composer->getRepositoryManager()->getLocalRepository();
 
-        foreach ($repo->getPackages() as $package) {
+        foreach (array_merge($repo->getPackages(), [$this->composer->getPackage()]) as $package) {
             if ($this->packageInstallerTrigger->supports($package->getType())) {
                 if ($actionName === static::ACTION_INSTALL) {
                     $this->packageInstallerTrigger->installPackage($package);

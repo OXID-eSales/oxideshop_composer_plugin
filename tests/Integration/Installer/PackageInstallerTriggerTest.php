@@ -9,6 +9,9 @@ namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer;
 use Composer\Composer;
 use Composer\Config;
 use Composer\IO\NullIO;
+use Composer\Package\Package;
+use Composer\Package\RootPackage;
+use Composer\Util\Filesystem;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
 
 class PackageInstallerTriggerTest extends \PHPUnit\Framework\TestCase
@@ -42,5 +45,30 @@ class PackageInstallerTriggerTest extends \PHPUnit\Framework\TestCase
         $result = $packageInstallerStub->getShopSourcePath();
 
         $this->assertEquals($result, getcwd() . '/source');
+    }
+
+    /**
+     * @covers PackageInstallerTrigger::getInstallPath
+     */
+    public function testGetInstallPath()
+    {
+        $composer = new Composer;
+        $composer->setConfig(new Config);
+        $trigger = new PackageInstallerTrigger(
+            new NullIO,
+            $composer,
+            'library',
+            $this->getMockBuilder(Filesystem::class)->getMock()
+        );
+
+        $this->assertSame(
+            'foo/bar',
+            $trigger->getInstallPath(new Package('foo/bar', null, null))
+        );
+
+        $this->assertSame(
+            getcwd(),
+            $trigger->getInstallPath(new RootPackage('foo/bar', null, null))
+        );
     }
 }
