@@ -7,7 +7,7 @@
 namespace OxidEsales\ComposerPlugin\Utilities\CopyFileManager;
 
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobMatcher;
-use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Iteration\BlacklistFilterIterator;
+use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Iteration\GlobFilterIterator;
 use Symfony\Component\Filesystem\Filesystem;
 use Webmozart\PathUtil\Path;
 
@@ -24,13 +24,14 @@ class CopyGlobFilteredFileManager
      * @param string $sourcePath         Absolute path to file or directory.
      * @param string $destinationPath    Absolute path to file or directory.
      * @param array  $globExpressionList List of glob expressions, e.g. ["*.txt", "*.pdf"].
+     * @param bool   $isWhiteList
      *
      * @throws \InvalidArgumentException If given $sourcePath is not a string.
      * @throws \InvalidArgumentException If given $destinationPath is not a string.
      *
      * @return null
      */
-    public static function copy($sourcePath, $destinationPath, $globExpressionList = [])
+    public static function copy($sourcePath, $destinationPath, $globExpressionList = [], $isWhiteList = false)
     {
         if (!is_string($sourcePath)) {
             $message = "Given value \"$sourcePath\" is not a valid source path entry. ".
@@ -51,9 +52,9 @@ class CopyGlobFilteredFileManager
         }
 
         if (is_dir($sourcePath)) {
-            self::copyDirectory($sourcePath, $destinationPath, $globExpressionList);
+            self::copyDirectory($sourcePath, $destinationPath, $globExpressionList, $isWhiteList);
         } else {
-            self::copyFile($sourcePath, $destinationPath, $globExpressionList);
+            self::copyFile($sourcePath, $destinationPath, $globExpressionList, $isWhiteList);
         }
     }
 
@@ -101,9 +102,7 @@ class CopyGlobFilteredFileManager
     private static function getFlatFileListIterator($sourcePath)
     {
         $recursiveFileIterator = new \RecursiveDirectoryIterator($sourcePath, \FilesystemIterator::SKIP_DOTS);
-        $flatFileListIterator = new \RecursiveIteratorIterator($recursiveFileIterator);
-
-        return $flatFileListIterator;
+        return new \RecursiveIteratorIterator($recursiveFileIterator);
     }
 
     /**
@@ -112,16 +111,18 @@ class CopyGlobFilteredFileManager
      * @param string $sourcePath         Absolute path to directory.
      * @param string $destinationPath    Absolute path to directory.
      * @param array  $globExpressionList List of glob expressions, e.g. ["*.txt", "*.pdf"].
+     * @param bool   $isWhiteList
      */
-    private static function copyDirectory($sourcePath, $destinationPath, $globExpressionList)
+    private static function copyDirectory($sourcePath, $destinationPath, $globExpressionList, $isWhiteList)
     {
         $filesystem = new Filesystem();
 
         $flatFileListIterator = self::getFlatFileListIterator($sourcePath);
-        $filteredFileListIterator = new BlacklistFilterIterator(
+        $filteredFileListIterator = new GlobFilterIterator(
             $flatFileListIterator,
             $sourcePath,
-            $globExpressionList
+            $globExpressionList,
+            $isWhiteList
         );
 
         $filesystem->mirror($sourcePath, $destinationPath, $filteredFileListIterator, ["override" => true]);
@@ -133,14 +134,15 @@ class CopyGlobFilteredFileManager
      * @param string $sourcePathOfFile   Absolute path to file.
      * @param string $destinationPath    Absolute path to directory.
      * @param array  $globExpressionList List of glob expressions, e.g. ["*.txt", "*.pdf"].
+     * @param bool   $isWhiteList
      */
-    private static function copyFile($sourcePathOfFile, $destinationPath, $globExpressionList)
+    private static function copyFile($sourcePathOfFile, $destinationPath, $globExpressionList, $isWhiteList)
     {
         $filesystem = new Filesystem();
 
         $relativeSourcePath = self::getRelativePathForSingleFile($sourcePathOfFile);
 
-        if (!GlobMatcher::matchAny($relativeSourcePath, $globExpressionList)) {
+        if (!($isWhiteList xor GlobMatcher::matchAny($relativeSourcePath, $globExpressionList))) {
             $filesystem->copy($sourcePathOfFile, $destinationPath, ["override" => true]);
         }
     }

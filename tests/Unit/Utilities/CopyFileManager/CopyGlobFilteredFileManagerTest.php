@@ -15,7 +15,7 @@ use Webmozart\PathUtil\Path;
  *
  * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager
  * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobMatcher
- * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Iteration\BlacklistFilterIterator
+ * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Iteration\GlobFilterIterator
  * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Integration\AbstractGlobMatcher
  * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Integration\WebmozartGlobMatcher
  * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobListMatcher\GlobListMatcher
@@ -24,6 +24,11 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit\Framework\TestCase
 {
     /** @var array */
     private $filter = [];
+
+    /**
+     * @var bool
+     */
+    private $isWhiteList = false;
 
     public function testBasicFileCopyOperation()
     {
@@ -225,73 +230,116 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit\Framework\TestCase
         $this->assertFilesNotExistInDestination(["module.php"]);
     }
 
-    public function testFilteringFileCopyOperation()
+    /**
+     * @return array
+     */
+    public function providerCopy()
     {
-        $inputFiles = [
-            "module.php"        => "PHP_1",
-            "readme.md"         => "MD_1",
-            "documentation.txt" => "TXT_1",
-            "src"               => [
-                "a.php" => "PHP_2",
-                "b.php" => "PHP_3",
-                "c.php" => "PHP_3",
+        $structure = [
+            'module.php'        => 'PHP_1',
+            'readme.md'         => 'MD_1',
+            'documentation.txt' => 'TXT_1',
+            'src'               => [
+                'a.php' => 'PHP_2',
+                'b.php' => 'PHP_3',
+                'c.php' => 'PHP_3',
             ],
-            "tests"             => [
-                "test.php"    => "PHP_4",
-                "unit"        => [
-                    "test.php" => "PHP_5",
+            'tests'             => [
+                'test.php'    => 'PHP_4',
+                'unit'        => [
+                    'test.php' => 'PHP_5',
                 ],
-                "integration" => [
-                    "test.php" => "PHP_6",
+                'integration' => [
+                    'test.php' => 'PHP_6',
                 ]
             ],
-            "documentation"     => [
-                "document_a.pdf" => "PDF_1",
-                "document_b.pdf" => "PDF_2",
-                "index.txt"      => "TXT_2",
-                "example.php"    => "PHP_7",
+            'documentation'     => [
+                'document_a.pdf' => 'PDF_1',
+                'document_b.pdf' => 'PDF_2',
+                'index.txt'      => 'TXT_2',
+                'example.php'    => 'PHP_7',
             ]
         ];
 
-        $this->prepareVirtualFileSystem($inputFiles, []);
+        return [
+            'blacklist' => [
+                [
+                    'module.php'                   => true,
+                    'src/a.php'                    => true,
+                    'src/b.php'                    => true,
+                    'src/c.php'                    => true,
+                    'documentation/example.php'    => true,
 
-        $this->setFilter(
-            [
-                "**/*.md",
-                "**/*.txt",
-                "tests/**/*.*",
-                "documentation/**/*.pdf",
-            ]
-        );
-        $this->simulateCopyWithFilter();
+                    'readme.md'                    => false,
+                    'documentation.txt'            => false,
+                    'tests/test.php'               => false,
+                    'tests/unit/test.php'          => false,
+                    'tests/integration/test.php'   => false,
+                    'documentation/document_a.pdf' => false,
+                    'documentation/document_b.pdf' => false,
+                    'documentation/index.txt'      => false,
+                ],
+                $structure,
+                [
+                    '**/*.md',
+                    '**/*.txt',
+                    'tests/**/*.*',
+                    'documentation/**/*.pdf',
+                ],
+                false,
+            ],
 
-        $this->assertFileCopyIsIdentical(
-            [
-                "module.php",
-                "src/a.php",
-                "src/b.php",
-                "src/c.php",
-                "documentation/example.php",
-            ]
-        );
+            'whitelist' => [
+                [
+                    'module.php'                   => false,
+                    'src/a.php'                    => false,
+                    'src/b.php'                    => false,
+                    'src/c.php'                    => false,
+                    'documentation/example.php'    => false,
 
-        $this->assertFilesNotExistInDestination(
-            [
-                "readme.md",
-                "documentation.txt",
-                "tests/test.php",
-                "tests/unit/test.php",
-                "tests/integration/test.php",
-                "documentation/document_a.pdf",
-                "documentation/document_b.pdf",
-                "documentation/index.txt",
-            ]
-        );
+                    'readme.md'                    => true,
+                    'documentation.txt'            => true,
+                    'tests/test.php'               => true,
+                    'tests/unit/test.php'          => true,
+                    'tests/integration/test.php'   => true,
+                    'documentation/document_a.pdf' => true,
+                    'documentation/document_b.pdf' => true,
+                    'documentation/index.txt'      => true,
+                ],
+                $structure,
+                [
+                    '**/*.md',
+                    '**/*.txt',
+                    'tests/**/*.*',
+                    'documentation/**/*.pdf',
+                ],
+                true,
+            ],
+        ];
     }
 
-    protected function setFilter($filter)
+    /**
+     * @dataProvider providerCopy
+     *
+     * @param array $expected
+     * @param array $structure
+     * @param array $filter
+     * @param bool $isWhiteList
+     */
+    public function testCopy(array $expected, array $structure, array $filter, $isWhiteList)
+    {
+        $this->setFilter($filter, $isWhiteList);
+        $this->prepareVirtualFileSystem($structure, []);
+        $this->simulateCopyWithFilter();
+        foreach ($expected as $path => $identical) {
+            $identical ? $this->assertFileCopyIsIdentical([$path]) : $this->assertFilesNotExistInDestination([$path]);
+        }
+    }
+
+    protected function setFilter($filter, $isWhiteList = false)
     {
         $this->filter = $filter;
+        $this->isWhiteList = $isWhiteList;
     }
 
     protected function prepareVirtualFileSystem($inputStructure, $outputStructure)
@@ -310,7 +358,7 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit\Framework\TestCase
         $sourcePath = $this->getSourcePath($source);
         $destinationPath = $this->getDestinationPath($destination);
 
-        CopyGlobFilteredFileManager::copy($sourcePath, $destinationPath, $this->filter);
+        CopyGlobFilteredFileManager::copy($sourcePath, $destinationPath, $this->filter, $this->isWhiteList);
     }
 
     protected function getSourcePath($suffixForSource = null)
@@ -330,20 +378,6 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    protected function assertFilesExistInDestination($paths)
-    {
-        foreach ($paths as $path) {
-            $this->assertFileExists($this->getDestinationPath($path));
-        }
-    }
-
-    protected function assertFilesNotExistInSource($paths)
-    {
-        foreach ($paths as $path) {
-            $this->assertFileNotExists($this->getSourcePath($path));
-        }
-    }
-
     protected function assertFilesNotExistInDestination($paths)
     {
         foreach ($paths as $path) {
@@ -355,13 +389,6 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit\Framework\TestCase
     {
         foreach ($paths as $path) {
             $this->assertFileEquals($this->getSourcePath($path), $this->getDestinationPath($path));
-        }
-    }
-
-    protected function assertFileCopyIsDifferent($paths)
-    {
-        foreach ($paths as $path) {
-            $this->assertFileNotEquals($this->getSourcePath($path), $this->getDestinationPath($path));
         }
     }
 }

@@ -26,12 +26,12 @@ use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobMatcher;
 use Webmozart\PathUtil\Path;
 
 /**
- * Class BlacklistFilterIterator.
+ * Class GlobFilterIterator.
  *
  * An iterator which iterates through given iterator of files/directories and filters out the items described in list of
- * glob filter definitions (black list filtering).
+ * glob filter definitions (black/white list filtering).
  */
-class BlacklistFilterIterator extends \FilterIterator
+class GlobFilterIterator extends \FilterIterator
 {
     /** @var array List of glob expressions, e.g. ["*.txt", "*.pdf"]. */
     private $globExpressionList;
@@ -40,18 +40,25 @@ class BlacklistFilterIterator extends \FilterIterator
     private $rootPath;
 
     /**
-     * BlacklistFilterIterator constructor.
+     * @var bool
+     */
+    private $isWhiteList;
+
+    /**
+     * GlobFilterIterator constructor.
      *
      * @param \Iterator $iterator           An iterator which iterates through files/directories.
      * @param string    $rootPath           Absolute root path from the start of iteration.
      * @param array     $globExpressionList List of glob expressions, e.g. ["*.txt", "*.pdf"].
+     * @param bool      $isWhiteList
      */
-    public function __construct(\Iterator $iterator, $rootPath, $globExpressionList)
+    public function __construct(\Iterator $iterator, $rootPath, $globExpressionList, $isWhiteList = false)
     {
         parent::__construct($iterator);
 
         $this->globExpressionList = $globExpressionList;
         $this->rootPath = $rootPath;
+        $this->isWhiteList = $isWhiteList;
     }
 
     /**
@@ -61,9 +68,9 @@ class BlacklistFilterIterator extends \FilterIterator
      */
     public function accept()
     {
-        $path = $this->convertFromSplFileInfoToString(parent::current());
-
-        return !GlobMatcher::matchAny($this->getRelativePath($path), $this->globExpressionList);
+        $path  = $this->convertFromSplFileInfoToString($this->current());
+        $match = GlobMatcher::matchAny($this->getRelativePath($path), $this->globExpressionList);
+        return !($this->isWhiteList xor $match);
     }
 
     /**

@@ -66,16 +66,19 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     protected function copyPackage($packagePath)
     {
-        $filtersToApply = [
-            [Path::join($this->formAssetsDirectoryName(), AbstractPackageInstaller::BLACKLIST_ALL_FILES)],
-            $this->getBlacklistFilterValue(),
-            $this->getVCSFilter(),
-        ];
+        if (!($isWhiteList = $filter = $this->getWhitelistFilterValue())) {
+            $filter = array_merge(
+                [Path::join($this->formAssetsDirectoryName(), AbstractPackageInstaller::BLACKLIST_ALL_FILES)],
+                $this->getBlacklistFilterValue(),
+                $this->getVCSFilter()
+            );
+        }
 
         CopyGlobFilteredFileManager::copy(
             $packagePath,
             $this->formThemeTargetPath(),
-            $this->getCombinedFilters($filtersToApply)
+            $filter,
+            (bool) $isWhiteList
         );
 
         $this->installAssets($packagePath);
@@ -106,7 +109,8 @@ class ThemePackageInstaller extends AbstractPackageInstaller
             CopyGlobFilteredFileManager::copy(
                 $source,
                 $target,
-                $this->getBlacklistFilterValue()
+                $this->getWhitelistFilterValue() ?: $this->getBlacklistFilterValue(),
+                (bool) $this->getWhitelistFilterValue()
             );
         }
     }

@@ -65,15 +65,18 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     protected function copyPackage($packagePath)
     {
-        $filtersToApply = [
-            $this->getBlacklistFilterValue(),
-            $this->getVCSFilter(),
-        ];
+        if (!($isWhiteList = $filter = $this->getWhitelistFilterValue())) {
+            $filter = array_merge(
+                $this->getBlacklistFilterValue(),
+                $this->getVCSFilter()
+            );
+        }
 
         CopyGlobFilteredFileManager::copy(
             $this->formSourcePath($packagePath),
             $this->formTargetPath(),
-            $this->getCombinedFilters($filtersToApply)
+            $filter,
+            (bool) $isWhiteList
         );
     }
 

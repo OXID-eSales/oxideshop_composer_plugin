@@ -55,6 +55,15 @@ class PackageInstallerTrigger extends LibraryInstaller
      */
     public function setSettings($settings)
     {
+        $hasBlackList = !empty($settings[AbstractPackageInstaller::EXTRA_PARAMETER_FILTER_BLACKLIST]);
+        $hasWhiteList = !empty($settings[AbstractPackageInstaller::EXTRA_PARAMETER_FILTER_WHITELIST]);
+        if ($hasBlackList && $hasWhiteList) {
+            throw new \InvalidArgumentException(sprintf(
+                'settings %s and %s should not be used together',
+                AbstractPackageInstaller::EXTRA_PARAMETER_FILTER_BLACKLIST,
+                AbstractPackageInstaller::EXTRA_PARAMETER_FILTER_WHITELIST
+            ));
+        }
         $this->settings = $settings;
     }
 

@@ -23,7 +23,7 @@ class ModulePackageInstallerTest extends AbstractPackageInstallerTest
             $package
         );
     }
-    
+
     public function testModuleNotInstalledByDefault()
     {
         $installer = $this->getPackageInstaller('test-vendor/test-package');
@@ -317,6 +317,28 @@ class ModulePackageInstallerTest extends AbstractPackageInstallerTest
 
     public function testComplexCase()
     {
+        $this->assertComplexCase([
+            'source-directory' => 'custom-root',
+            'target-directory' => 'custom-out',
+            'blacklist-filter' => [
+                '**/*.txt',
+                '**/*.pdf',
+                'documentation/**/*.*',
+            ]
+        ]);
+
+        $this->assertComplexCase([
+            'source-directory' => 'custom-root',
+            'target-directory' => 'custom-out',
+            'whitelist-filter' => [
+                '*.php',
+                'model/*.*',
+            ]
+        ]);
+    }
+
+    private function assertComplexCase(array $settings)
+    {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/custom-root', [
             'metadata.php' => '<?php',
             'module.php' => '<?php',
@@ -328,15 +350,7 @@ class ModulePackageInstallerTest extends AbstractPackageInstallerTest
         ]);
 
         $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
-            'oxideshop' => [
-                'source-directory' => 'custom-root',
-                'target-directory' => 'custom-out',
-                'blacklist-filter' => [
-                    '**/*.txt',
-                    '**/*.pdf',
-                    'documentation/**/*.*',
-                ]
-            ]
+            'oxideshop' => $settings
         ]);
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 

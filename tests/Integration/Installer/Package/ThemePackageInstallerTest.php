@@ -405,6 +405,27 @@ class ThemePackageInstallerTest extends AbstractPackageInstallerTest
 
     public function testComplexCase()
     {
+        $this->assertComplexCase([
+            'assets-directory' => 'custom_assets',
+            'target-directory' => 'custom-package',
+            'blacklist-filter' => [
+                '**/*.txt',
+                '**/*.pdf',
+            ]
+        ]);
+
+        $this->assertComplexCase([
+            'assets-directory' => 'custom_assets',
+            'target-directory' => 'custom-package',
+            'whitelist-filter' => [
+                '*.php',
+                '**/*.css',
+            ]
+        ]);
+    }
+
+    public function assertComplexCase(array $settings)
+    {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
             'theme.txt' => 'txt',
@@ -415,14 +436,7 @@ class ThemePackageInstallerTest extends AbstractPackageInstallerTest
         ]);
 
         $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
-            'oxideshop' => [
-                'assets-directory' => 'custom_assets',
-                'target-directory' => 'custom-package',
-                'blacklist-filter' => [
-                    '**/*.txt',
-                    '**/*.pdf',
-                ]
-            ]
+            'oxideshop' => $settings
         ]);
         $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 

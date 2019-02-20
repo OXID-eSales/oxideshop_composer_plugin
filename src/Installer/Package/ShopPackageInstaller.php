@@ -87,18 +87,19 @@ class ShopPackageInstaller extends AbstractPackageInstaller
      */
     private function copyShopSourceFromPackageToTarget($packagePath)
     {
-        $filtersToApply = [
-            $this->getBlacklistFilterValue(),
-            [self::HTACCESS_FILTER],
-            [self::ROBOTS_EXCLUSION_FILTER],
-            [self::SETUP_FILES_FILTER],
-            $this->getVCSFilter(),
-        ];
+        if (!($isWhiteList = $filter = $this->getWhitelistFilterValue())) {
+            $filter = array_merge(
+                $this->getBlacklistFilterValue(),
+                [self::HTACCESS_FILTER, self::ROBOTS_EXCLUSION_FILTER, self::SETUP_FILES_FILTER],
+                $this->getVCSFilter()
+            );
+        }
 
         CopyGlobFilteredFileManager::copy(
             $this->getPackageDirectoryOfShopSource($packagePath),
             $this->getTargetDirectoryOfShopSource(),
-            $this->getCombinedFilters($filtersToApply)
+            $filter,
+            (bool) $isWhiteList
         );
     }
 
