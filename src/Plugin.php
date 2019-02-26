@@ -14,7 +14,7 @@ use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
 use OxidEsales\EshopCommunity\Internal\Application\BootstrapContainer\BootstrapContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Application\ContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Application\Utility\BasicContextInterface;
+use OxidEsales\EshopCommunity\Internal\Application\Service\ShopStateServiceInterface;
 use OxidEsales\EshopCommunity\Internal\Module\Configuration\Dao\ProjectConfigurationDaoInterface;
 use OxidEsales\Facts\Facts;
 
@@ -130,9 +130,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     private function isShopLaunched()
     {
         $container = BootstrapContainerFactory::getBootstrapContainer();
-        $context = $container->get(BasicContextInterface::class);
+        $shopStateService = $container->get(ShopStateServiceInterface::class);
 
-        return $context->isShopLaunched();
+        return $shopStateService->isLaunched();
     }
 
     private function generateDefaultProjectConfigurationIfMissing()
