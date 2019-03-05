@@ -13,7 +13,7 @@ use OxidEsales\EshopCommunity\Internal\Module\Install\Service\ModuleInstallerInt
 use Webmozart\PathUtil\Path;
 
 /**
- * @deprecated since v.3.0.0 (2019-01-31); This class will be @internal in future and not public to be used by 3rd party.
+ * @inheritdoc
  */
 class ModulePackageInstaller extends AbstractPackageInstaller
 {
