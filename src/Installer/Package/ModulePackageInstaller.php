@@ -80,7 +80,22 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     private function getOxidShopPackage(string $packagePath): OxidEshopPackage
     {
-        return new OxidEshopPackage($this->getPackage()->getName(), $packagePath, $this->getPackage()->getExtra());
+        $package = new OxidEshopPackage($this->getPackage()->getName(), $packagePath);
+        $extraParameters = $this->getPackage()->getExtra();
+
+        if (isset($extraParameters['oxideshop']['blacklist-filter'])) {
+            $package->setBlackListFilters($extraParameters['oxideshop']['blacklist-filter']);
+        }
+
+        if (isset($extraParameters['oxideshop']['source-directory'])) {
+            $package->setSourceDirectory($extraParameters['oxideshop']['source-directory']);
+        }
+
+        if (isset($extraParameters['oxideshop']['target-directory'])) {
+            $package->setTargetDirectory($extraParameters['oxideshop']['target-directory']);
+        }
+        
+        return $package;
     }
 
     /**
