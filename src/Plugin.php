@@ -143,7 +143,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if ($projectConfigurationDao->isConfigurationEmpty()) {
             if ($this->isShopLaunched()) {
                 $container = ContainerFactory::getInstance()->getContainer();
-                $container->get('oxid_esales.module.install.service.lanched_shop_project_configuration_generator')->generate();
+                $container->get('oxid_esales.module.install.service.launched_shop_project_configuration_generator')->generate();
             } else {
                 $bootstrapContainer->get('oxid_esales.module.install.service.installed_shop_project_configuration_generator')->generate();
             }
