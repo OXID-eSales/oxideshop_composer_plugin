@@ -36,13 +36,8 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     public function install($packagePath)
     {
         $this->getIO()->write("Installing module {$this->getPackageName()} package.");
-
-        try {
-            $moduleInstaller = $this->getModuleInstaller();
-            $moduleInstaller->install($this->getOxidShopPackage($packagePath));
-        } catch (\Throwable $throwable) {
-            $this->getIO()->write("Error: module {$this->getPackageName()} package wasn't installed with exception: {$throwable->getMessage()}");
-        }
+        $moduleInstaller = $this->getModuleInstaller();
+        $moduleInstaller->install($this->getOxidShopPackage($packagePath));
     }
 
     /**
