@@ -8,7 +8,7 @@ namespace OxidEsales\ComposerPlugin\Installer;
 
 use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
-use Composer\Package\RootPackage;
+use Composer\Package\RootPackageInterface;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ComponentInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
@@ -64,7 +64,7 @@ class PackageInstallerTrigger extends LibraryInstaller
      */
     public function getInstallPath(PackageInterface $package)
     {
-        return $package instanceof RootPackage ? getcwd() : parent::getInstallPath($package);
+        return $package instanceof RootPackageInterface ? getcwd() : parent::getInstallPath($package);
     }
 
     /**

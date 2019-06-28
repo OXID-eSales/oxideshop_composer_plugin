@@ -9,7 +9,9 @@ namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer;
 use Composer\Composer;
 use Composer\Config;
 use Composer\IO\NullIO;
+use Composer\Package\AliasPackage;
 use Composer\Package\Package;
+use Composer\Package\RootAliasPackage;
 use Composer\Package\RootPackage;
 use Composer\Util\Filesystem;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
@@ -52,23 +54,39 @@ class PackageInstallerTriggerTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetInstallPath()
     {
-        $composer = new Composer;
-        $composer->setConfig(new Config);
-        $trigger = new PackageInstallerTrigger(
-            new NullIO,
-            $composer,
-            'library',
-            $this->getMockBuilder(Filesystem::class)->getMock()
-        );
+        $trigger = function() {
+            $composer = new Composer;
+            $composer->setConfig(new Config);
+            return new PackageInstallerTrigger(
+                new NullIO,
+                $composer,
+                'library',
+                $this->getMockBuilder(Filesystem::class)->getMock()
+            );
+        };
 
         $this->assertSame(
             'foo/bar',
-            $trigger->getInstallPath(new Package('foo/bar', null, null))
+            $trigger()->getInstallPath(new Package('foo/bar', null, null)),
+            'package => vendor/*'
         );
 
         $this->assertSame(
             getcwd(),
-            $trigger->getInstallPath(new RootPackage('foo/bar', null, null))
+            $trigger()->getInstallPath($root = new RootPackage('foo/bar', null, null)),
+            'root package => current working directory'
+        );
+
+        $this->assertSame(
+            'foo/bar',
+            $trigger()->getInstallPath(new AliasPackage($root, null, null)),
+            'aliased package => vendor/*'
+        );
+
+        $this->assertSame(
+            getcwd(),
+            $trigger()->getInstallPath(new RootAliasPackage($root, null, null)),
+            'aliased root package => current working directory'
         );
     }
 }
