@@ -49,7 +49,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     {
         $moduleInstaller = $this->getModuleInstaller();
 
-        if ($moduleInstaller->isInstalled($packagePath)) {
+        if ($moduleInstaller->isInstalled($this->getOxidShopPackage($packagePath))) {
             if ($this->askQuestion("Update operation will overwrite {$this->getPackageName()} files in the directory source/modules. Do you want to overwrite them? (y/N) ")) {
                 $this->getIO()->write("Updating module {$this->getPackageName()} files...");
                 $moduleInstaller->install($packagePath);
