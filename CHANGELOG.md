@@ -4,20 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.0.0] Unreleased
+## [2.1.0] - 2019-07-23
 
 ### Removed
 - Support for PHP 5.6
 
 ### Added
-- Backwards compatibility break: New installer type - `oxideshop-component`, which will trigger service registration to newly introduced OXID eShop DI container.
+- New installer type - `oxideshop-component`, which will trigger service registration to newly introduced OXID eShop DI container.
 
 ### Changed
 - Exclude non-essential files from dist package [PR-12](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/12)
 - Clarified and unified CLI messages during composer install and composer update
 - Updated version of required PHPUnit and fixed tests
-
-### Fixed
+- Module installation logic was changed and moved to OXID eShop Community Edition Core Component.
 
 ## [2.0.4] - 2019-07-16
 
@@ -31,6 +30,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
-[3.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.3...HEAD
+[2.1.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.3...v2.1.0
 [2.0.4]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.2...v2.0.3
