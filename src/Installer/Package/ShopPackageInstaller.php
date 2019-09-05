@@ -17,6 +17,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
 {
     const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
     const SHOP_SOURCE_CONFIGURATION_FILE = 'config.inc.php';
+    const OFFLINE_FILE = 'offline.html';
     const DISTRIBUTION_FILE_EXTENSION_MARK = '.dist';
     const SHOP_SOURCE_DIRECTORY = 'source';
     const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
@@ -77,6 +78,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
         $this->copySetupFiles($packagePath);
         $this->copyConfigurationDistFileWithinTarget();
         $this->copyHtaccessFiles($packagePath);
+        $this->copyOfflineFile($packagePath);
         $this->copyRobotsExclusionFiles($packagePath);
     }
 
@@ -92,6 +94,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
             [self::HTACCESS_FILTER],
             [self::ROBOTS_EXCLUSION_FILTER],
             [self::SETUP_FILES_FILTER],
+            [self::OFFLINE_FILE],
             $this->getVCSFilter(),
         ];
 
@@ -123,6 +126,19 @@ class ShopPackageInstaller extends AbstractPackageInstaller
         $this->copyFilesFromSourceToInstallationByFilter(
             $packagePath,
             self::HTACCESS_FILTER
+        );
+    }
+
+    /**
+     * Copy shop's offline/maintenange page from package.
+     *
+     * @param string $packagePath Absolute path which points to shop's package directory.
+     */
+    private function copyOfflineFile($packagePath)
+    {
+        $this->copyFilesFromSourceToInstallationByFilter(
+            $packagePath,
+            self::OFFLINE_FILE
         );
     }
 

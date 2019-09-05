@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.0] - Unreleased
+
+### Changed
+- Do not copy offline.html if it already present in source [PR-17](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/17)
+
 ## [3.0.0] - 2019-07-23
 
 ### Removed
@@ -30,6 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
+[3.1.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v3.0.0...master
 [3.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.4...v3.0.0
 [2.0.4]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.2...v2.0.3
