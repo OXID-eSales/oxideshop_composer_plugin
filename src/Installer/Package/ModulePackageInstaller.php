@@ -6,8 +6,8 @@
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
-use OxidEsales\EshopCommunity\Internal\Application\BootstrapContainer\BootstrapContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Application\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainer\BootstrapContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\DataObject\OxidEshopPackage;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\Service\ModuleInstallerInterface;
 use Webmozart\PathUtil\Path;

@@ -12,9 +12,9 @@ use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
-use OxidEsales\EshopCommunity\Internal\Application\BootstrapContainer\BootstrapContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Application\ContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Application\Service\ShopStateServiceInterface;
+use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainer\BootstrapContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Container\Service\ShopStateServiceInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ProjectConfigurationDaoInterface;
 use OxidEsales\Facts\Facts;
 

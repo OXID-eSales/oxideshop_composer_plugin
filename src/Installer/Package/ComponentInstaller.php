@@ -8,8 +8,8 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
-use OxidEsales\EshopCommunity\Internal\Application\BootstrapContainer\BootstrapContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Application\Service\ProjectYamlImportServiceInterface;
+use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainer\BootstrapContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Container\Service\ProjectYamlImportServiceInterface;
 
 class ComponentInstaller extends AbstractPackageInstaller
 {
