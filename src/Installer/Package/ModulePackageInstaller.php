@@ -9,6 +9,7 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\DataObject\OxidEshopPackage;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\Service\ModuleFilesInstallerInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\Service\ModuleInstallerInterface;
 use Webmozart\PathUtil\Path;
 
@@ -50,7 +51,11 @@ class ModulePackageInstaller extends AbstractPackageInstaller
         $moduleInstaller = $this->getModuleInstaller();
         $package = $this->getOxidShopPackage($packagePath);
 
-        if ($moduleInstaller->isInstalled($package)) {
+        /**
+         * We check only files because during the first composer update modules may not have installed configuration
+         * and module files are getting overwritten without asking if ModuleInstallerInterface is used.
+         */
+        if ($this->getModuleFilesInstaller()->isInstalled($package)) {
             if ($this->askQuestion("Update operation will overwrite {$this->getPackageName()} files in the directory source/modules. Do you want to overwrite them? (y/N) ")) {
                 $this->getIO()->write("Updating module {$this->getPackageName()} files...");
                 $moduleInstaller->install($package);
@@ -67,6 +72,15 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     {
         $container = BootstrapContainerFactory::getBootstrapContainer();
         return $container->get(ModuleInstallerInterface::class);
+    }
+
+    /**
+     * @return ModuleFilesInstallerInterface
+     */
+    private function getModuleFilesInstaller(): ModuleFilesInstallerInterface
+    {
+        $container = BootstrapContainerFactory::getBootstrapContainer();
+        return $container->get(ModuleFilesInstallerInterface::class);
     }
 
     /**
