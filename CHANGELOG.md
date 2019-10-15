@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.1.0] - Unreleased
+## [4.0.0] - 2019-10-15
 
 ### Changed
 - Do not copy offline.html if it already present in source [PR-17](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/17)
+- Used OXID eShop compilation v6.2.0 packages
 
 ## [3.0.0] - 2019-07-23
 
