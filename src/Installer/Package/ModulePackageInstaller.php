@@ -48,6 +48,13 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
+        $realPath = realpath($packagePath);
+        $targetPath = $this->formTargetPath();
+        if ($realPath == $targetPath) {
+            //do not try to install into the source directory
+            return;
+        }
+   
         $moduleInstaller = $this->getModuleInstaller();
         $package = $this->getOxidShopPackage($packagePath);
 
