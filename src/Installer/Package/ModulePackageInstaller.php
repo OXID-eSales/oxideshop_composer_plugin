@@ -37,8 +37,20 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     public function install($packagePath)
     {
         $this->getIO()->write("Installing module {$this->getPackageName()} package.");
+        $package = $this->getOxidShopPackage($packagePath));
+        $this->installOrUpdate($package);
+    }
+
+    /**
+     * @param $package OxidEshopPackage
+     */
+    private function installOrUpdate($package){
         $moduleInstaller = $this->getModuleInstaller();
-        $moduleInstaller->install($this->getOxidShopPackage($packagePath));
+        $moduleInstaller->install($package);
+        $installation_info = ['version'=>$this->getPackage()
+            ->getVersion()];
+        $data_as_json = json_encode($installation_info);
+        file_put_contents($this->formTargetPath() . DIRECTORY_SEPARATOR . 'installed.json', $data_as_json);
     }
 
     /**
@@ -48,21 +60,42 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
-        $moduleInstaller = $this->getModuleInstaller();
         $package = $this->getOxidShopPackage($packagePath);
 
         /**
          * We check only files because during the first composer update modules may not have installed configuration
          * and module files are getting overwritten without asking if ModuleInstallerInterface is used.
          */
-        if ($this->getModuleFilesInstaller()->isInstalled($package)) {
+        $moduleFilesInstaller = $this->getModuleFilesInstaller();
+        if ($moduleFilesInstaller->isInstalled($package)) {
+
+            if ($this->isInstalledInSameVersion()) {
+                $this->getIO()->write("Module {$this->getPackageName()} is already up-to-date in version {$this->getPackage()->getVersion()}.");
+                return;
+            }
+
             if ($this->askQuestion("Update operation will overwrite {$this->getPackageName()} files in the directory source/modules. Do you want to overwrite them? (y/N) ")) {
                 $this->getIO()->write("Updating module {$this->getPackageName()} files...");
-                $moduleInstaller->install($package);
+                $this->installOrUpdate($package);
             }
         } else {
             $this->install($packagePath);
         }
+    }
+
+    public function isInstalledInSameVersion() {
+        $targetPath = $this->formTargetPath();
+        $filename = $targetPath . '/installed.json';
+        if (file_exists($filename)) {
+            $data = json_decode(file_get_contents($filename), true);
+            if (!$this->getPackage()->isDev() &&
+                $data['version'] &&
+                $data['version'] == $this->getPackage()->getVersion()
+            ){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
