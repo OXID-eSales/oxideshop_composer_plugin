@@ -37,7 +37,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     public function install($packagePath)
     {
         $this->getIO()->write("Installing module {$this->getPackageName()} package.");
-        $package = $this->getOxidShopPackage($packagePath));
+        $package = $this->getOxidShopPackage($packagePath);
         $this->installOrUpdate($package);
     }
 
@@ -47,9 +47,9 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     private function installOrUpdate($package){
         $moduleInstaller = $this->getModuleInstaller();
         $moduleInstaller->install($package);
-        $installation_info = ['version'=>$this->getPackage()
+        $installationInfo = ['version'=>$this->getPackage()
             ->getVersion()];
-        $data_as_json = json_encode($installation_info);
+        $dataAsJson = json_encode($installationInfo);
         file_put_contents($this->formTargetPath() . DIRECTORY_SEPARATOR . 'installed.json', $data_as_json);
     }
 
