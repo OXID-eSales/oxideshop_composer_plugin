@@ -30,7 +30,9 @@ class ComponentInstaller extends AbstractPackageInstaller
      */
     protected function importServiceFile($packagePath)
     {
-        $projectYamlImportService = BootstrapContainerFactory::getBootstrapContainer()->get(ProjectYamlImportServiceInterface::class);
+        $projectYamlImportService = BootstrapContainerFactory::getBootstrapContainer()->get(
+            ProjectYamlImportServiceInterface::class
+        );
         $projectYamlImportService->removeNonExistingImports();
         $projectYamlImportService->addImport($packagePath);
     }
