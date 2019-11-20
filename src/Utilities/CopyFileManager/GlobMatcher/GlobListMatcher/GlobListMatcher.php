@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobListMatcher;
 
@@ -40,9 +43,11 @@ class GlobListMatcher
      */
     public function matchAny($relativePath, $globExpressionList)
     {
-        if (!is_array($globExpressionList) && (!$globExpressionList instanceof \Traversable)
-            && (!is_null($globExpressionList))) {
-            $message = "Given value \"$globExpressionList\" is not a valid glob expression list. ".
+        if (
+            !is_array($globExpressionList) && (!$globExpressionList instanceof \Traversable)
+            && (!is_null($globExpressionList))
+        ) {
+            $message = "Given value \"$globExpressionList\" is not a valid glob expression list. " .
                 "Valid entry must be a list of glob expressions e.g. [\"*.txt\", \"*.pdf\"].";
 
             throw new \InvalidArgumentException($message);

@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Integration;
 
@@ -30,14 +33,14 @@ abstract class AbstractGlobMatcher
     public function match($relativePath, $globExpression)
     {
         if (!is_string($globExpression) && !is_null($globExpression)) {
-            $message = "Given value \"$globExpression\" is not a valid glob expression. ".
+            $message = "Given value \"$globExpression\" is not a valid glob expression. " .
                 "Valid expression must be a string e.g. \"*.txt\".";
 
             throw new InvalidArgumentException($message);
         }
 
         if (Path::isAbsolute((string)$globExpression)) {
-            $message = "Given value \"$globExpression\" is an absolute path. ".
+            $message = "Given value \"$globExpression\" is an absolute path. " .
                 "Glob expression can only be accepted if it's a relative path.";
 
             throw new InvalidArgumentException($message);

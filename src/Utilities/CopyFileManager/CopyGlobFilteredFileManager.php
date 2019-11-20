@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Utilities\CopyFileManager;
 
@@ -33,14 +36,14 @@ class CopyGlobFilteredFileManager
     public static function copy($sourcePath, $destinationPath, $globExpressionList = [])
     {
         if (!is_string($sourcePath)) {
-            $message = "Given value \"$sourcePath\" is not a valid source path entry. ".
+            $message = "Given value \"$sourcePath\" is not a valid source path entry. " .
                 "Valid entry must be an absolute path to an existing file or directory.";
 
             throw new \InvalidArgumentException($message);
         }
 
         if (!is_string($destinationPath)) {
-            $message = "Given value \"$destinationPath\" is not a valid destination path entry. ".
+            $message = "Given value \"$destinationPath\" is not a valid destination path entry. " .
                 "Valid entry must be an absolute path to an existing directory.";
 
             throw new \InvalidArgumentException($message);
