@@ -1,8 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
+ * @phpcs:disable PSR12.Properties.ConstantVisibility.NotFound
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
@@ -23,7 +27,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function isInstalled()
     {
-        return file_exists($this->formThemeTargetPath().'/'.static::METADATA_FILE_NAME);
+        return file_exists($this->formThemeTargetPath() . '/' . static::METADATA_FILE_NAME);
     }
 
     /**

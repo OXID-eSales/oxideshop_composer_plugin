@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * This file is part of OXID eShop Composer plugin.
  *
@@ -19,6 +20,8 @@
  * @copyright (C) OXID eSales AG 2003-2017
  * @version   OXID eShop Composer plugin
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Iteration;
 
