@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Unit\Utilities;
 
@@ -42,7 +45,10 @@ class VfsFileStructureOperatorTest extends \PHPUnit\Framework\TestCase
 
     public function testReturnArrayAsIsWhenMultipleItemsArePresent()
     {
-        $this->assertSame(['foo' => 'abc', 'bar' => 'def'], VfsFileStructureOperator::nest(['foo' => 'abc', 'bar' => 'def']));
+        $this->assertSame(
+            ['foo' => 'abc', 'bar' => 'def'],
+            VfsFileStructureOperator::nest(['foo' => 'abc', 'bar' => 'def'])
+        );
     }
 
     public function testReturnArrayAsIsWhenOnlyOneFileIsPresent()
@@ -156,7 +162,7 @@ class VfsFileStructureOperatorTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expectedOutput, VfsFileStructureOperator::nest($input));
     }
 
-    public function testReturnNestedArrayWhenMultipleItemsContainsMultiLevelPathWithSameBaseButWithBreakPointInTheMiddle()
+    public function testReturnNestedArrayWhenMultipleItemsContainsMultiLevelPathWithSameBaseButWithBreakPointInside()
     {
         $input = [
             'directory/file'        => 'contents',
