@@ -23,7 +23,9 @@ class ShopPackageInstaller extends AbstractPackageInstaller
     const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
     const HTACCESS_FILTER = '**/.htaccess';
     const ROBOTS_EXCLUSION_FILTER = '**/robots.txt';
-    const SETUP_FILES_FILTER = self::SHOP_SOURCE_SETUP_DIRECTORY . DIRECTORY_SEPARATOR . AbstractPackageInstaller::BLACKLIST_ALL_FILES;
+    const SETUP_FILES_FILTER = self::SHOP_SOURCE_SETUP_DIRECTORY
+        . DIRECTORY_SEPARATOR
+        . AbstractPackageInstaller::BLACKLIST_ALL_FILES;
 
     /**
      * @return bool

@@ -66,7 +66,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         $extraSettings = $this->composer->getPackage()->getExtra();
         if (isset($extraSettings[AbstractPackageInstaller::EXTRA_PARAMETER_KEY_ROOT])) {
-            $this->packageInstallerTrigger->setSettings($extraSettings[AbstractPackageInstaller::EXTRA_PARAMETER_KEY_ROOT]);
+            $this->packageInstallerTrigger->setSettings(
+                $extraSettings[AbstractPackageInstaller::EXTRA_PARAMETER_KEY_ROOT]
+            );
         }
     }
 
@@ -143,9 +145,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if ($projectConfigurationDao->isConfigurationEmpty()) {
             if ($this->isShopLaunched()) {
                 $container = ContainerFactory::getInstance()->getContainer();
-                $container->get('oxid_esales.module.install.service.launched_shop_project_configuration_generator')->generate();
+                $container
+                    ->get('oxid_esales.module.install.service.launched_shop_project_configuration_generator')
+                    ->generate();
             } else {
-                $bootstrapContainer->get('oxid_esales.module.install.service.installed_shop_project_configuration_generator')->generate();
+                $bootstrapContainer
+                    ->get('oxid_esales.module.install.service.installed_shop_project_configuration_generator')
+                    ->generate();
             }
         }
     }

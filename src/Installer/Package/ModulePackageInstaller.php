@@ -56,7 +56,9 @@ class ModulePackageInstaller extends AbstractPackageInstaller
          * and module files are getting overwritten without asking if ModuleInstallerInterface is used.
          */
         if ($this->getModuleFilesInstaller()->isInstalled($package)) {
-            if ($this->askQuestion("Update operation will overwrite {$this->getPackageName()} files in the directory source/modules. Do you want to overwrite them? (y/N) ")) {
+            $question = "Update operation will overwrite {$this->getPackageName()} files in the directory ";
+            $question .= "source/modules. Do you want to overwrite them? (y/N) ";
+            if ($this->askQuestion($question)) {
                 $this->getIO()->write("Updating module {$this->getPackageName()} files...");
                 $moduleInstaller->install($package);
             }
@@ -104,7 +106,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
         if (isset($extraParameters['oxideshop']['target-directory'])) {
             $package->setTargetDirectory($extraParameters['oxideshop']['target-directory']);
         }
-        
+
         return $package;
     }
 
