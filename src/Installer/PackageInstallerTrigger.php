@@ -3,7 +3,6 @@
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
- * @phpcs:disable PSR12.Properties.ConstantVisibility.NotFound
  */
 
 declare(strict_types=1);
@@ -24,11 +23,11 @@ use Webmozart\PathUtil\Path;
  */
 class PackageInstallerTrigger extends LibraryInstaller
 {
-    const TYPE_ESHOP = 'oxideshop';
-    const TYPE_MODULE = 'oxideshop-module';
-    const TYPE_THEME = 'oxideshop-theme';
-    const TYPE_DEMODATA = 'oxideshop-demodata';
-    const TYPE_COMPONENT = 'oxideshop-component';
+    protected const TYPE_ESHOP = 'oxideshop';
+    protected const TYPE_MODULE = 'oxideshop-module';
+    protected const TYPE_THEME = 'oxideshop-theme';
+    protected const TYPE_DEMODATA = 'oxideshop-demodata';
+    protected const TYPE_COMPONENT = 'oxideshop-component';
 
     /** @var array Available installers for packages. */
     private $installers = [

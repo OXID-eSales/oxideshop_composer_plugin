@@ -3,7 +3,6 @@
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
- * @phpcs:disable PSR12.Properties.ConstantVisibility.NotFound
  */
 
 declare(strict_types=1);
@@ -19,15 +18,15 @@ use Webmozart\PathUtil\Path;
  */
 class ShopPackageInstaller extends AbstractPackageInstaller
 {
-    const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
-    const SHOP_SOURCE_CONFIGURATION_FILE = 'config.inc.php';
-    const OFFLINE_FILE = 'offline.html';
-    const DISTRIBUTION_FILE_EXTENSION_MARK = '.dist';
-    const SHOP_SOURCE_DIRECTORY = 'source';
-    const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
-    const HTACCESS_FILTER = '**/.htaccess';
-    const ROBOTS_EXCLUSION_FILTER = '**/robots.txt';
-    const SETUP_FILES_FILTER = self::SHOP_SOURCE_SETUP_DIRECTORY
+    public const SHOP_SOURCE_DIRECTORY = 'source';
+    protected const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
+    protected const SHOP_SOURCE_CONFIGURATION_FILE = 'config.inc.php';
+    protected const OFFLINE_FILE = 'offline.html';
+    protected const DISTRIBUTION_FILE_EXTENSION_MARK = '.dist';
+    protected const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
+    protected const HTACCESS_FILTER = '**/.htaccess';
+    protected const ROBOTS_EXCLUSION_FILTER = '**/robots.txt';
+    protected const SETUP_FILES_FILTER = self::SHOP_SOURCE_SETUP_DIRECTORY
         . DIRECTORY_SEPARATOR
         . AbstractPackageInstaller::BLACKLIST_ALL_FILES;
 

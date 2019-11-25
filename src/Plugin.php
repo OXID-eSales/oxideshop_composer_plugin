@@ -3,7 +3,6 @@
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
- * @phpcs:disable PSR12.Properties.ConstantVisibility.NotFound
  */
 
 declare(strict_types=1);
@@ -27,9 +26,9 @@ use OxidEsales\Facts\Facts;
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
-    const ACTION_INSTALL = 'install';
+    protected const ACTION_INSTALL = 'install';
 
-    const ACTION_UPDATE = 'update';
+    protected const ACTION_UPDATE = 'update';
 
     /** @var Composer */
     private $composer;
