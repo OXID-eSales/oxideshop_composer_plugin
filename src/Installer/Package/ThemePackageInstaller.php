@@ -3,7 +3,6 @@
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
- * @phpcs:disable PSR12.Properties.ConstantVisibility.NotFound
  */
 
 declare(strict_types=1);
@@ -19,8 +18,8 @@ use Webmozart\PathUtil\Path;
  */
 class ThemePackageInstaller extends AbstractPackageInstaller
 {
-    const METADATA_FILE_NAME = 'theme.php';
-    const PATH_TO_THEMES = "Application/views";
+    protected const METADATA_FILE_NAME = 'theme.php';
+    protected const PATH_TO_THEMES = "Application/views";
 
     /**
      * @return bool

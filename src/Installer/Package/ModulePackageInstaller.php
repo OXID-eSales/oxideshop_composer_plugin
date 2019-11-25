@@ -3,7 +3,6 @@
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
- * @phpcs:disable PSR12.Properties.ConstantVisibility.NotFound
  */
 
 declare(strict_types=1);
@@ -23,7 +22,7 @@ use Webmozart\PathUtil\Path;
 class ModulePackageInstaller extends AbstractPackageInstaller
 {
     /** @var string MODULES_DIRECTORY */
-    const MODULES_DIRECTORY = 'modules';
+    protected const MODULES_DIRECTORY = 'modules';
 
     /**
      * @return bool
