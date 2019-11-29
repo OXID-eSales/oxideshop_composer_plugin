@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
@@ -15,34 +18,34 @@ use Composer\Package\PackageInterface;
  */
 abstract class AbstractPackageInstaller
 {
-    const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
+    public const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
 
     /** Used to determine third party package internal source path. */
-    const EXTRA_PARAMETER_KEY_SOURCE = 'source-directory';
+    public const EXTRA_PARAMETER_KEY_SOURCE = 'source-directory';
 
     /** Used to install third party integrations. */
-    const EXTRA_PARAMETER_KEY_TARGET = 'target-directory';
+    public const EXTRA_PARAMETER_KEY_TARGET = 'target-directory';
 
     /** Used to install third party integration assets. */
-    const EXTRA_PARAMETER_KEY_ASSETS = 'assets-directory';
+    public const EXTRA_PARAMETER_KEY_ASSETS = 'assets-directory';
 
     /** Used to decide what the shop source directory is. */
-    const EXTRA_PARAMETER_SOURCE_PATH = 'source-path';
+    public const EXTRA_PARAMETER_SOURCE_PATH = 'source-path';
 
     /** List of glob expressions used to blacklist files being copied. */
-    const EXTRA_PARAMETER_FILTER_BLACKLIST = 'blacklist-filter';
+    public const EXTRA_PARAMETER_FILTER_BLACKLIST = 'blacklist-filter';
 
     /** Glob expression to filter all files, might be used to filter whole directory. */
-    const BLACKLIST_ALL_FILES = '**/*';
+    public const BLACKLIST_ALL_FILES = '**/*';
 
     /** Name of directory to be excluded for VCS */
-    const BLACKLIST_VCS_DIRECTORY = '.git';
+    public const BLACKLIST_VCS_DIRECTORY = '.git';
 
     /** Name of ignore files to be excluded for VCS */
-    const BLACKLIST_VCS_IGNORE_FILE = '.gitignore';
+    public const BLACKLIST_VCS_IGNORE_FILE = '.gitignore';
 
     /** Glob filter expression to exclude VCS files */
-    const BLACKLIST_VCS_DIRECTORY_FILTER = self::BLACKLIST_VCS_DIRECTORY
+    public const BLACKLIST_VCS_DIRECTORY_FILTER = self::BLACKLIST_VCS_DIRECTORY
         . DIRECTORY_SEPARATOR
         . self::BLACKLIST_ALL_FILES;
 

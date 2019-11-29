@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Installer;
 
@@ -20,11 +23,11 @@ use Webmozart\PathUtil\Path;
  */
 class PackageInstallerTrigger extends LibraryInstaller
 {
-    const TYPE_ESHOP = 'oxideshop';
-    const TYPE_MODULE = 'oxideshop-module';
-    const TYPE_THEME = 'oxideshop-theme';
-    const TYPE_DEMODATA = 'oxideshop-demodata';
-    const TYPE_COMPONENT = 'oxideshop-component';
+    public const TYPE_ESHOP = 'oxideshop';
+    public const TYPE_MODULE = 'oxideshop-module';
+    public const TYPE_THEME = 'oxideshop-theme';
+    public const TYPE_DEMODATA = 'oxideshop-demodata';
+    public const TYPE_COMPONENT = 'oxideshop-component';
 
     /** @var array Available installers for packages. */
     private $installers = [

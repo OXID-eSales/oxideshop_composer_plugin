@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
@@ -19,7 +22,7 @@ use Webmozart\PathUtil\Path;
 class ModulePackageInstaller extends AbstractPackageInstaller
 {
     /** @var string MODULES_DIRECTORY */
-    const MODULES_DIRECTORY = 'modules';
+    public const MODULES_DIRECTORY = 'modules';
 
     /**
      * @return bool

@@ -6,12 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [4.1.0] - Unreleased
 
+### Removed
+- Support for PHP 7.0
+
 ### Added
 - CodeSniffer as dev dependency [PR-20](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/20)
-- Run CodeSniffer with PSR-12 standard during travis runs [PR-20](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/20)
+- Run CodeSniffer with PSR-2 standard during travis runs [PR-20](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/20)
 
 ### Fixed
-- Fix code style to fit PSR-12 standard [PR-20](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/20)
+- Fix code style to fit PSR-2 standard [PR-20](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/20)
+- Fix code style to fit PSR-12 [PR-21](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/21)
 
 ## [4.0.0] - 2019-10-15
 

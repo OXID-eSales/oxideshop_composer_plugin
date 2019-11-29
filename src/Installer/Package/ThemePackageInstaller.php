@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
@@ -15,15 +18,15 @@ use Webmozart\PathUtil\Path;
  */
 class ThemePackageInstaller extends AbstractPackageInstaller
 {
-    const METADATA_FILE_NAME = 'theme.php';
-    const PATH_TO_THEMES = "Application/views";
+    public const METADATA_FILE_NAME = 'theme.php';
+    public const PATH_TO_THEMES = "Application/views";
 
     /**
      * @return bool
      */
     public function isInstalled()
     {
-        return file_exists($this->formThemeTargetPath().'/'.static::METADATA_FILE_NAME);
+        return file_exists($this->formThemeTargetPath() . '/' . static::METADATA_FILE_NAME);
     }
 
     /**

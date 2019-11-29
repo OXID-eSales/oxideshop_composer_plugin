@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
@@ -15,15 +18,15 @@ use Webmozart\PathUtil\Path;
  */
 class ShopPackageInstaller extends AbstractPackageInstaller
 {
-    const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
-    const SHOP_SOURCE_CONFIGURATION_FILE = 'config.inc.php';
-    const OFFLINE_FILE = 'offline.html';
-    const DISTRIBUTION_FILE_EXTENSION_MARK = '.dist';
-    const SHOP_SOURCE_DIRECTORY = 'source';
-    const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
-    const HTACCESS_FILTER = '**/.htaccess';
-    const ROBOTS_EXCLUSION_FILTER = '**/robots.txt';
-    const SETUP_FILES_FILTER = self::SHOP_SOURCE_SETUP_DIRECTORY
+    public const SHOP_SOURCE_DIRECTORY = 'source';
+    public const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
+    public const SHOP_SOURCE_CONFIGURATION_FILE = 'config.inc.php';
+    public const OFFLINE_FILE = 'offline.html';
+    public const DISTRIBUTION_FILE_EXTENSION_MARK = '.dist';
+    public const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
+    public const HTACCESS_FILTER = '**/.htaccess';
+    public const ROBOTS_EXCLUSION_FILTER = '**/robots.txt';
+    public const SETUP_FILES_FILTER = self::SHOP_SOURCE_SETUP_DIRECTORY
         . DIRECTORY_SEPARATOR
         . AbstractPackageInstaller::BLACKLIST_ALL_FILES;
 
