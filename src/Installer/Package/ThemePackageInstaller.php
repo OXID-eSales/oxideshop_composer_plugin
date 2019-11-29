@@ -18,8 +18,8 @@ use Webmozart\PathUtil\Path;
  */
 class ThemePackageInstaller extends AbstractPackageInstaller
 {
-    protected const METADATA_FILE_NAME = 'theme.php';
-    protected const PATH_TO_THEMES = "Application/views";
+    public const METADATA_FILE_NAME = 'theme.php';
+    public const PATH_TO_THEMES = "Application/views";
 
     /**
      * @return bool

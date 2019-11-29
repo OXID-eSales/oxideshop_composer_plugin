@@ -19,14 +19,14 @@ use Webmozart\PathUtil\Path;
 class ShopPackageInstaller extends AbstractPackageInstaller
 {
     public const SHOP_SOURCE_DIRECTORY = 'source';
-    protected const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
-    protected const SHOP_SOURCE_CONFIGURATION_FILE = 'config.inc.php';
-    protected const OFFLINE_FILE = 'offline.html';
-    protected const DISTRIBUTION_FILE_EXTENSION_MARK = '.dist';
-    protected const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
-    protected const HTACCESS_FILTER = '**/.htaccess';
-    protected const ROBOTS_EXCLUSION_FILTER = '**/robots.txt';
-    protected const SETUP_FILES_FILTER = self::SHOP_SOURCE_SETUP_DIRECTORY
+    public const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
+    public const SHOP_SOURCE_CONFIGURATION_FILE = 'config.inc.php';
+    public const OFFLINE_FILE = 'offline.html';
+    public const DISTRIBUTION_FILE_EXTENSION_MARK = '.dist';
+    public const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
+    public const HTACCESS_FILTER = '**/.htaccess';
+    public const ROBOTS_EXCLUSION_FILTER = '**/robots.txt';
+    public const SETUP_FILES_FILTER = self::SHOP_SOURCE_SETUP_DIRECTORY
         . DIRECTORY_SEPARATOR
         . AbstractPackageInstaller::BLACKLIST_ALL_FILES;
 

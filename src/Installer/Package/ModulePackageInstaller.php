@@ -22,7 +22,7 @@ use Webmozart\PathUtil\Path;
 class ModulePackageInstaller extends AbstractPackageInstaller
 {
     /** @var string MODULES_DIRECTORY */
-    protected const MODULES_DIRECTORY = 'modules';
+    public const MODULES_DIRECTORY = 'modules';
 
     /**
      * @return bool

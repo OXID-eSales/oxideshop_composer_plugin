@@ -26,9 +26,9 @@ use OxidEsales\Facts\Facts;
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
-    protected const ACTION_INSTALL = 'install';
+    public const ACTION_INSTALL = 'install';
 
-    protected const ACTION_UPDATE = 'update';
+    public const ACTION_UPDATE = 'update';
 
     /** @var Composer */
     private $composer;

@@ -23,11 +23,11 @@ use Webmozart\PathUtil\Path;
  */
 class PackageInstallerTrigger extends LibraryInstaller
 {
-    protected const TYPE_ESHOP = 'oxideshop';
-    protected const TYPE_MODULE = 'oxideshop-module';
-    protected const TYPE_THEME = 'oxideshop-theme';
-    protected const TYPE_DEMODATA = 'oxideshop-demodata';
-    protected const TYPE_COMPONENT = 'oxideshop-component';
+    public const TYPE_ESHOP = 'oxideshop';
+    public const TYPE_MODULE = 'oxideshop-module';
+    public const TYPE_THEME = 'oxideshop-theme';
+    public const TYPE_DEMODATA = 'oxideshop-demodata';
+    public const TYPE_COMPONENT = 'oxideshop-component';
 
     /** @var array Available installers for packages. */
     private $installers = [

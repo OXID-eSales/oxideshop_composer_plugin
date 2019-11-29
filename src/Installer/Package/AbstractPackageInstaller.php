@@ -39,13 +39,13 @@ abstract class AbstractPackageInstaller
     public const BLACKLIST_ALL_FILES = '**/*';
 
     /** Name of directory to be excluded for VCS */
-    protected const BLACKLIST_VCS_DIRECTORY = '.git';
+    public const BLACKLIST_VCS_DIRECTORY = '.git';
 
     /** Name of ignore files to be excluded for VCS */
-    protected const BLACKLIST_VCS_IGNORE_FILE = '.gitignore';
+    public const BLACKLIST_VCS_IGNORE_FILE = '.gitignore';
 
     /** Glob filter expression to exclude VCS files */
-    protected const BLACKLIST_VCS_DIRECTORY_FILTER = self::BLACKLIST_VCS_DIRECTORY
+    public const BLACKLIST_VCS_DIRECTORY_FILTER = self::BLACKLIST_VCS_DIRECTORY
         . DIRECTORY_SEPARATOR
         . self::BLACKLIST_ALL_FILES;
 
