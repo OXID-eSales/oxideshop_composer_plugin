@@ -70,18 +70,35 @@ class ThemePackageInstaller extends AbstractPackageInstaller
     protected function copyPackage($packagePath)
     {
         $filtersToApply = [
-            [Path::join($this->formAssetsDirectoryName(), AbstractPackageInstaller::BLACKLIST_ALL_FILES)],
+            [Path::join($this->formSourcePath($this->formAssetsDirectoryName()), AbstractPackageInstaller::BLACKLIST_ALL_FILES)],
             $this->getBlacklistFilterValue(),
             $this->getVCSFilter(),
         ];
 
         CopyGlobFilteredFileManager::copy(
-            $packagePath,
+            $this->formSourcePath($packagePath),
             $this->formThemeTargetPath(),
             $this->getCombinedFilters($filtersToApply)
         );
 
         $this->installAssets($packagePath);
+    }
+
+    /**
+     * If theme source directory option provided add it's relative path.
+     * Otherwise return plain package path.
+     *
+     * @param string $packagePath
+     *
+     * @return string
+     */
+    protected function formSourcePath($packagePath)
+    {
+        $sourceDirectory = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_SOURCE);
+
+        return !empty($sourceDirectory)?
+            Path::join($packagePath, $sourceDirectory):
+            $packagePath;
     }
 
     /**
@@ -103,6 +120,9 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $target = $this->getRootDirectory() . '/out/' . $this->formThemeDirectoryName($package);
 
         $assetsDirectory = $this->formAssetsDirectoryName();
+        $assetsDirectory = ! empty($this->formSourcePath('')) ?
+            Path::join($this->formSourcePath(''), $assetsDirectory):
+            $assetsDirectory;
         $source = $packagePath . '/' . $assetsDirectory;
 
         if (file_exists($source)) {
