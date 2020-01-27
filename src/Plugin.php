@@ -11,6 +11,7 @@ namespace OxidEsales\ComposerPlugin;
 
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\Installer\PackageEvent;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
@@ -48,7 +49,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         return array(
             'post-install-cmd' => 'installPackages',
-            'post-update-cmd' => 'updatePackages'
+            'post-update-cmd' => 'updatePackages',
+            'pre-package-uninstall' => 'uninstallPackage'
         );
     }
 
@@ -89,6 +91,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function updatePackages()
     {
         $this->executeAction(static::ACTION_UPDATE);
+    }
+
+    /**
+     * @param PackageEvent $event
+     */
+    public function uninstallPackage(PackageEvent $event) : void {
+
     }
 
     /**

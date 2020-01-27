@@ -64,6 +64,11 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         }
     }
 
+    public function uninstall(PackageInterface $package): void
+    {
+        //not implemented yet
+    }
+
     /**
      * @param string $packagePath
      */

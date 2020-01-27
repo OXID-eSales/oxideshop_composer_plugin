@@ -28,6 +28,11 @@ class ComponentInstaller extends AbstractPackageInstaller
         $this->importServiceFile($packagePath);
     }
 
+    public function uninstall(PackageInterface $package): void
+    {
+        //not implemented yet
+    }
+
     /**
      * @param $packagePath
      */

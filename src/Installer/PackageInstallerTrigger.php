@@ -82,6 +82,15 @@ class PackageInstallerTrigger extends LibraryInstaller
     }
 
     /**
+     * @param PackageInterface $package
+     */
+    public function uninstallPackage(PackageInterface $package) : void
+    {
+        $installer = $this->createInstaller($package);
+        $installer->uninstall($package);
+    }
+
+    /**
      * Get the path to shop's source directory.
      *
      * @return string

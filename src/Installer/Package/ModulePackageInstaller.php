@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
+use Composer\Package\PackageInterface;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\DataObject\OxidEshopPackage;
@@ -42,6 +43,15 @@ class ModulePackageInstaller extends AbstractPackageInstaller
         $this->getIO()->write("Installing module {$this->getPackageName()} package.");
         $moduleInstaller = $this->getModuleInstaller();
         $moduleInstaller->install($this->getOxidShopPackage($packagePath));
+    }
+
+    /**
+     * @param PackageInterface $package
+     */
+    public function uninstall(PackageInterface $package): void
+    {
+        $moduleInstaller = $this->getModuleInstaller();
+        $moduleInstaller->uninstall($this->getOxidShopPackage($packagePath));
     }
 
     /**

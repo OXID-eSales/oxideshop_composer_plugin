@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
+use Composer\Package\PackageInterface;
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
 use Webmozart\Glob\Iterator\GlobIterator;
 use Webmozart\PathUtil\Path;
@@ -72,6 +73,11 @@ class ShopPackageInstaller extends AbstractPackageInstaller
         } else {
             $this->writeSkippedMessage();
         }
+    }
+
+    public function uninstall(PackageInterface $package): void
+    {
+        //not implemented yet
     }
 
     /**
