@@ -84,10 +84,10 @@ class PackageInstallerTrigger extends LibraryInstaller
     /**
      * @param PackageInterface $package
      */
-    public function uninstallPackage(PackageInterface $package) : void
+    public function uninstallPackage(PackageInterface $package): void
     {
         $installer = $this->createInstaller($package);
-        $installer->uninstall($package);
+        $installer->uninstall($this->getInstallPath($package));
     }
 
     /**

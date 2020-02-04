@@ -87,9 +87,9 @@ abstract class AbstractPackageInstaller
     abstract public function update($packagePath);
 
     /**
-     * @param PackageInterface $package
+     * @param string $packagePath
      */
-    abstract public function uninstall(PackageInterface $package): void;
+    abstract public function uninstall(string $packagePath): void;
 
     /**
      * @return string

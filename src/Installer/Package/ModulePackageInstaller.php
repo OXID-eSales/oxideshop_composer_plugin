@@ -12,6 +12,8 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 use Composer\Package\PackageInterface;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\DIContainer\Service\ShopStateServiceInterface;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ProjectConfigurationDaoInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\DataObject\OxidEshopPackage;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\Service\ModuleFilesInstallerInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\Service\ModuleInstallerInterface;
@@ -48,7 +50,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     /**
      * @param PackageInterface $package
      */
-    public function uninstall(PackageInterface $package): void
+    public function uninstall(string $packagePath): void
     {
         $moduleInstaller = $this->getModuleInstaller();
         $moduleInstaller->uninstall($this->getOxidShopPackage($packagePath));
@@ -85,8 +87,24 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     private function getModuleInstaller(): ModuleInstallerInterface
     {
+        if ($this->isShopLaunched()) {
+            return ContainerFactory::getInstance()->getContainer()
+                ->get(ModuleInstallerInterface::class);
+        } else {
+            return BootstrapContainerFactory::getBootstrapContainer()
+                ->get('oxid_esales.module.install.service.bootstrap_module_installer');
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    private function isShopLaunched(): bool
+    {
         $container = BootstrapContainerFactory::getBootstrapContainer();
-        return $container->get(ModuleInstallerInterface::class);
+        $shopStateService = $container->get(ShopStateServiceInterface::class);
+
+        return $shopStateService->isLaunched();
     }
 
     /**
