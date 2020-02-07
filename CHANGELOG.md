@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - CodeSniffer as dev dependency [PR-20](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/20)
 - Run CodeSniffer with PSR-2 standard during travis runs [PR-20](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/20)
+- Support uninstall module
 
 ### Fixed
 - Fix code style to fit PSR-2 standard [PR-20](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/20)
