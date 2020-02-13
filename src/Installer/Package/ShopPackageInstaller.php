@@ -144,7 +144,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
     }
 
     /**
-     * Copy shop's offline/maintenange page from package.
+     * Copy shop's offline/maintenance page from package.
      *
      * @param string $packagePath Absolute path which points to shop's package directory.
      */
