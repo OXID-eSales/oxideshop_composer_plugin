@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.1.0] - Unreleased
+## [4.1.0] - 2020-02-25
 
 ### Removed
 - Support for PHP 7.0
@@ -50,7 +50,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
-[4.1.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v4.0.0...master
+[4.1.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v4.0.0...4.1.0
 [4.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v3.0.0...4.0.0
 [3.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.4...v3.0.0
 [2.0.4]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.3...v2.0.4
