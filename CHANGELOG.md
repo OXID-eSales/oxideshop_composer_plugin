@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [4.1.0] - 2020-02-25
 
+### Changed
+- Update symfony components to version 5
+
 ### Removed
 - Support for PHP 7.0
 
