@@ -28,8 +28,9 @@ More information how to create themes installable via composer: https://docs.oxi
 Requirements
 ------------
 
-* master branch: OXID eShop compilation >=v6.2.0 (b-6.x CE branch)
-* b-2.x branch: OXID eShop compilation v6.0.0 - v6.1.x
+* master branch is compatible with OXID eShop compilation master
+* b-3.x branch is compatible with OXID eShop compilation 6.x (>=6.2.x)
+* b-2.x branch is compatible with OXID eShop compilation 6.0.x and 6.1.x
 
 Bugs and Issues
 ---------------
