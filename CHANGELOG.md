@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.5] - Unreleased
+
+### Fixed
+ - Made composer.json compatible with composer v2
+
 ## [2.0.4] - 2019-07-16
 
 ### Fixed
@@ -16,5 +21,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
+[2.0.5]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v2.0.2...v2.0.3
