@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Fix code style to fit PSR-2 standard [PR-20](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/20)
 - Fix code style to fit PSR-12 [PR-21](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/21)
+- Made composer.json compatible with composer v2
 
 ## [4.0.0] - 2019-10-15
 
