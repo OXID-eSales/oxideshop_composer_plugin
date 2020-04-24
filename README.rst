@@ -29,7 +29,7 @@ Requirements
 ------------
 
 * master branch is compatible with OXID eShop compilation master
-* b-3.x branch is compatible with OXID eShop compilation 6.x (>=6.2.x)
+* b-6.x branch is compatible with OXID eShop compilation 6.x (>=6.2.x)
 * b-2.x branch is compatible with OXID eShop compilation 6.0.x and 6.1.x
 
 Bugs and Issues
