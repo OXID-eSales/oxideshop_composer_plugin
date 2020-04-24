@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Plugin updates oxid eshop components only if they have any updates
+- Skip overwriting favicon.ico file on update [PR-23](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/23)
 
 ## [4.1.1] - 2020-04-14
 
