@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
+[5.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v4.1.1...b-6.x
 [4.1.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v4.1.0...4.1.1
 [4.1.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v4.0.0...4.1.0
 [4.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v3.0.0...4.0.0
