@@ -27,8 +27,15 @@ use OxidEsales\Facts\Facts;
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
+    public const ACTION_INSTALL = 'install';
+
+    public const ACTION_UPDATE = 'update';
+
     /** @var Composer */
     private $composer;
+
+    /** @var IOInterface */
+    private $io;
 
     /** @var PackageInstallerTrigger */
     private $packageInstallerTrigger;
@@ -40,12 +47,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return [
-            'post-install-cmd'      => 'installPackages',
-            'post-update-cmd'       => 'installPackages',
-            'post-package-update'   => 'updatePackage',
-            'pre-package-uninstall' => 'uninstallPackage',
-        ];
+        return array(
+            'post-install-cmd' => 'installPackages',
+            'post-update-cmd' => 'updatePackages',
+            'pre-package-uninstall' => 'uninstallPackage'
+        );
     }
 
     /**
@@ -60,6 +66,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $composer->getInstallationManager()->addInstaller($packageInstallerTrigger);
 
         $this->composer = $composer;
+        $this->io = $io;
         $this->packageInstallerTrigger = $packageInstallerTrigger;
 
         $extraSettings = $this->composer->getPackage()->getExtra();
@@ -73,32 +80,17 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Run installation for oxid packages.
      */
-    public function installPackages(): void
+    public function installPackages()
     {
-        $this->autoloadInstalledPackages();
-        $this->bootstrapOxidShopComponent();
-        $this->generateDefaultProjectConfigurationIfMissing();
-
-        $repo = $this->composer->getRepositoryManager()->getLocalRepository();
-
-        foreach ($repo->getPackages() as $package) {
-            if ($this->packageInstallerTrigger->supports($package->getType())) {
-                $this->packageInstallerTrigger->installPackage($package);
-            }
-        }
+        $this->executeAction(static::ACTION_INSTALL);
     }
 
     /**
-     * @param PackageEvent $event
+     * Run update for oxid packages.
      */
-    public function updatePackage(PackageEvent $event): void
+    public function updatePackages()
     {
-        $package = $event->getOperation()->getTargetPackage();
-        if ($this->packageInstallerTrigger->supports($package->getType())) {
-            $this->autoloadInstalledPackages();
-            $this->bootstrapOxidShopComponent();
-            $this->packageInstallerTrigger->updatePackage($package);
-        }
+        $this->executeAction(static::ACTION_UPDATE);
     }
 
     /**
@@ -115,16 +107,39 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
+     * @param string $actionName
+     */
+    protected function executeAction($actionName)
+    {
+        $this->autoloadInstalledPackages();
+        $this->bootstrapOxidShopComponent();
+        $this->generateDefaultProjectConfigurationIfMissing();
+
+        $repo = $this->composer->getRepositoryManager()->getLocalRepository();
+
+        foreach ($repo->getPackages() as $package) {
+            if ($this->packageInstallerTrigger->supports($package->getType())) {
+                if ($actionName === static::ACTION_INSTALL) {
+                    $this->packageInstallerTrigger->installPackage($package);
+                }
+                if ($actionName === static::ACTION_UPDATE) {
+                    $this->packageInstallerTrigger->updatePackage($package);
+                }
+            }
+        }
+    }
+
+    /**
      * Composer autoloads classes needed for its own tasks only. Classes of other packages installed need to be loaded
      * separately.
      */
-    private function autoloadInstalledPackages(): void
+    private function autoloadInstalledPackages()
     {
         $vendorDir = $this->composer->getConfig()->get('vendor-dir');
         require_once($vendorDir . '/autoload.php');
     }
 
-    private function bootstrapOxidShopComponent(): void
+    private function bootstrapOxidShopComponent()
     {
         if ($this->isShopLaunched()) {
             $bootstrapFilePath = (new Facts())->getSourcePath() . DIRECTORY_SEPARATOR . 'bootstrap.php';
@@ -132,7 +147,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
     }
 
-    private function isShopLaunched(): bool
+    private function isShopLaunched()
     {
         $container = BootstrapContainerFactory::getBootstrapContainer();
         $shopStateService = $container->get(ShopStateServiceInterface::class);
@@ -140,7 +155,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         return $shopStateService->isLaunched();
     }
 
-    private function generateDefaultProjectConfigurationIfMissing(): void
+    private function generateDefaultProjectConfigurationIfMissing()
     {
         $bootstrapContainer = BootstrapContainerFactory::getBootstrapContainer();
         $projectConfigurationDao = $bootstrapContainer->get(ProjectConfigurationDaoInterface::class);
