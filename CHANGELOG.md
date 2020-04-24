@@ -20,6 +20,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Plugin updates oxid eshop components only if they have any updates
 
+## [4.1.1] - 2020-04-14
+
+### Changed
+- Component installer uses main container if shop is launched
+
 ## [4.1.0] - 2020-02-25
 
 ### Removed
