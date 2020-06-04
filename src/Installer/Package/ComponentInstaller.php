@@ -54,8 +54,6 @@ class ComponentInstaller extends AbstractPackageInstaller
         $bootstrapContainer = BootstrapContainerFactory::getBootstrapContainer();
         $shopStateService = $bootstrapContainer->get(ShopStateServiceInterface::class);
 
-        return $shopStateService->isLaunched()
-            ? ContainerFactory::getInstance()->getContainer()
-            : $bootstrapContainer;
+        return $bootstrapContainer;
     }
 }
