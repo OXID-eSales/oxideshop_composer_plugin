@@ -32,7 +32,17 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function isInstalled()
     {
-        return file_exists($this->formTargetPath());
+        if (file_exists($this->formTargetPath())) {
+            $question = "Update operation will overwrite {$this->getPackageName()} files in the directory ";
+            $question .= "source/modules. Do you want to overwrite them? (y/N) ";
+            if (!$this->askQuestion($question)) {
+                $this->getIO()->write("Updating module {$this->getPackageName()} files...");
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -43,8 +53,10 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     public function install($packagePath)
     {
         $this->getIO()->write("Installing module {$this->getPackageName()} package.");
-        $moduleInstaller = $this->getModuleInstaller();
-        $moduleInstaller->install($this->getOxidShopPackage($packagePath));
+        $bootstrapModuleInstaller = BootstrapContainerFactory::getBootstrapContainer()
+            ->get('oxid_esales.module.install.service.bootstrap_module_installer');
+
+        $bootstrapModuleInstaller->install($this->getOxidShopPackage($packagePath));
     }
 
     /**

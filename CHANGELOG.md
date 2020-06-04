@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Update symfony components to version 5
 
+## [5.0.1] - Unreleased
+
+### Fixed
+- Bootstrap container is used for the module installation
+
 ## [5.0.0] - 2020-04-24
 
 ### Removed
@@ -74,6 +79,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
 [master]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/b-6.x...master
+[5.0.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v4.1.1...v5.0.0
 [4.1.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v4.1.0...v4.1.1
 [4.1.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v4.0.0...v4.1.0
