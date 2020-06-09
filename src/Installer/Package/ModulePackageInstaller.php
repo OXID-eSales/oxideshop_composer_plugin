@@ -32,17 +32,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function isInstalled()
     {
-        if (file_exists($this->formTargetPath())) {
-            $question = "Update operation will overwrite {$this->getPackageName()} files in the directory ";
-            $question .= "source/modules. Do you want to overwrite them? (y/N) ";
-            if (!$this->askQuestion($question)) {
-                $this->getIO()->write("Updating module {$this->getPackageName()} files...");
-
-                return true;
-            }
-        }
-
-        return false;
+        return file_exists($this->formTargetPath());
     }
 
     /**
