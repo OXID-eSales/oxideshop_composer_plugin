@@ -12,7 +12,6 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\DIContainer\Service\ProjectYamlImportServiceInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\DIContainer\Service\ShopStateServiceInterface;
 use Psr\Container\ContainerInterface;
@@ -44,16 +43,10 @@ class ComponentInstaller extends AbstractPackageInstaller
      */
     protected function importServiceFile($packagePath)
     {
-        $projectYamlImportService = $this->getContainer()->get(ProjectYamlImportServiceInterface::class);
+        $projectYamlImportService = BootstrapContainerFactory::getBootstrapContainer()
+            ->get(ProjectYamlImportServiceInterface::class);
+
         $projectYamlImportService->removeNonExistingImports();
         $projectYamlImportService->addImport($packagePath);
-    }
-
-    private function getContainer(): ContainerInterface
-    {
-        $bootstrapContainer = BootstrapContainerFactory::getBootstrapContainer();
-        $shopStateService = $bootstrapContainer->get(ShopStateServiceInterface::class);
-
-        return $bootstrapContainer;
     }
 }
