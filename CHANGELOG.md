@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Update symfony components to version 5
 
-## [5.0.1] - Unreleased
+## [5.0.1] - 2020-07-03
 
 ### Fixed
 - Bootstrap container is used for the module installation
