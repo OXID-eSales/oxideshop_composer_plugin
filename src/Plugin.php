@@ -42,8 +42,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         return [
             'post-install-cmd'      => 'installPackages',
-            'post-update-cmd'       => 'installPackages',
-            'post-package-update'   => 'updatePackage',
+            'post-update-cmd'       => 'updatePackages',
             'pre-package-uninstall' => 'uninstallPackage',
         ];
     }
@@ -88,16 +87,18 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
     }
 
-    /**
-     * @param PackageEvent $event
-     */
-    public function updatePackage(PackageEvent $event): void
+    public function updatePackages(): void
     {
-        $package = $event->getOperation()->getTargetPackage();
-        if ($this->packageInstallerTrigger->supports($package->getType())) {
-            $this->autoloadInstalledPackages();
-            $this->bootstrapOxidShopComponent();
-            $this->packageInstallerTrigger->updatePackage($package);
+        $this->autoloadInstalledPackages();
+        $this->bootstrapOxidShopComponent();
+        $this->generateDefaultProjectConfigurationIfMissing();
+
+        $repo = $this->composer->getRepositoryManager()->getLocalRepository();
+
+        foreach ($repo->getPackages() as $package) {
+            if ($this->packageInstallerTrigger->supports($package->getType())) {
+                $this->packageInstallerTrigger->updatePackage($package);
+            }
         }
     }
 
