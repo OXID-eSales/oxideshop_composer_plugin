@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Bootstrap container is used for the module installation
+- Revert feature: plugin updates oxid eshop components only if they have any updates
 
 ## [5.0.0] - 2020-04-24
 
