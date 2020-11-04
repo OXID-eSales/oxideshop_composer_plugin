@@ -122,10 +122,6 @@ class ModulePackageInstaller extends AbstractPackageInstaller
         $package = new OxidEshopPackage($this->getPackage()->getName(), $packagePath);
         $extraParameters = $this->getPackage()->getExtra();
 
-        if (isset($extraParameters['oxideshop']['blacklist-filter'])) {
-            $package->setBlackListFilters($extraParameters['oxideshop']['blacklist-filter']);
-        }
-
         if (isset($extraParameters['oxideshop']['source-directory'])) {
             $package->setSourceDirectory($extraParameters['oxideshop']['source-directory']);
         }

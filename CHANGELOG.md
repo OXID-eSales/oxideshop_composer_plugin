@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Update symfony components to version 5
 
+### Removed
+- Module blacklist-filter functionality
+
 ## [5.1.1] - Unreleased
 
 ### Deprecated
