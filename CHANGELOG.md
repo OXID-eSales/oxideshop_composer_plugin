@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.1.1] - Unreleased
+
+### Deprecated
+- Module blacklist-filter functionality
+
 ## [5.1.0] - 2020-11-04
 
 ### Added
@@ -79,6 +84,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
+[5.1.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.1.0...v5.1.1
 [5.1.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.0.1...v5.1.0
 [5.0.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v4.1.1...v5.0.0
