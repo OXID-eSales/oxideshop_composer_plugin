@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Update symfony components to version 5
 
+## [5.1.0] - 2020-11-04
+
+### Added
+- Support for composer v2
+
 ## [5.0.1] - 2020-07-03
 
 ### Fixed
@@ -78,7 +83,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
-[master]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/b-6.x...master
+[5.1.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.0.1...v5.1.0
 [5.0.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v4.1.1...v5.0.0
 [4.1.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v4.1.0...v4.1.1
