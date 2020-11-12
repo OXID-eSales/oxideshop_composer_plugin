@@ -22,9 +22,11 @@ class ThemePackageInstaller extends AbstractPackageInstaller
     public const PATH_TO_THEMES = "Application/views";
 
     /**
+     * @param string $packagePath
+     *
      * @return bool
      */
-    public function isInstalled()
+    public function isInstalled(string $packagePath)
     {
         return file_exists($this->formThemeTargetPath() . '/' . static::METADATA_FILE_NAME);
     }
@@ -69,7 +71,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
             '- ' . Path::join($this->getRootDirectory(), $assetsPath) . PHP_EOL .
             'Do you want to overwrite them? (y/N) ';
 
-        if ($this->askQuestionIfNotInstalled($question)) {
+        if ($this->askQuestionIfNotInstalled($question, $packagePath)) {
             $this->writeCopyingMessage();
             $this->copyPackage($packagePath);
             $this->writeDoneMessage();

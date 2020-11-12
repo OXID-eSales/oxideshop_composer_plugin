@@ -28,11 +28,15 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     public const MODULES_DIRECTORY = 'modules';
 
     /**
+     * @param string $packagePath
+     *
      * @return bool
      */
-    public function isInstalled()
+    public function isInstalled(string $packagePath)
     {
-        return file_exists($this->formTargetPath());
+        $package = $this->getOxidShopPackage($packagePath);
+
+        return $this->getBootstrapModuleInstaller()->isInstalled($package);
     }
 
     /**
@@ -56,29 +60,15 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     }
 
     /**
-     * Update module files.
-     *
      * @param string $packagePath
      */
     public function update($packagePath)
     {
         $package = $this->getOxidShopPackage($packagePath);
 
-        /**
-         * We check only files because during the first composer update modules may not have installed configuration
-         * and module files are getting overwritten without asking if ModuleInstallerInterface is used.
-         */
-        if ($this->getModuleFilesInstaller()->isInstalled($package)) {
-            $packageName = $this->highlightMessage($this->getPackageName());
-            $targetDirectory = $this->highlightMessage($this->getModuleTargetDir());
-
-            $question = "Update operation will overwrite {$packageName} files in the directory ";
-            $question .= "source/modules/{$targetDirectory}. Do you want to overwrite them? (y/N) ";
-
-            if ($this->askQuestion($question)) {
-                $this->getIO()->write("Updating module {$this->getPackageName()} files...");
-                $this->getBootstrapModuleInstaller()->install($package);
-            }
+        if ($this->getBootstrapModuleInstaller()->isInstalled($package)) {
+            $this->getIO()->write("Updating module {$this->getPackageName()} files...");
+            $this->getBootstrapModuleInstaller()->install($package);
         } else {
             $this->install($packagePath);
         }
@@ -109,14 +99,6 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     }
 
     /**
-     * @return ModuleFilesInstallerInterface
-     */
-    private function getModuleFilesInstaller(): ModuleFilesInstallerInterface
-    {
-        return BootstrapContainerFactory::getBootstrapContainer()->get(ModuleFilesInstallerInterface::class);
-    }
-
-    /**
      * @param string $packagePath
      *
      * @return OxidEshopPackage
@@ -126,28 +108,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
         $package = new OxidEshopPackage($this->getPackage()->getName(), $packagePath);
         $extraParameters = $this->getPackage()->getExtra();
 
-        if (isset($extraParameters['oxideshop']['source-directory'])) {
-            $package->setSourceDirectory($extraParameters['oxideshop']['source-directory']);
-        }
-
-        if (isset($extraParameters['oxideshop']['target-directory'])) {
-            $package->setTargetDirectory($extraParameters['oxideshop']['target-directory']);
-        }
-
         return $package;
-    }
-
-    /**
-     * @return string
-     */
-    protected function formTargetPath()
-    {
-        $targetDirectory = $this->getExtraParameterValueByKey(
-            static::EXTRA_PARAMETER_KEY_TARGET,
-            $this->getPackage()->getName()
-        );
-
-        return Path::join($this->getRootDirectory(), static::MODULES_DIRECTORY, $targetDirectory);
     }
 
     private function getBootstrapModuleInstaller(): ModuleInstallerInterface

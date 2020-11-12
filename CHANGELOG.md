@@ -11,9 +11,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Update symfony components to version 5
+- Use bootstrap container for the modulePackageInstaller
 
 ### Removed
 - Module blacklist-filter functionality
+- Ask question to update module package files 
 
 ## [5.1.1] - Unreleased
 

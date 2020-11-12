@@ -67,8 +67,10 @@ class PackageInstallerTrigger extends LibraryInstaller
     public function installPackage(PackageInterface $package)
     {
         $installer = $this->createInstaller($package);
-        if (!$installer->isInstalled()) {
-            $installer->install($this->getInstallPath($package));
+
+        $packagePath = $this->getInstallPath($package);
+        if (!$installer->isInstalled($packagePath)) {
+            $installer->install($packagePath);
         }
     }
 

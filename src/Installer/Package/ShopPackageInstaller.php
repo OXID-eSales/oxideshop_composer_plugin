@@ -33,9 +33,11 @@ class ShopPackageInstaller extends AbstractPackageInstaller
         . AbstractPackageInstaller::BLACKLIST_ALL_FILES;
 
     /**
+     * @param string $packagePath
+     *
      * @return bool
      */
-    public function isInstalled()
+    public function isInstalled(string $packagePath)
     {
         return file_exists(
             Path::join($this->getTargetDirectoryOfShopSource(), self::FILE_TO_CHECK_IF_PACKAGE_INSTALLED)
@@ -73,7 +75,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
                     '- ' . $shopSourceDirectory . PHP_EOL .
                     'Do you want to overwrite them? (y/N) ';
 
-        if ($this->askQuestionIfNotInstalled($question)) {
+        if ($this->askQuestionIfNotInstalled($question, $packagePath)) {
             $this->writeCopyingMessage();
             $this->copyPackage($packagePath);
             $this->writeDoneMessage();

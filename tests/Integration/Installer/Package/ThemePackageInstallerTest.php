@@ -31,7 +31,8 @@ class ThemePackageInstallerTest extends AbstractPackageInstallerTest
     {
         $installer = $this->getPackageInstaller('test-vendor/test-package');
 
-        $this->assertFalse($installer->isInstalled());
+        $packagePath = $this->getVirtualFileSystemRootPath('test-vendor/test-package');
+        $this->assertFalse($installer->isInstalled($packagePath));
     }
 
     public function testThemeIsInstalledIfAlreadyExistsInShop()
@@ -42,7 +43,8 @@ class ThemePackageInstallerTest extends AbstractPackageInstallerTest
 
         $installer = $this->getPackageInstaller('test-vendor/test-package');
 
-        $this->assertTrue($installer->isInstalled());
+        $packagePath = $this->getVirtualFileSystemRootPath('source/Application/views/test-package');
+        $this->assertTrue($installer->isInstalled($packagePath));
     }
 
     public function testThemeIsInstalledAfterInstallProcess()
@@ -52,9 +54,11 @@ class ThemePackageInstallerTest extends AbstractPackageInstallerTest
         ]);
 
         $installer = $this->getPackageInstaller('test-vendor/test-package');
-        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $this->assertTrue($installer->isInstalled());
+        $packagePath = $this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package');
+        $installer->install($packagePath);
+
+        $this->assertTrue($installer->isInstalled($packagePath));
     }
 
     public function testThemeFilesAreCopiedAfterInstallProcess()
@@ -427,9 +431,11 @@ class ThemePackageInstallerTest extends AbstractPackageInstallerTest
                 ]
             ]
         ]);
-        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $this->assertTrue($installer->isInstalled());
+        $packagePath = $this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package');
+        $installer->install($packagePath);
+
+        $this->assertTrue($installer->isInstalled($packagePath));
         $this->assertVirtualFileEquals(
             'vendor/test-vendor/test-package/theme.php',
             'source/Application/views/custom-package/theme.php'

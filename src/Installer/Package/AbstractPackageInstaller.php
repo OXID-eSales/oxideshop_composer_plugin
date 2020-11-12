@@ -171,20 +171,23 @@ abstract class AbstractPackageInstaller
 
     /**
      * @param string $messageToAsk
+     * @param string $packagePath
      *
      * @return bool
      */
-    protected function askQuestionIfNotInstalled($messageToAsk)
+    protected function askQuestionIfNotInstalled(string $messageToAsk, string $packagePath)
     {
-        return $this->isInstalled() ? $this->askQuestion($messageToAsk) : true;
+        return $this->isInstalled($packagePath) ? $this->askQuestion($messageToAsk) : true;
     }
 
     /**
      * Check whether given package is already installed.
      *
+     * @param string $packagePath
+     *
      * @return bool
      */
-    public function isInstalled()
+    public function isInstalled(string $packagePath)
     {
         return false;
     }

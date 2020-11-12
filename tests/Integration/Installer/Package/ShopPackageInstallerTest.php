@@ -15,7 +15,7 @@ class ShopPackageInstallerTest extends AbstractShopPackageInstallerTest
     {
         $installer = $this->getPackageInstaller();
 
-        $this->assertFalse($installer->isInstalled());
+        $this->assertFalse($installer->isInstalled(''));
     }
 
     public function testShopIsInstalledIfSourceFilesAlreadyExist()
@@ -26,7 +26,7 @@ class ShopPackageInstallerTest extends AbstractShopPackageInstallerTest
 
         $installer = $this->getPackageInstaller();
 
-        $this->assertTrue($installer->isInstalled());
+        $this->assertTrue($installer->isInstalled($this->getVirtualFileSystemRootPath('')));
         $this->assertVirtualFileExists('source/index.php');
     }
 
@@ -37,9 +37,11 @@ class ShopPackageInstallerTest extends AbstractShopPackageInstallerTest
         ]);
 
         $installer = $this->getPackageInstaller();
-        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
 
-        $this->assertTrue($installer->isInstalled());
+        $packagePath = $this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package');
+        $installer->install($packagePath);
+
+        $this->assertTrue($installer->isInstalled($packagePath));
     }
 
     public function testShopFilesAreCopiedAfterInstallProcess()
