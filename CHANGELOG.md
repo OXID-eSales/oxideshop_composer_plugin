@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 - Module blacklist-filter functionality
-- Ask question to update module package files 
+- Ask question to update module package files
+- Support for module source-directory and target-directory in composer.json
 
 ## [5.1.1] - Unreleased
 
