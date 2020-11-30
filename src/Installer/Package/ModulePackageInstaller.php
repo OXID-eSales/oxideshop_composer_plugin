@@ -24,9 +24,6 @@ use Webmozart\PathUtil\Path;
  */
 class ModulePackageInstaller extends AbstractPackageInstaller
 {
-    /** @var string MODULES_DIRECTORY */
-    public const MODULES_DIRECTORY = 'modules';
-
     /**
      * @param string $packagePath
      *
@@ -34,9 +31,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     public function isInstalled(string $packagePath)
     {
-        $package = $this->getOxidShopPackage($packagePath);
-
-        return $this->getBootstrapModuleInstaller()->isInstalled($package);
+        return $this->getBootstrapModuleInstaller()->isInstalled($this->getOxidShopPackage($packagePath));
     }
 
     /**
@@ -44,14 +39,14 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      *
      * @param string $packagePath
      */
-    public function install($packagePath)
+    public function install($packagePath): void
     {
         $this->getIO()->write("Installing module {$this->getPackageName()} package.");
         $this->getBootstrapModuleInstaller()->install($this->getOxidShopPackage($packagePath));
     }
 
     /**
-     * @param PackageInterface $package
+     * @param string $packagePath
      */
     public function uninstall(string $packagePath): void
     {
@@ -105,10 +100,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     private function getOxidShopPackage(string $packagePath): OxidEshopPackage
     {
-        $package = new OxidEshopPackage($this->getPackage()->getName(), $packagePath);
-        $extraParameters = $this->getPackage()->getExtra();
-
-        return $package;
+        return new OxidEshopPackage($packagePath);
     }
 
     private function getBootstrapModuleInstaller(): ModuleInstallerInterface
