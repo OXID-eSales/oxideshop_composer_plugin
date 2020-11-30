@@ -69,8 +69,8 @@ class ModulePackageInstaller extends AbstractPackageInstaller
          * and module files are getting overwritten without asking if ModuleInstallerInterface is used.
          */
         if ($this->getModuleFilesInstaller()->isInstalled($package)) {
-            $question = "Update operation will overwrite {$this->getPackageName()} files in the directory ";
-            $question .= "source/modules. Do you want to overwrite them? (y/N) ";
+            $question = "Update operation will overwrite <options=bold>{$this->getPackageName()}</> files in the directory ";
+            $question .= "source/modules/<options=bold>{$this->getModuleTargetDir()}</>. Do you want to overwrite them? (y/N) ";
             if ($this->askQuestion($question)) {
                 $this->getIO()->write("Updating module {$this->getPackageName()} files...");
                 $this->getBootstrapModuleInstaller()->install($package);
@@ -150,5 +150,16 @@ class ModulePackageInstaller extends AbstractPackageInstaller
     {
         return BootstrapContainerFactory::getBootstrapContainer()
             ->get('oxid_esales.module.install.service.bootstrap_module_installer');
+    }
+
+
+    /**
+     * returns module's installation target direcory
+     *
+     * @return string
+     */
+    protected function getModuleTargetDir()
+    {
+        return $this->getPackage()->getExtra()["oxideshop"]["target-directory"] ?? "";
     }
 }
