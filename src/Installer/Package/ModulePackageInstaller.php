@@ -69,8 +69,10 @@ class ModulePackageInstaller extends AbstractPackageInstaller
          * and module files are getting overwritten without asking if ModuleInstallerInterface is used.
          */
         if ($this->getModuleFilesInstaller()->isInstalled($package)) {
-            $question = "Update operation will overwrite <options=bold>{$this->getPackageName()}</> files in the directory ";
-            $question .= "source/modules/<options=bold>{$this->getModuleTargetDir()}</>. Do you want to overwrite them? (y/N) ";
+            $packageName = "<options=bold>" . $this->getPackageName() . "</>";
+            $targetDirectory = "<options=bold>" . $this->getModuleTargetDir() . "</>";
+            $question = "Update operation will overwrite {$packageName} files in the directory ";
+            $question .= "source/modules/{$targetDirectory}. Do you want to overwrite them? (y/N) ";
             if ($this->askQuestion($question)) {
                 $this->getIO()->write("Updating module {$this->getPackageName()} files...");
                 $this->getBootstrapModuleInstaller()->install($package);
