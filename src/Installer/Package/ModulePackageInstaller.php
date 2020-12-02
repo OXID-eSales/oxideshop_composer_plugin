@@ -24,7 +24,12 @@ use Webmozart\PathUtil\Path;
  */
 class ModulePackageInstaller extends AbstractPackageInstaller
 {
-    /** @var string MODULES_DIRECTORY */
+
+    /**
+     * @deprecated will be removed in next major version
+     *
+     * @var string MODULES_DIRECTORY
+     */
     public const MODULES_DIRECTORY = 'modules';
 
     /**
