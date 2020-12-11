@@ -266,7 +266,7 @@ abstract class AbstractPackageInstaller
      */
     protected function getUpdatingMessage(string $packageType): string
     {
-        return $this->getMessagePrefix() . "Updating {$packageType} {$this->getPackage()->getName()}";
+        return $this->getMessagePrefix() . "Updating {$packageType} <options=bold>{$this->getPackage()->getName()}</>";
     }
 
     /**
