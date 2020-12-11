@@ -71,7 +71,7 @@ class ModulePackageInstaller extends AbstractPackageInstaller
         if ($this->getModuleFilesInstaller()->isInstalled($package)) {
             $packageName = $this->highlightMessage($this->getPackageName());
             $targetDirectory = $this->highlightMessage($this->getModuleTargetDir());
-            
+
             $question = "Update operation will overwrite {$packageName} files in the directory ";
             $question .= "source/modules/{$targetDirectory}. Do you want to overwrite them? (y/N) ";
 

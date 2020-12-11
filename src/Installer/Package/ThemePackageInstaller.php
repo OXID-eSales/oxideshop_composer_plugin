@@ -50,7 +50,6 @@ class ThemePackageInstaller extends AbstractPackageInstaller
     public function update($packagePath)
     {
         $this->writeUpdatingMessage($this->getPackageTypeDescription());
-        
         $themeDirectoryName = $this->formThemeDirectoryName($this->getPackage());
 
         $templatesPath = str_replace(
