@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [master] - Unreleased
 
+### Added
+- Improve messages readability by sharpening component names [PR-26](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/26)
+
 ### Changed
 - Update symfony components to version 5
 
