@@ -50,10 +50,21 @@ class ThemePackageInstaller extends AbstractPackageInstaller
     public function update($packagePath)
     {
         $this->writeUpdatingMessage($this->getPackageTypeDescription());
+        
         $themeDirectoryName = $this->formThemeDirectoryName($this->getPackage());
-        $boldThemeDirectoryName = "<options=bold>" . $themeDirectoryName . "</>";
-        $templatesPath = str_replace($themeDirectoryName, $boldThemeDirectoryName, $this->formThemeTargetPath());
-        $assetsPath = str_replace($themeDirectoryName, $boldThemeDirectoryName, $this->formAssetsDirectoryName());
+
+        $templatesPath = str_replace(
+            $themeDirectoryName,
+            $this->highlightMessage($themeDirectoryName),
+            $this->formThemeTargetPath()
+        );
+
+        $assetsPath = str_replace(
+            $themeDirectoryName,
+            $this->highlightMessage($themeDirectoryName),
+            $this->formAssetsDirectoryName()
+        );
+
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
             '- ' . $templatesPath . PHP_EOL .
             '- ' . Path::join($this->getRootDirectory(), $assetsPath) . PHP_EOL .

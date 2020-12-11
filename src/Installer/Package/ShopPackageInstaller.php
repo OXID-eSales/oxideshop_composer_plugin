@@ -62,9 +62,15 @@ class ShopPackageInstaller extends AbstractPackageInstaller
      */
     public function update($packagePath)
     {
+        $shopSourceDirectory = str_replace(
+            "source",
+            $this->highlightMessage("source"),
+            $this->getTargetDirectoryOfShopSource()
+        );
+
         $this->writeUpdatingMessage($this->getPackageTypeDescription());
         $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
-            '- ' . str_replace("source", "<options=bold>source</>", $this->getTargetDirectoryOfShopSource()) . PHP_EOL .
+                    '- ' . $shopSourceDirectory . PHP_EOL .
                     'Do you want to overwrite them? (y/N) ';
 
         if ($this->askQuestionIfNotInstalled($question)) {

@@ -266,7 +266,8 @@ abstract class AbstractPackageInstaller
      */
     protected function getUpdatingMessage(string $packageType): string
     {
-        return $this->getMessagePrefix() . "Updating {$packageType} <options=bold>{$this->getPackage()->getName()}</>";
+        $packageName = $this->highlightMessage($this->getPackage()->getName());
+        return $this->getMessagePrefix() . "Updating {$packageType} {$packageName}";
     }
 
     /**
@@ -315,5 +316,10 @@ abstract class AbstractPackageInstaller
     protected function getSkippedMessage(): string
     {
         return 'Skipped';
+    }
+
+    protected function highlightMessage($message): string
+    {
+        return '<options=bold>' . $message . '</>';
     }
 }
