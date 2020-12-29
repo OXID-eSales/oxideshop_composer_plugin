@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Deprecated
 - Module blacklist-filter functionality
+- `OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller::MODULES_DIRECTORY`
 
 ## [5.1.0] - 2020-11-04
 
