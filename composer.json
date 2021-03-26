@@ -10,7 +10,6 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": "^7.3",
     "composer-plugin-api": "^1.0 || ^2.0",
     "symfony/filesystem": "^5.0.4",
     "webmozart/glob": "^4.1",
