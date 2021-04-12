@@ -4,15 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
-
-### Deprecated
-- `OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller::MODULES_DIRECTORY`
-
-## [5.1.1] - Unreleased
+## [5.1.1] - 2021-04-12
 
 ### Deprecated
 - Module blacklist-filter functionality
+- `OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller::MODULES_DIRECTORY`
 
 ## [5.1.0] - 2020-11-04
 
