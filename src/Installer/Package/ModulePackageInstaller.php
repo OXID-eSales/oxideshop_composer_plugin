@@ -24,7 +24,6 @@ use Webmozart\PathUtil\Path;
  */
 class ModulePackageInstaller extends AbstractPackageInstaller
 {
-
     /**
      * @deprecated will be removed in next major version
      *
