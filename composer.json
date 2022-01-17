@@ -29,5 +29,10 @@
   },
   "extra": {
     "class": "OxidEsales\\ComposerPlugin\\Plugin"
+  },
+  "scripts": {
+    "phpcs": "phpcs --standard=PSR12 --extensions=php src tests",
+    "unit": "phpunit tests -c tests/phpunit.xml",
+    "unit-coverage": "XDEBUG_MODE=coverage phpunit tests --coverage-html=./coverage -c tests/phpunit.xml"
   }
 }
