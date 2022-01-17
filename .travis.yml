@@ -4,14 +4,14 @@ notifications:
   email: false
 
 php:
-  - "7.1"
-  - "7.2"
-  - "7.3"
+  - "7.4"
+  - "8.0"
+  - "8.1"
 
 install:
   - composer install
 
 script:
   - find {src,tests} -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
-  - vendor/bin/phpcs --standard=PSR12 --extensions=php src tests
-  - vendor/bin/phpunit tests
+  - composer phpcs
+  - composer unit

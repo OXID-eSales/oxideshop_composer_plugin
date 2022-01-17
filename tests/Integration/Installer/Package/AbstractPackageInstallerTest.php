@@ -15,7 +15,7 @@ use Webmozart\PathUtil\Path;
 
 abstract class AbstractPackageInstallerTest extends \PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->setupVirtualFileSystem();
     }
@@ -65,7 +65,7 @@ abstract class AbstractPackageInstallerTest extends \PHPUnit\Framework\TestCase
 
     protected function assertVirtualFileNotExists($path)
     {
-        $this->assertFileNotExists($this->getVirtualFileSystemRootPath($path));
+        $this->assertFileDoesNotExist($this->getVirtualFileSystemRootPath($path));
     }
 
     protected function assertVirtualFileEquals($expected, $actual)

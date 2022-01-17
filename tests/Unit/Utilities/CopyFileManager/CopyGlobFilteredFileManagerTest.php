@@ -343,14 +343,14 @@ class CopyGlobFilteredFileManagerTest extends \PHPUnit\Framework\TestCase
     protected function assertFilesNotExistInSource($paths)
     {
         foreach ($paths as $path) {
-            $this->assertFileNotExists($this->getSourcePath($path));
+            $this->assertFileDoesNotExist($this->getSourcePath($path));
         }
     }
 
     protected function assertFilesNotExistInDestination($paths)
     {
         foreach ($paths as $path) {
-            $this->assertFileNotExists($this->getDestinationPath($path));
+            $this->assertFileDoesNotExist($this->getDestinationPath($path));
         }
     }
 
