@@ -1,0 +1,28 @@
+on: [push, pull_request]
+name: CI
+jobs:
+  phpcs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        run: composer install
+
+      - name: Run PhpCs
+        run: composer phpcs
+
+  phpunit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        run: composer install
+
+      - name: Run tests
+        run: composer phpunit
