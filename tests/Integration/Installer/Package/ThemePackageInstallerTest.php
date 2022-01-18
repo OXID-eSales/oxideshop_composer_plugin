@@ -443,4 +443,41 @@ class ThemePackageInstallerTest extends AbstractPackageInstallerTest
         $this->assertVirtualFileNotExists('source/out/custom-package/style.pdf');
         $this->assertVirtualFileNotExists('source/out/custom-package/custom_style.pdf');
     }
+
+    public function testThemeFilesAreCopiedFromCustomSourceDirectory()
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'custom-source/theme.php' => '<?php',
+            'custom-source/theme.txt' => 'txt',
+            'out/style.css' => 'css',
+            'out/style.pdf' => 'PDF',
+            'custom_assets/custom_style.css' => 'css',
+            'custom_assets/custom_style.pdf' => 'PDF',
+        ]);
+
+        $installer = $this->getPackageInstaller('test-vendor/test-package', '1.0.0', [
+            'oxideshop' => [
+                'source-directory' => 'custom-source',
+                'assets-directory' => 'custom_assets',
+                'target-directory' => 'custom-package',
+                'blacklist-filter' => [
+                    '**/*.txt',
+                    '**/*.pdf',
+                ]
+            ]
+        ]);
+
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileExists('source/Application/views/custom-package/theme.php');
+        $this->assertVirtualFileNotExists('source/Application/views/custom-package/theme.txt');
+
+        $this->assertVirtualFileExists('source/out/custom-package/custom_style.css');
+        $this->assertVirtualFileNotExists('source/out/custom-package/custom_style.pdf');
+
+        $this->assertVirtualFileNotExists('source/Application/views/custom-package/.git/HEAD');
+        $this->assertVirtualFileNotExists('source/Application/views/custom-package/.git/index');
+        $this->assertVirtualFileNotExists('source/Application/views/custom-package/.git/objects/ff/fftest');
+        $this->assertVirtualFileNotExists('source/Application/views/custom-package/.gitignore');
+    }
 }
