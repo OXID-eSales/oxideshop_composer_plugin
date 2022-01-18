@@ -78,7 +78,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
     protected function copyPackage($packagePath)
     {
         $filtersToApply = [
-            [Path::join($this->formSourcePath($this->formAssetsDirectoryName()), AbstractPackageInstaller::BLACKLIST_ALL_FILES)],
+            [Path::join($this->formAssetsDirectoryName(), AbstractPackageInstaller::BLACKLIST_ALL_FILES)],
             $this->getBlacklistFilterValue(),
             $this->getVCSFilter(),
         ];
@@ -128,9 +128,6 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $target = $this->getRootDirectory() . '/out/' . $this->formThemeDirectoryName($package);
 
         $assetsDirectory = $this->formAssetsDirectoryName();
-        $assetsDirectory = ! empty($this->formSourcePath('')) ?
-            Path::join($this->formSourcePath(''), $assetsDirectory):
-            $assetsDirectory;
         $source = $packagePath . '/' . $assetsDirectory;
 
         if (file_exists($source)) {
