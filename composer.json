@@ -1,32 +1,39 @@
 {
   "name": "oxid-esales/oxideshop-composer-plugin",
   "description": "This file is mean to be used to install OXID eShop compilation.",
-  "type": "composer-plugin",
-  "keywords": ["oxidEshop", "plugin"],
-  "homepage": "https://www.oxid-esales.com/en/home.html",
   "license": [
     "GPL-3.0-only"
   ],
-  "minimum-stability": "dev",
-  "prefer-stable": true,
+  "type": "composer-plugin",
+  "keywords": [
+    "oxidEshop",
+    "plugin"
+  ],
+  "homepage": "https://www.oxid-esales.com/en/home.html",
   "require": {
-    "composer-plugin-api": "^1.0 || ^2.0",
-    "symfony/filesystem": "^5.0.4",
+    "composer-plugin-api": "^2.0",
+    "symfony/filesystem": "*",
     "webmozart/glob": "^4.1",
     "webmozart/path-util": "^2.3"
   },
   "require-dev": {
-    "phpunit/phpunit": "~9",
+    "composer/composer": "^2.0",
     "mikey179/vfsstream": "^1.6",
+    "phpunit/phpunit": "^9",
     "squizlabs/php_codesniffer": "3.*",
-    "symfony/yaml": "^v5.0.5",
-    "composer/composer": "^1.0 || ^2.0"
+    "symfony/yaml": "*"
   },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "autoload": {
-    "psr-4": {"OxidEsales\\ComposerPlugin\\": "src"}
+    "psr-4": {
+      "OxidEsales\\ComposerPlugin\\": "src"
+    }
   },
   "autoload-dev": {
-    "psr-4": { "OxidEsales\\ComposerPlugin\\Tests\\": "tests/" }
+    "psr-4": {
+      "OxidEsales\\ComposerPlugin\\Tests\\": "tests/"
+    }
   },
   "extra": {
     "class": "OxidEsales\\ComposerPlugin\\Plugin"
