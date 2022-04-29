@@ -1,8 +1,8 @@
 OXID eShop composer plugin
 ==========================
 
-.. image:: https://travis-ci.org/OXID-eSales/oxideshop_composer_plugin.svg?branch=master
-  :target: https://travis-ci.org/OXID-eSales/oxideshop_composer_plugin
+.. image:: https://app.travis-ci.com/OXID-eSales/oxideshop_composer_plugin.svg?branch=master
+  :target: https://app.travis-ci.com/OXID-eSales/oxideshop_composer_plugin
 
 .. image:: https://img.shields.io/packagist/v/oxid-esales/oxideshop-composer-plugin.svg?maxAge=3600
   :target: https://packagist.org/packages/oxid-esales/oxideshop-composer-plugin

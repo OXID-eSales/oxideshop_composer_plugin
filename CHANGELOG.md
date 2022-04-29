@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 - Support for Composer v1
 
+## [6.0.1] - Unreleased
+
+### Fixed
+- Fix failing unit tests
+
 ## [6.0.0] - 2021-07-06
 
 ### Added
@@ -24,6 +29,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Support for module source-directory and target-directory in composer.json
     - `OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller::MODULES_DIRECTORY`
    
+## [5.2.1] - 2022-03-31
+
+### Fixed
+- Fix symfony/filesystem copy method use case
+
 ## [5.2.0] - 2021-04-12
 
 ### Changed
@@ -109,7 +119,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
+[6.0.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.1.2...v6.0.0
+[5.2.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.2.0...v5.2.1
 [5.2.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.1.1...v5.2.0
 [5.1.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.1.0...v5.1.1
 [5.1.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.0.1...v5.1.0
