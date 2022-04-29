@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 - Support for Composer v1
 
-## [6.0.1] - Unreleased
-
 ### Fixed
 - Fix failing unit tests
 
@@ -119,7 +117,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
-[6.0.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v6.0.0...v6.0.1
+[7.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v6.0.0...b-7.0.x
 [6.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.1.2...v6.0.0
 [5.2.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.2.0...v5.2.1
 [5.2.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.1.1...v5.2.0
