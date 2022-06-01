@@ -21,9 +21,8 @@ class PackageInstallerTriggerTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetShopSourcePathByConfiguration()
     {
-        $composerConfigMock = $this->getMockBuilder(Config::class)->getMock();
         $composerMock = $this->getMockBuilder(Composer::class)->getMock();
-        $composerMock->method('getConfig')->withAnyParameters()->willReturn($composerConfigMock);
+        $composerMock->method('getConfig')->withAnyParameters()->willReturn(new Config());
 
         $packageInstallerStub = new PackageInstallerTrigger(new NullIO(), $composerMock);
         $packageInstallerStub->setSettings([
@@ -37,9 +36,8 @@ class PackageInstallerTriggerTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetShopSourcePathFor60()
     {
-        $composerConfigMock = $this->getMockBuilder(Config::class)->getMock();
         $composerMock = $this->getMockBuilder(Composer::class)->getMock();
-        $composerMock->method('getConfig')->withAnyParameters()->willReturn($composerConfigMock);
+        $composerMock->method('getConfig')->withAnyParameters()->willReturn(new Config());
 
         $packageInstallerStub = new PackageInstallerTrigger(new NullIO(), $composerMock);
         $result = $packageInstallerStub->getShopSourcePath();
