@@ -27,6 +27,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Support for module source-directory and target-directory in composer.json
     - `OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller::MODULES_DIRECTORY`
    
+## [5.2.2] - 2022-06-22
+
+### Fixed
+- Fix autoloading of components during the uninstall process
+  [#0007309](https://bugs.oxid-esales.com/view.php?id=7309)
+  [#0007123](https://bugs.oxid-esales.com/view.php?id=7123)
+  [PR-27](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/27)
+
 ## [5.2.1] - 2022-03-31
 
 ### Fixed
@@ -119,6 +127,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [7.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v6.0.0...b-7.0.x
 [6.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.1.2...v6.0.0
+[5.2.2]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.2.1...v5.2.2
 [5.2.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.2.0...v5.2.1
 [5.2.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.1.1...v5.2.0
 [5.1.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.1.0...v5.1.1
