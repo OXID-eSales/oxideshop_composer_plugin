@@ -116,7 +116,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function uninstallPackage(PackageEvent $event): void
     {
         $this->autoloadInstalledPackages();
-        
+
         $package = $event->getOperation()->getPackage();
         if ($this->packageInstallerTrigger->supports($package->getType())) {
             $this->bootstrapOxidShopComponent();
