@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.2] - Unreleased
+
+### Fixed
+- Fix autoloading of components during the uninstall process [#0007309](https://bugs.oxid-esales.com/view.php?id=7309) [PR-27](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/27)
+
 ## [5.2.1] - 2022-03-31
 
 ### Fixed
@@ -95,6 +100,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
+[5.2.2]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.2.1...v5.2.2
 [5.2.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.2.0...v5.2.1
 [5.2.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.1.1...v5.2.0
 [5.1.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.1.0...v5.1.1
