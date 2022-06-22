@@ -4,10 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.2.2] - Unreleased
+## [5.2.2] - 2022-06-22
 
-### Fixed
-- Fix autoloading of components during the uninstall process [#0007309](https://bugs.oxid-esales.com/view.php?id=7309) [PR-27](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/27)
+### Fixedk
+- Fix autoloading of components during the uninstall process
+  [#0007309](https://bugs.oxid-esales.com/view.php?id=7309)
+  [#0007123](https://bugs.oxid-esales.com/view.php?id=7123)
+  [PR-27](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/27)
 
 ## [5.2.1] - 2022-03-31
 
