@@ -13,8 +13,8 @@ Packages are recognised by their type, specified in composer.json file.
 Available types are:
 
 - oxideshop - Main shop package is installed into source directory.
-- oxideshop-module - Modules depends on main shop package.
-- oxideshop-theme - Themes, which are installed into source directory. Themes depends on main shop package.
+- oxideshop-module - Modules depend on main shop package.
+- oxideshop-theme - Themes, which are installed into source directory, depend on main shop package.
 
 Bugs and Issues
 ---------------
