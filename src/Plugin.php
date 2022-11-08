@@ -14,6 +14,7 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Installer\PackageEvent;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
+use Composer\Util\PackageSorter;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
@@ -22,9 +23,6 @@ use OxidEsales\EshopCommunity\Internal\Framework\DIContainer\Service\ShopStateSe
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ProjectConfigurationDaoInterface;
 use OxidEsales\Facts\Facts;
 
-/**
- * Class Plugin.
- */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
     /** @var Composer */
@@ -77,18 +75,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
     }
 
-    /**
-     * Run installation for oxid packages.
-     */
     public function installPackages(): void
     {
         $this->autoloadInstalledPackages();
         $this->bootstrapOxidShopComponent();
         $this->generateDefaultProjectConfigurationIfMissing();
 
-        $repo = $this->composer->getRepositoryManager()->getLocalRepository();
-
-        foreach ($repo->getPackages() as $package) {
+        foreach ($this->getPackagesSorted() as $package) {
             if ($this->packageInstallerTrigger->supports($package->getType())) {
                 $this->packageInstallerTrigger->installPackage($package);
             }
@@ -101,9 +94,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->bootstrapOxidShopComponent();
         $this->generateDefaultProjectConfigurationIfMissing();
 
-        $repo = $this->composer->getRepositoryManager()->getLocalRepository();
-
-        foreach ($repo->getPackages() as $package) {
+        foreach ($this->getPackagesSorted() as $package) {
             if ($this->packageInstallerTrigger->supports($package->getType())) {
                 $this->packageInstallerTrigger->updatePackage($package);
             }
@@ -144,10 +135,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     private function isShopLaunched(): bool
     {
-        $container = BootstrapContainerFactory::getBootstrapContainer();
-        $shopStateService = $container->get(ShopStateServiceInterface::class);
-
-        return $shopStateService->isLaunched();
+        return BootstrapContainerFactory::getBootstrapContainer()
+            ->get(ShopStateServiceInterface::class)
+            ->isLaunched();
     }
 
     private function generateDefaultProjectConfigurationIfMissing(): void
@@ -167,5 +157,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     ->generate();
             }
         }
+    }
+
+    private function getPackagesSorted(): array
+    {
+        return PackageSorter::sortPackages(
+            $this->composer->getRepositoryManager()->getLocalRepository()->getPackages()
+        );
     }
 }
