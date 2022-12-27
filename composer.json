@@ -13,8 +13,7 @@
   "require": {
     "composer-plugin-api": "^2.0",
     "symfony/filesystem": "*",
-    "webmozart/glob": "^4.1",
-    "webmozart/path-util": "^2.3"
+    "webmozart/glob": "^4.1"
   },
   "require-dev": {
     "composer/composer": "^2.0",

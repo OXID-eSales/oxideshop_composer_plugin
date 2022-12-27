@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Integration;
 
 use InvalidArgumentException;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 /**
  * Class AbstractGlobMatcher.
