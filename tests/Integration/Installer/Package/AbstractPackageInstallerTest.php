@@ -11,7 +11,7 @@ namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
 use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
 use org\bovigo\vfs\vfsStream;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 abstract class AbstractPackageInstallerTest extends \PHPUnit\Framework\TestCase
 {
