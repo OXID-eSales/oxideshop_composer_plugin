@@ -31,6 +31,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /** @var PackageInstallerTrigger */
     private $packageInstallerTrigger;
 
+    private array $alreadyProcessedPackages = [];
+
     /**
      * Register events.
      *
@@ -82,8 +84,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->generateDefaultProjectConfigurationIfMissing();
 
         foreach ($this->getPackagesSorted() as $package) {
-            if ($this->packageInstallerTrigger->supports($package->getType())) {
+            if ($this->packageInstallerTrigger->supports($package->getType()) && $this->isNotProcessed($package->getName())) {
                 $this->packageInstallerTrigger->installPackage($package);
+
+                $this->alreadyProcessedPackages[] = $package->getName();
             }
         }
     }
@@ -95,8 +99,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->generateDefaultProjectConfigurationIfMissing();
 
         foreach ($this->getPackagesSorted() as $package) {
-            if ($this->packageInstallerTrigger->supports($package->getType())) {
+            if ($this->packageInstallerTrigger->supports($package->getType()) && $this->isNotProcessed($package->getName())) {
                 $this->packageInstallerTrigger->updatePackage($package);
+
+                $this->alreadyProcessedPackages[] = $package->getName();
             }
         }
     }
@@ -164,5 +170,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         return PackageSorter::sortPackages(
             $this->composer->getRepositoryManager()->getLocalRepository()->getPackages()
         );
+    }
+
+    private function isNotProcessed(string $packageName): bool
+    {
+        return !in_array($packageName, $this->alreadyProcessedPackages, true);
     }
 }
