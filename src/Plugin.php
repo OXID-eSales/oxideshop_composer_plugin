@@ -13,6 +13,7 @@ use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Installer\PackageEvent;
 use Composer\IO\IOInterface;
+use Composer\Package\AliasPackage;
 use Composer\Plugin\PluginInterface;
 use Composer\Util\PackageSorter;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
@@ -82,6 +83,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->generateDefaultProjectConfigurationIfMissing();
 
         foreach ($this->getPackagesSorted() as $package) {
+            if ($package instanceof AliasPackage) {
+                continue;
+            }
             if ($this->packageInstallerTrigger->supports($package->getType())) {
                 $this->packageInstallerTrigger->installPackage($package);
             }
@@ -95,6 +99,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->generateDefaultProjectConfigurationIfMissing();
 
         foreach ($this->getPackagesSorted() as $package) {
+            if ($package instanceof AliasPackage) {
+                continue;
+            }
             if ($this->packageInstallerTrigger->supports($package->getType())) {
                 $this->packageInstallerTrigger->updatePackage($package);
             }
