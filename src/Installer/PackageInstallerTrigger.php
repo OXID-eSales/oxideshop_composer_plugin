@@ -16,7 +16,7 @@ use OxidEsales\ComposerPlugin\Installer\Package\ComponentInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ThemePackageInstaller;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 /**
  * Class responsible for triggering installation process.

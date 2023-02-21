@@ -11,7 +11,7 @@ namespace OxidEsales\ComposerPlugin\Tests\Unit\Utilities\CopyFileManager;
 
 use org\bovigo\vfs\vfsStream;
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 /**
  * Class CopyGlobFilteredFileManagerTest.

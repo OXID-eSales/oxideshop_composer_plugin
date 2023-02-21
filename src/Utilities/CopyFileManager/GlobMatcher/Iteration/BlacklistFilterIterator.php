@@ -26,7 +26,7 @@ declare(strict_types=1);
 namespace OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Iteration;
 
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobMatcher;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 /**
  * Class BlacklistFilterIterator.

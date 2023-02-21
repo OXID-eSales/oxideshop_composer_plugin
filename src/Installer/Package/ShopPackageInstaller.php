@@ -11,7 +11,7 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
 use Webmozart\Glob\Iterator\GlobIterator;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 /**
  * @inheritdoc
