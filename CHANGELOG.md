@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Filter alias packages to avoid duplicated package installation
 
+### Removed
+- Dependency to webmozart/path-util
+
 ## [v7.0.1] - 2022-11-23
 
 ### Fixed
