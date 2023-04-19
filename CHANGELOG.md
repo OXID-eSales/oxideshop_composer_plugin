@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [v7.1.0] - Unreleased
+## [v7.1.0] - 2023-04-19
 
 ### Fixed
 - Filter alias packages to avoid duplicated package installation
@@ -143,8 +143,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [Add robot exclusion files filter](https://bugs.oxid-esales.com/view.php?id=6703)
 
-[7.0.2]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v7.0.1...b-7.0.x
-[7.0.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v7.0.0...b-7.0.1
+[7.1.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v7.0.1...v7.1.0
+[7.0.1]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v7.0.0...v7.0.1
 [7.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v6.0.0...v7.0.0
 [6.0.0]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.2.2...v6.0.0
 [5.2.3]: https://github.com/OXID-eSales/oxideshop_composer_plugin/compare/v5.2.2...b-6.5.x
