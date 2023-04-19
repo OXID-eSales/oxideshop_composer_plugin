@@ -2,7 +2,7 @@
   "name": "oxid-esales/oxideshop-composer-plugin",
   "description": "This file is mean to be used to install OXID eShop compilation.",
   "license": [
-    "GPL-3.0-only"
+    "proprietary"
   ],
   "type": "composer-plugin",
   "keywords": [
