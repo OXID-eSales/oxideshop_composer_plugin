@@ -9,7 +9,7 @@
     "oxidEshop",
     "plugin"
   ],
-  "homepage": "https://www.oxid-esales.com/en/home.html",
+  "homepage": "https://www.oxid-esales.com/en",
   "require": {
     "composer-plugin-api": "^2.0",
     "symfony/filesystem": "*",
