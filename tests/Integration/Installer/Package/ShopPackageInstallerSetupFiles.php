@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-class ShopPackageInstallerSetupFilesTest extends AbstractShopPackageInstallerTest
+class ShopPackageInstallerSetupFiles extends AbstractShopPackageInstaller
 {
-    public function testShopInstallProcessCopiesSetupFilesIfShopConfigIsMissing()
+    public function testShopInstallProcessCopiesSetupFilesIfShopConfigIsMissing(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -28,7 +28,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractShopPackageInstallerTes
         );
     }
 
-    public function testShopInstallProcessOverwritesSetupFilesIfShopConfigIsMissing()
+    public function testShopInstallProcessOverwritesSetupFilesIfShopConfigIsMissing(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -48,7 +48,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractShopPackageInstallerTes
         );
     }
 
-    public function testShopInstallProcessCopiesSetupFilesIfShopConfigIsNotConfigured()
+    public function testShopInstallProcessCopiesSetupFilesIfShopConfigIsNotConfigured(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -67,7 +67,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractShopPackageInstallerTes
         );
     }
 
-    public function testShopInstallProcessOverwritesSetupFilesIfShopConfigIsNotConfigured()
+    public function testShopInstallProcessOverwritesSetupFilesIfShopConfigIsNotConfigured(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -87,7 +87,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractShopPackageInstallerTes
         );
     }
 
-    public function testShopInstallProcessDoesNotCopySetupFilesIfShopConfigIsConfigured()
+    public function testShopInstallProcessDoesNotCopySetupFilesIfShopConfigIsConfigured(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -103,7 +103,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractShopPackageInstallerTes
         $this->assertVirtualFileNotExists('source/Setup/index.php');
     }
 
-    public function testShopInstallProcessDoesNotOverwriteSetupFilesIfShopConfigIsConfigured()
+    public function testShopInstallProcessDoesNotOverwriteSetupFilesIfShopConfigIsConfigured(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -123,7 +123,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractShopPackageInstallerTes
         );
     }
 
-    protected function getNonConfiguredConfigFileContents()
+    protected static function getNonConfiguredConfigFileContents(): string
     {
         return  <<<'EOT'
     $this->dbType = 'pdo_mysql';
@@ -138,7 +138,7 @@ class ShopPackageInstallerSetupFilesTest extends AbstractShopPackageInstallerTes
 EOT;
     }
 
-    protected function getConfiguredConfigFileContents()
+    protected function getConfiguredConfigFileContents(): string
     {
         return <<<'EOT'
     $this->dbType = 'pdo_mysql';

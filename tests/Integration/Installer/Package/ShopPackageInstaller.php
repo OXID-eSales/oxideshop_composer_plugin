@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-class ShopPackageInstallerTest extends AbstractShopPackageInstallerTest
+class ShopPackageInstaller extends AbstractShopPackageInstaller
 {
     public function testShopNotInstalledByDefault()
     {

@@ -13,9 +13,9 @@ use Composer\Package\Package;
 use Composer\IO\NullIO;
 use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
 
-abstract class AbstractShopPackageInstallerTest extends AbstractPackageInstallerTest
+abstract class AbstractShopPackageInstaller extends AbstractPackageInstaller
 {
-    protected function getPackageInstaller()
+    protected function getPackageInstaller(): ShopPackageInstaller
     {
         $package = new Package(
             'test-vendor/test-package',

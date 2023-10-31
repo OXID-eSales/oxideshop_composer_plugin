@@ -2,6 +2,12 @@
 
 ## v7.1.1 - unreleased
 
+### Added
+- PHPUnit v10 support
+
+### Removed
+- PHPUnit v9 support
+
 ### Changed
 - License update
 

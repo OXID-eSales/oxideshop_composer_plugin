@@ -13,7 +13,7 @@ use Composer\IO\NullIO;
 use Composer\Package\Package;
 use OxidEsales\ComposerPlugin\Installer\Package\ThemePackageInstaller;
 
-class ThemePackageInstallerTest extends AbstractPackageInstallerTest
+class ThemePackageInstaller extends AbstractPackageInstaller
 {
     protected function getPackageInstaller($packageName, $version = '1.0.0', $extra = [])
     {
