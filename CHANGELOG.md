@@ -1,6 +1,6 @@
 # Change Log for OXID eSales Composer Plugin
 
-## v7.1.1 - unreleased
+## v7.1.1 - 2023-11-16
 
 ### Changed
 - License update
