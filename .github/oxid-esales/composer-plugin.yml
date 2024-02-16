@@ -1,0 +1,43 @@
+# {{ $ids := "composer-plugin" }}ids: {{ print $ids }}
+# {{ $org := "oxid-esales" }}organisation: {{ print $org }}
+# {{ $name := "composer-plugin" }}name: {{ print $name }}
+
+prepare_shop:
+  git:
+    shop_ref: &git_shop_ref '{{ .Data.global.git.default_ref }}'
+
+install_module:
+  matrix:
+    testplan: '["-"]'
+  cache:
+    prefix: &install_module_prefix 'moduleInstallation-ce-{{ .Github.SHA }}-{{ .Github.RunID }}-{{ print $name }}'
+  ids: &ids '{{ print $ids }}'
+  activate: ''
+  git:
+    module:
+      url: &git_module_url '{{ .Github.Repository }}'
+      ref: '{{ .Github.RefName }}'
+  package_name: &package_name '{{ print $org }}/{{ print $name }}'
+  path: *ids
+
+phpunit:
+  matrix:
+    testplan: '["tests/github_actions/defaults/module_phpunit_unit.yml","tests/github_actions/defaults/module_phpunit_integration.yml"]'
+  load_shop: *install_module_prefix
+
+codeception:
+  matrix:
+    testplan: 'skip'
+  load_shop: *install_module_prefix
+
+runtest:
+  matrix:
+    testplan: 'skip'
+  load_shop: *install_module_prefix
+
+sonarcloud:
+  matrix:
+    testplan: 'skip'
+
+finish:
+  slack_title: 'Component {{ print $name }} ({{ .Data.global.git.shop_ref }}) on {{ .Github.Repository }} by {{ .Github.Actor }}'
