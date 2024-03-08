@@ -1,16 +1,16 @@
 # {{ $ids := "composer-plugin" }}ids: {{ print $ids }}
 # {{ $org := "oxid-esales" }}organisation: {{ print $org }}
-# {{ $name := "composer-plugin" }}name: {{ print $name }}
+# {{ $name := "oxideshop-composer-plugin" }}name: {{ print $name }}
 
 prepare_shop:
   git:
-    shop_ref: &git_shop_ref '{{ .Data.global.git.default_ref }}'
+    shop_ref: '{{ .Data.global.git.default_ref }}'
 
 install_module:
   matrix:
     testplan: '["-"]'
   cache:
-    prefix: &install_module_prefix 'moduleInstallation-ce-{{ .Github.SHA }}-{{ .Github.RunID }}-{{ print $name }}'
+    prefix: &install_module_prefix 'moduleInstallation-ce-{{ .Github.SHA }}-{{ .Github.RunID }}'
   ids: &ids '{{ print $ids }}'
   activate: ''
   git:
@@ -22,7 +22,7 @@ install_module:
 
 phpunit:
   matrix:
-    testplan: '["tests/github_actions/defaults/module_phpunit_unit.yml","tests/github_actions/defaults/module_phpunit_integration.yml"]'
+    testplan: '["~/defaults/module_phpunit_unit.yml","~/defaults/module_phpunit_integration.yml"]'
   load_shop: *install_module_prefix
 
 codeception:
