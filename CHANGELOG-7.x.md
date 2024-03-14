@@ -11,6 +11,11 @@
 ### Changed
 - License update
 
+## v7.1.1 - 2023-11-16
+
+### Changed
+- License update
+
 ## v7.1.0 - 2023-04-19
 
 ### Fixed
