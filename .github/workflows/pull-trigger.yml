@@ -1,4 +1,4 @@
-name: Auto trigger on PR to 7.1.x*
+name: Auto trigger on Pull-Request
 
 on:
   pull_request:
