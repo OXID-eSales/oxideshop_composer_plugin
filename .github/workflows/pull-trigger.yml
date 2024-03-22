@@ -1,4 +1,4 @@
-name: Auto trigger on Pull-Request to 7.0.x*
+name: Auto trigger on Pull-Request
 
 on:
   pull_request:
