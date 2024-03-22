@@ -1,15 +1,15 @@
-name: Auto trigger on Push to 7.0.x*
+name: Auto trigger on Push to 7.1.x*
 
 on:
   push:
     branches:
-      - 'b-7.0.x**'
+      - 'b-7.1.x**'
 
 jobs:
   push_module:
     uses: oxid-eSales/github-actions/.github/workflows/call-universal_test_workflow.yml@v4
     with:
-      testplan: '~/defaults/7.0.x.yml,~/composer-plugin.yml'
+      testplan: '~/defaults/7.1.x.yml,~/composer-plugin.yml'
       runs_on: '"ubuntu-latest"'
       defaults: 'v4'
       plan_folder: '.github/oxid-esales'
