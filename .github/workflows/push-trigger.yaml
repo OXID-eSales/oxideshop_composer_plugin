@@ -3,13 +3,13 @@ name: Auto trigger on Push
 on:
   push:
     branches:
-      - 'b-7.1.x**'
+      - 'b-8.0.x**'
 
 jobs:
   push_module:
     uses: oxid-eSales/github-actions/.github/workflows/call-universal_test_workflow.yml@v4
     with:
-      testplan: '~/defaults/7.1.x.yml,~/composer-plugin.yaml'
+      testplan: '~/defaults/8.0.x.yml,~/composer-plugin.yaml'
       runs_on: '"ubuntu-latest"'
       defaults: 'v4'
       plan_folder: '.github/oxid-esales'
