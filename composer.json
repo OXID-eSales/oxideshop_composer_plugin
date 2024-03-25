@@ -1,45 +1,45 @@
 {
-  "name": "oxid-esales/oxideshop-composer-plugin",
-  "description": "This file is mean to be used to install OXID eShop compilation.",
-  "license": [
-    "proprietary"
-  ],
-  "type": "composer-plugin",
-  "keywords": [
-    "oxidEshop",
-    "plugin"
-  ],
-  "homepage": "https://www.oxid-esales.com/en",
-  "require": {
-    "composer-plugin-api": "^2.0",
-    "symfony/filesystem": "*",
-    "webmozart/glob": "^4.1"
-  },
-  "require-dev": {
-    "composer/composer": "^2.0",
-    "mikey179/vfsstream": "^1.6",
-    "phpunit/phpunit": "^10",
-    "squizlabs/php_codesniffer": "3.*",
-    "symfony/yaml": "*"
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true,
-  "autoload": {
-    "psr-4": {
-      "OxidEsales\\ComposerPlugin\\": "src"
+    "name": "oxid-esales/oxideshop-composer-plugin",
+    "description": "This file is mean to be used to install OXID eShop compilation.",
+    "license": [
+        "proprietary"
+    ],
+    "type": "composer-plugin",
+    "keywords": [
+        "oxidEshop",
+        "plugin"
+    ],
+    "homepage": "https://www.oxid-esales.com/en",
+    "require": {
+        "composer-plugin-api": "^2.0",
+        "symfony/filesystem": "*",
+        "webmozart/glob": "^4.1"
+    },
+    "require-dev": {
+        "composer/composer": "^2.0",
+        "mikey179/vfsstream": "^1.6",
+        "phpunit/phpunit": "^10",
+        "squizlabs/php_codesniffer": "3.*",
+        "symfony/yaml": "*"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "OxidEsales\\ComposerPlugin\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OxidEsales\\ComposerPlugin\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "class": "OxidEsales\\ComposerPlugin\\Plugin"
+    },
+    "scripts": {
+        "phpcs": "phpcs --standard=PSR12 --extensions=php src tests",
+        "phpunit": "phpunit tests -c tests/phpunit.xml",
+        "phpunit-coverage": "XDEBUG_MODE=coverage phpunit tests --coverage-html=./coverage -c tests/phpunit.xml"
     }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "OxidEsales\\ComposerPlugin\\Tests\\": "tests/"
-    }
-  },
-  "extra": {
-    "class": "OxidEsales\\ComposerPlugin\\Plugin"
-  },
-  "scripts": {
-    "phpcs": "phpcs --standard=PSR12 --extensions=php src tests",
-    "phpunit": "phpunit tests -c tests/phpunit.xml",
-    "phpunit-coverage": "XDEBUG_MODE=coverage phpunit tests --coverage-html=./coverage -c tests/phpunit.xml"
-  }
 }

@@ -10,7 +10,7 @@ on:
           - 7.1.x
           - 8.0.x
           - use custom testplan
-        default: '8.0.x'
+        default: '7.1.x'
         description: 'Choose test scenario'
       limit:
         type: choice
@@ -30,7 +30,7 @@ on:
         type: string
         required: true
         description: 'URL/PATH of the testplan to run'
-        default: '~/defaults/7.0.x.yml,~/composer-plugin.yaml'
+        default: '~/defaults/7.1.x.yml,~/composer-plugin.yaml'
       runs_on:
         type: string
         description: 'JSON string/array describing the runner'
