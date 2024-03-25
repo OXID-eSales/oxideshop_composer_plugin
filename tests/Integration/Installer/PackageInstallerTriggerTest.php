@@ -13,13 +13,14 @@ use Composer\Composer;
 use Composer\Config;
 use Composer\IO\NullIO;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
+use PHPUnit\Framework\TestCase;
 
-class PackageInstallerTriggerTest extends \PHPUnit\Framework\TestCase
+class PackageInstallerTriggerTest extends TestCase
 {
     /**
      * The composer.json file already in source for 5.3.
      */
-    public function testGetShopSourcePathByConfiguration()
+    public function testGetShopSourcePathByConfiguration(): void
     {
         $composerMock = $this->getMockBuilder(Composer::class)->getMock();
         $composerMock->method('getConfig')->withAnyParameters()->willReturn(new Config());
@@ -34,7 +35,7 @@ class PackageInstallerTriggerTest extends \PHPUnit\Framework\TestCase
     /**
      * The composer.json file is taken up from the source directory for 6.0, so we should add source to path.
      */
-    public function testGetShopSourcePathFor60()
+    public function testGetShopSourcePathFor60(): void
     {
         $composerMock = $this->getMockBuilder(Composer::class)->getMock();
         $composerMock->method('getConfig')->withAnyParameters()->willReturn(new Config());

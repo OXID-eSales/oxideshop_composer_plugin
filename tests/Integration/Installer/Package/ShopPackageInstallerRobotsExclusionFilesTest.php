@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-class ShopPackageInstallerRobotsExclusionFilesTest extends AbstractShopPackageInstallerTest
+class ShopPackageInstallerRobotsExclusionFilesTest extends AbstractShopPackageInstaller
 {
-    public function providerFiles()
+    public function providerFiles(): array
     {
         return [
             ['robots.txt'],
@@ -22,7 +22,7 @@ class ShopPackageInstallerRobotsExclusionFilesTest extends AbstractShopPackageIn
     /**
      * @dataProvider providerFiles
      */
-    public function testShopInstallProcessCopiesRobotsExclusionFilesIfTheyAreMissing($file)
+    public function testShopInstallProcessCopiesRobotsExclusionFilesIfTheyAreMissing($file): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -38,7 +38,7 @@ class ShopPackageInstallerRobotsExclusionFilesTest extends AbstractShopPackageIn
     /**
      * @dataProvider providerFiles
      */
-    public function testShopInstallProcessDoesNotCopyRobotsExclusioIfTheyAreAlreadyPresent($file)
+    public function testShopInstallProcessDoesNotCopyRobotsExclusionIfTheyAreAlreadyPresent($file): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',

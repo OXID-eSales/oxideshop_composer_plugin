@@ -5,6 +5,15 @@
 prepare_shop:
   git:
     shop_ref: '{{ .Data.global.git.default_ref }}'
+  composer:
+    transform: |
+      {
+        "autoload-dev": {
+          "psr-4": {
+              "OxidEsales\\ComposerPlugin\\Tests\\": "vendor/{{ print $org }}/{{ print $name }}/tests/"
+          }
+        }
+      }
 
 install_module:
   matrix:

@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-class ShopPackageInstallerHtaccessFilesTest extends AbstractShopPackageInstallerTest
+class ShopPackageInstallerHtaccessFilesTest extends AbstractShopPackageInstaller
 {
-    public function providerHtaccessFiles()
+    public function providerHtaccessFiles(): array
     {
         return [
             ['.htaccess'],
@@ -26,7 +26,7 @@ class ShopPackageInstallerHtaccessFilesTest extends AbstractShopPackageInstaller
     /**
      * @dataProvider providerHtaccessFiles
      */
-    public function testShopInstallProcessCopiesHtaccessFilesIfTheyAreMissing($htaccessFile)
+    public function testShopInstallProcessCopiesHtaccessFilesIfTheyAreMissing($htaccessFile): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -42,7 +42,7 @@ class ShopPackageInstallerHtaccessFilesTest extends AbstractShopPackageInstaller
     /**
      * @dataProvider providerHtaccessFiles
      */
-    public function testShopInstallProcessDoesNotCopyHtaccessFilesIfTheyAreAlreadyPresent($htaccessFile)
+    public function testShopInstallProcessDoesNotCopyHtaccessFilesIfTheyAreAlreadyPresent($htaccessFile): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',

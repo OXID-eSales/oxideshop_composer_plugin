@@ -9,18 +9,20 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
+use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Path;
 
-abstract class AbstractPackageInstallerTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractPackageInstaller extends TestCase
 {
     public function setUp(): void
     {
         $this->setupVirtualFileSystem();
     }
 
-    protected function setupVirtualFileSystem()
+    protected function setupVirtualFileSystem(): void
     {
         vfsStream::setup(
             'root',
@@ -32,7 +34,7 @@ abstract class AbstractPackageInstallerTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    protected function setupVirtualProjectRoot($prefix, $input)
+    protected function setupVirtualProjectRoot($prefix, $input): vfsStreamDirectory
     {
         $updated = [];
 
@@ -43,32 +45,32 @@ abstract class AbstractPackageInstallerTest extends \PHPUnit\Framework\TestCase
         return vfsStream::create(VfsFileStructureOperator::nest($updated));
     }
 
-    protected function getVirtualShopSourcePath()
+    protected function getVirtualShopSourcePath(): string
     {
         return $this->getVirtualFileSystemRootPath('source');
     }
 
-    protected function getVirtualVendorPath()
+    protected function getVirtualVendorPath(): string
     {
         return $this->getVirtualFileSystemRootPath('vendor');
     }
 
-    protected function getVirtualFileSystemRootPath($suffix = '')
+    protected function getVirtualFileSystemRootPath($suffix = ''): string
     {
         return Path::join(vfsStream::url('root'), $suffix);
     }
 
-    protected function assertVirtualFileExists($path)
+    protected function assertVirtualFileExists($path): void
     {
         $this->assertFileExists($this->getVirtualFileSystemRootPath($path));
     }
 
-    protected function assertVirtualFileNotExists($path)
+    protected function assertVirtualFileNotExists($path): void
     {
         $this->assertFileDoesNotExist($this->getVirtualFileSystemRootPath($path));
     }
 
-    protected function assertVirtualFileEquals($expected, $actual)
+    protected function assertVirtualFileEquals($expected, $actual): void
     {
         $this->assertFileEquals(
             $this->getVirtualFileSystemRootPath($expected),
@@ -76,7 +78,7 @@ abstract class AbstractPackageInstallerTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    protected function assertVirtualFileNotEquals($expected, $actual)
+    protected function assertVirtualFileNotEquals($expected, $actual): void
     {
         $this->assertFileNotEquals(
             $this->getVirtualFileSystemRootPath($expected),
