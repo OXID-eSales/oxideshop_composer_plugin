@@ -62,7 +62,7 @@ class BlacklistFilterIterator extends \FilterIterator
      *
      * @return bool
      */
-    public function accept()
+    public function accept(): bool
     {
         $path = $this->convertFromSplFileInfoToString(parent::current());
 
