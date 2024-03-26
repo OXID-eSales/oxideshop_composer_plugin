@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-use Composer\Package\Package;
 use Composer\IO\NullIO;
+use Composer\Package\Package;
 use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
 
 abstract class AbstractShopPackageInstaller extends AbstractPackageInstaller

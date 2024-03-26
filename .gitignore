@@ -1,4 +1,4 @@
 .idea/
 composer.lock
 vendor/
-tests/.phpunit.result.cache
+tests/.phpunit.cache

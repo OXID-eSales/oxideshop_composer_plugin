@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-class ShopPackageInstallerSetupFiles extends AbstractShopPackageInstaller
+class ShopPackageInstallerSetupFilesTest extends AbstractShopPackageInstaller
 {
     public function testShopInstallProcessCopiesSetupFilesIfShopConfigIsMissing(): void
     {

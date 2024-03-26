@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-class ShopPackageInstallerHtaccessFiles extends AbstractShopPackageInstaller
+class ShopPackageInstallerHtaccessFilesTest extends AbstractShopPackageInstaller
 {
     public static function providerHtaccessFiles(): array
     {
