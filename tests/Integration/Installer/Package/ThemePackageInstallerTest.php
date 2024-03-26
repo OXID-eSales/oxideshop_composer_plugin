@@ -13,9 +13,9 @@ use Composer\IO\NullIO;
 use Composer\Package\Package;
 use OxidEsales\ComposerPlugin\Installer\Package\ThemePackageInstaller;
 
-class ThemePackageInstaller extends AbstractPackageInstaller
+class ThemePackageInstallerTest extends AbstractPackageInstaller
 {
-    protected function getPackageInstaller($packageName, $version = '1.0.0', $extra = [])
+    protected function getPackageInstaller($packageName, $version = '1.0.0', $extra = []): ThemePackageInstaller
     {
         $package = new Package($packageName, $version, $version);
         $package->setExtra($extra);
@@ -27,7 +27,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         );
     }
 
-    public function testThemeNotInstalledByDefault()
+    public function testThemeNotInstalledByDefault(): void
     {
         $installer = $this->getPackageInstaller('test-vendor/test-package');
 
@@ -35,7 +35,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->assertFalse($installer->isInstalled($packagePath));
     }
 
-    public function testThemeIsInstalledIfAlreadyExistsInShop()
+    public function testThemeIsInstalledIfAlreadyExistsInShop(): void
     {
         $this->setupVirtualProjectRoot('source/Application/views/test-package', [
             'theme.php' => '<?php'
@@ -47,7 +47,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->assertTrue($installer->isInstalled($packagePath));
     }
 
-    public function testThemeIsInstalledAfterInstallProcess()
+    public function testThemeIsInstalledAfterInstallProcess(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php'
@@ -61,7 +61,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->assertTrue($installer->isInstalled($packagePath));
     }
 
-    public function testThemeFilesAreCopiedAfterInstallProcess()
+    public function testThemeFilesAreCopiedAfterInstallProcess(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php'
@@ -76,7 +76,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         );
     }
 
-    public function testThemeFilesAreCopiedAfterInstallProcessWithSameTargetDirectory()
+    public function testThemeFilesAreCopiedAfterInstallProcessWithSameTargetDirectory(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php'
@@ -95,7 +95,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         );
     }
 
-    public function testThemeFilesAreCopiedAfterInstallProcessWithCustomTargetDirectory()
+    public function testThemeFilesAreCopiedAfterInstallProcessWithCustomTargetDirectory(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php'
@@ -114,7 +114,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         );
     }
 
-    public function testThemeAssetsAreCopiedAfterInstallProcess()
+    public function testThemeAssetsAreCopiedAfterInstallProcess(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -130,7 +130,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         );
     }
 
-    public function testThemeAssetsAreCopiedAfterInstallProcessWithSameAssetsDirectory()
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithSameAssetsDirectory(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -150,7 +150,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         );
     }
 
-    public function testThemeAssetsAreCopiedAfterInstallProcessWithSameTargetDirectory()
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithSameTargetDirectory(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -170,7 +170,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         );
     }
 
-    public function testThemeAssetsAreCopiedAfterInstallProcessWithSameAssetsDirectoryAndSameTargetDirectory()
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithSameAssetsDirectoryAndSameTargetDirectory(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -191,7 +191,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         );
     }
 
-    public function testThemeAssetsAreCopiedAfterInstallProcessWithCustomAssetsDirectory()
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithCustomAssetsDirectory(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -211,7 +211,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         );
     }
 
-    public function testThemeAssetsAreCopiedAfterInstallProcessWithCustomTargetDirectory()
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithCustomTargetDirectory(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -231,7 +231,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         );
     }
 
-    public function testThemeAssetsAreCopiedAfterInstallProcessWithCustomAssetsDirectoryAndCustomTargetDirectory()
+    public function testThemeAssetsAreCopiedAfterInstallProcessWithCustomAssetsDirectoryAndCustomTargetDirectory(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -252,7 +252,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         );
     }
 
-    public function testThemeAssetsAreNotCopiedAfterInstallProcessWithNonExistingCustomAssetsDirectory()
+    public function testThemeAssetsAreNotCopiedAfterInstallProcessWithNonExistingCustomAssetsDirectory(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -268,7 +268,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->assertVirtualFileNotExists('source/out/test-package/custom_style.css');
     }
 
-    public function testBlacklistedFilesArePresentWhenNoBlacklistFilterIsDefined()
+    public function testBlacklistedFilesArePresentWhenNoBlacklistFilterIsDefined(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -286,7 +286,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->assertVirtualFileExists('source/out/test-package/style.pdf');
     }
 
-    public function testBlacklistedFilesArePresentWhenEmptyBlacklistFilterIsDefined()
+    public function testBlacklistedFilesArePresentWhenEmptyBlacklistFilterIsDefined(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -308,7 +308,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->assertVirtualFileExists('source/out/test-package/style.pdf');
     }
 
-    public function testBlacklistedFilesArePresentWhenDifferentBlacklistFilterIsDefined()
+    public function testBlacklistedFilesArePresentWhenDifferentBlacklistFilterIsDefined(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -332,7 +332,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->assertVirtualFileExists('source/out/test-package/style.pdf');
     }
 
-    public function testBlacklistedFilesAreSkippedWhenABlacklistFilterIsDefined()
+    public function testBlacklistedFilesAreSkippedWhenABlacklistFilterIsDefined(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -357,7 +357,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->assertVirtualFileNotExists('source/out/test-package/style.pdf');
     }
 
-    public function testVCSFilesAreSkippedWhenNoBlacklistFilterIsDefined()
+    public function testVCSFilesAreSkippedWhenNoBlacklistFilterIsDefined(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -377,7 +377,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->assertVirtualFileNotExists('source/Application/views/test-package/.gitignore');
     }
 
-    public function testVCSFilesAreSkippedWhenABlacklistFilterIsDefined()
+    public function testVCSFilesAreSkippedWhenABlacklistFilterIsDefined(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',
@@ -410,7 +410,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->assertVirtualFileNotExists('source/Application/views/test-package/.gitignore');
     }
 
-    public function testComplexCase()
+    public function testComplexCase(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
             'theme.php' => '<?php',

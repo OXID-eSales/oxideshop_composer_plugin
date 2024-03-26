@@ -9,16 +9,16 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-class ShopPackageInstaller extends AbstractShopPackageInstaller
+class ShopPackageInstallerTest extends AbstractShopPackageInstaller
 {
-    public function testShopNotInstalledByDefault()
+    public function testShopNotInstalledByDefault(): void
     {
         $installer = $this->getPackageInstaller();
 
         $this->assertFalse($installer->isInstalled(''));
     }
 
-    public function testShopIsInstalledIfSourceFilesAlreadyExist()
+    public function testShopIsInstalledIfSourceFilesAlreadyExist(): void
     {
         $this->setupVirtualProjectRoot('source/', [
             'index.php' => '<?php'
@@ -30,7 +30,7 @@ class ShopPackageInstaller extends AbstractShopPackageInstaller
         $this->assertVirtualFileExists('source/index.php');
     }
 
-    public function testShopIsInstalledAfterInstallProcess()
+    public function testShopIsInstalledAfterInstallProcess(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -44,7 +44,7 @@ class ShopPackageInstaller extends AbstractShopPackageInstaller
         $this->assertTrue($installer->isInstalled($packagePath));
     }
 
-    public function testShopFilesAreCopiedAfterInstallProcess()
+    public function testShopFilesAreCopiedAfterInstallProcess(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -69,7 +69,7 @@ class ShopPackageInstaller extends AbstractShopPackageInstaller
         );
     }
 
-    public function testShopInstallProcessCopiesConfigFileIfItDoesNotExist()
+    public function testShopInstallProcessCopiesConfigFileIfItDoesNotExist(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -85,7 +85,7 @@ class ShopPackageInstaller extends AbstractShopPackageInstaller
         );
     }
 
-    public function testShopInstallProcessDoesNotCopyConfigFileIfItAlreadyExists()
+    public function testShopInstallProcessDoesNotCopyConfigFileIfItAlreadyExists(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -104,7 +104,7 @@ class ShopPackageInstaller extends AbstractShopPackageInstaller
         );
     }
 
-    public function testShopInstallProcessDoesNotCopyFilteredClasses()
+    public function testShopInstallProcessDoesNotCopyFilteredClasses(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -129,7 +129,7 @@ class ShopPackageInstaller extends AbstractShopPackageInstaller
         $this->assertVirtualFileNotExists('source/Application/Component/Class.php');
     }
 
-    public function testShopInstallProcessDoesNotCopyVCSFiles()
+    public function testShopInstallProcessDoesNotCopyVCSFiles(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',

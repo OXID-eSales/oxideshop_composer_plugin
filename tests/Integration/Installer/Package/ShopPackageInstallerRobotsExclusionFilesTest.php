@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-class ShopPackageInstallerRobotsExclusionFiles extends AbstractShopPackageInstaller
+class ShopPackageInstallerRobotsExclusionFilesTest extends AbstractShopPackageInstaller
 {
     public static function providerFiles(): array
     {

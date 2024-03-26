@@ -9,11 +9,13 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
-use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
+use OxidEsales\ComposerPlugin\Utilities\VfsFileStructureOperator;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Path;
 
-abstract class AbstractPackageInstaller extends \PHPUnit\Framework\TestCase
+abstract class AbstractPackageInstaller extends TestCase
 {
     public function setUp(): void
     {
@@ -32,7 +34,7 @@ abstract class AbstractPackageInstaller extends \PHPUnit\Framework\TestCase
         );
     }
 
-    protected function setupVirtualProjectRoot($prefix, $input): \org\bovigo\vfs\vfsStreamDirectory
+    protected function setupVirtualProjectRoot($prefix, $input): vfsStreamDirectory
     {
         $updated = [];
 
