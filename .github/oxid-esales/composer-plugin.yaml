@@ -53,5 +53,9 @@ styles:
     testplan: 'skip'
   load_shop: *install_module_prefix
 
+phpcs_tests:
+  matrix:
+    testplan: 'skip'
+
 finish:
   slack_title: 'Component {{ print $name }} ({{ .Data.global.git.shop_ref }}) on {{ .Github.Repository }} by {{ .Github.Actor }}'
