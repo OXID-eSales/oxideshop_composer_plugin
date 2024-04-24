@@ -1,4 +1,5 @@
-name: Manual trigger
+name: Manual run
+# Matrix workflow using re-usable github actions
 
 on:
   workflow_dispatch:
@@ -8,9 +9,10 @@ on:
         options:
           - 7.0.x
           - 7.1.x
+          - 7.2.x
           - 8.0.x
           - use custom testplan
-        default: '7.0.x'
+        default: '8.0.x'
         description: 'Choose test scenario'
       limit:
         type: choice
@@ -25,16 +27,13 @@ on:
           - 'PHP8.3/MySQL5.7'
           - 'PHP8.3/MySQL8.0'
         default: 'PHP8.1/MySQL5.7'
-        description: 'Limit to one PHP/MySQL combination'
       custom_testplan:
         type: string
-        required: true
-        description: 'URL/PATH of the testplan to run'
-        default: '~/defaults/7.0.x.yml,~/composer-plugin.yaml'
+        description: 'Custom testplan'
+        default: '~/defaults/php8.2_mysql5.7_only.yml,~/composer-plugin.yml,~/defaults/component.yml'
       runs_on:
         type: string
         description: 'JSON string/array describing the runner'
-        required: true
         default: '"ubuntu-latest"'
       use_dev_version:
         type: choice
@@ -52,8 +51,10 @@ jobs:
         id: build
         run: |
           # Build testplan
-          # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-          case '${{inputs.limit}}' in
+          # shellcheck disable=SC2088
+          PLAN="~/composer-plugin.yml,~/defaults/component.yml"
+          # shellcheck disable=SC2088
+          case "${{ inputs.limit }}" in
             "no") LIMIT='';;
             "PHP8.0/MySQL5.7") LIMIT='~/defaults/php8.0_mysql5.7_only.yml,' ;;
             "PHP8.0/MySQL8.0") LIMIT='~/defaults/php8.0_mysql8.0_only.yml,' ;;
@@ -64,26 +65,17 @@ jobs:
             "PHP8.3/MySQL5.7") LIMIT='~/defaults/php8.3_mysql5.7_only.yml,' ;;
             "PHP8.3/MySQL8.0") LIMIT='~/defaults/php8.3_mysql8.0_only.yml,' ;;
             *) echo "Illegal choice, fix the workflow"
-               exit 1
-               ;;
+              exit 1
+              ;;
           esac
+          # shellcheck disable=SC2088
           case '${{ inputs.scenario}}' in
-            "7.0.x")
-              # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="~/defaults/7.0.x.yml,${LIMIT}~/composer-plugin.yaml"
-              ;;
-            "7.1.x")
-              # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="~/defaults/7.1.x.yml,${LIMIT}~/composer-plugin.yaml"
-              ;;
-            "8.0.x")
-              # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="${LIMIT}~/composer-plugin.yaml"
-              ;;
-            "use custom testplan")
-              # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="${{ inputs.custom_testplan }}"
-              ;;
+            "7.0.x") TESTPLAN="~/defaults/7.0.x.yml,${LIMIT}${PLAN}" ;;
+            "7.1.x") TESTPLAN="~/defaults/7.1.x.yml,${LIMIT}${PLAN}" ;;
+            "7.2.x") TESTPLAN="~/defaults/7.2.x.yml,${LIMIT}${PLAN}" ;;
+            "8.0.x") TESTPLAN="${LIMIT}${PLAN}" ;;
+            "smarty 7.0.x") TESTPLAN="~/defaults/7.0.x.yml,${LIMIT}~/smarty_7.0.x.yml" ;;
+            "use custom testplan") TESTPLAN="${{ inputs.custom_testplan }}" ;;
             *)
               echo "Illegal choice, fix the workflow"
               exit 1
@@ -94,11 +86,11 @@ jobs:
   dispatch_stable:
     if: ${{ inputs.use_dev_version == 'no' }}
     needs: build_testplan
-    uses: oxid-eSales/github-actions/.github/workflows/call-universal_test_workflow.yml@v4
+    uses: oxid-eSales/github-actions/.github/workflows/universal_workflow_light.yml@v0
     with:
       testplan: ${{ needs.build_testplan.outputs.testplan }}
       runs_on: ${{ inputs.runs_on }}
-      defaults: 'v4'
+      defaults: 'v0'
       plan_folder: '.github/oxid-esales'
     secrets:
       DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
@@ -113,7 +105,7 @@ jobs:
   dispatch_v0:
     if: ${{ inputs.use_dev_version == 'v0' }}
     needs: build_testplan
-    uses: oxid-eSales/github-actions/.github/workflows/call-universal_test_workflow.yml@v0
+    uses: oxid-eSales/github-actions/.github/workflows/universal_workflow_light.yml@v0
     with:
       testplan: ${{ needs.build_testplan.outputs.testplan }}
       runs_on: ${{ inputs.runs_on }}
