@@ -2,6 +2,6 @@
 set -e
 vendor/bin/phpstan \
     -ctests/PhpStan/phpstan.neon \
-    analyse source/ \
+    analyse src/ \
     --error-format=json \
     >"tests/Reports/phpstan.report.json"
