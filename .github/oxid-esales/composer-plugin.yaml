@@ -10,8 +10,8 @@ install_shop_with_modules:
     transform: |
       {
         "require-dev": {
-            "phpstan/phpstan": "^1.9.14",
-            "phpmd/phpmd": "^2.11",
+          "phpstan/phpstan": "^1.9.14",
+          "phpmd/phpmd": "^2.11",
         }
       }
 
