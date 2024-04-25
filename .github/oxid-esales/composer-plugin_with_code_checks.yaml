@@ -1,0 +1,26 @@
+global:
+  org: 'oxid-esales'
+  name: 'oxideshop-composer-plugin'
+
+install_shop_with_modules:
+  git:
+    shop_url: 'https://github.com/OXID-eSales/oxideshop_composer_plugin.git'
+  composer:
+    root_url: ''
+    transform: |
+      {
+        "require-dev": {
+          "phpstan/phpstan": "^1.9.14",
+          "phpmd/phpmd": "^2.11"
+        }
+      }
+
+runscript:
+  matrix:
+    script: |
+      [
+        "component:~/Integration.sh",
+        "component:~/PhpCsReport.sh",
+        "component:~/PhpMdReport.sh",
+        "component:~/PhpStanReport.sh"
+      ]
