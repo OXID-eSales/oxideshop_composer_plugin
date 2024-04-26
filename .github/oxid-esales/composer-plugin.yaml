@@ -1,14 +1,35 @@
-global:
-  org: 'oxid-esales'
-  name: 'oxideshop-composer-plugin'
+# This plan should be used before ~/defaults/component.yml. That template uses
+# the variables below to fill all the settings for the installation into
+# /var/www directly without installing a shop.
 
-install_shop_with_modules:
-  git:
-    shop_url: 'https://github.com/OXID-eSales/oxideshop_composer_plugin.git'
-  composer:
-    root_url: ''
-    transform: ''
+global:
+  # The organisation part of the composer package name <org>/<name>
+  org: 'oxid-esales'
+  # The name part of the composer package, also used in other places
+  name: 'oxideshop-composer-plugin'
+  # The repository organisation/name to check out
+  repo: 'OXID-eSales/oxideshop_composer_plugin'
 
 runscript:
   matrix:
+    # A string containing a valid json array of scripts to execute
+    # The scripts follow the pattern "<prefix>:<composer_alias>" for scripts
+    # defined in composer.json and "<prefix>:~/<shell_script>" for shell
+    # scripts located in tests/Scripts
+    # If you want to see the tests output, make sure to generate it in tests/Output
     script: '["component:~/Integration.sh"]'
+
+sonarcloud:
+  matrix:
+    # Remove the next line if you want to feed the results of your tests to
+    # sonarcloud. You need to make sure that your scripts generate an xml
+    # coverage file in tests/Reports, e.g. by adding
+    # --coverage-clover=tests/Reports/coverage_phpunit_integration.xml to them.
+    testplan: 'skip'
+  # If you want to enable sonarcloud, you need to uncomment and fill out the
+  # settings for project_key and project_name. You can get them from
+  # https://sonarcloud.io/organizations/oxid-esales/projects. The defaults for
+  # organization and parameters should be OK for most cases, so you don't need
+  # to overwrite them here.
+  # project_key: '???'
+  # project_name: '???'
