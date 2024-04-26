@@ -1,12 +1,10 @@
 global:
   org: 'oxid-esales'
   name: 'oxideshop-composer-plugin'
+  repo: 'OXID-eSales/oxideshop_composer_plugin'
 
 install_shop_with_modules:
-  git:
-    shop_url: 'https://github.com/OXID-eSales/oxideshop_composer_plugin.git'
   composer:
-    root_url: ''
     transform: |
       {
         "require-dev": {
@@ -24,3 +22,7 @@ runscript:
         "component:~/PhpMdReport.sh",
         "component:~/PhpStanReport.sh"
       ]
+
+sonarcloud:
+  matrix:
+    testplan: 'skip'
