@@ -10,6 +10,8 @@ global:
   # The repository organisation/name to check out
   repo: 'OXID-eSales/oxideshop_composer_plugin'
 
+# These tests are run for all PHP/MySQL combinations specified when calling
+# the workflow
 runscript:
   matrix:
     # A string containing a valid json array of scripts to execute
@@ -17,14 +19,19 @@ runscript:
     # defined in composer.json and "<prefix>:~/<shell_script>" for shell
     # scripts located in tests/Scripts
     # If you want to see the tests output, make sure to generate it in tests/Output
-    script: '["component:~/Integration.sh"]'
+    script: '["component:~/unit.sh","component:~/integration.sh"]'
+
+# These tests are only run for one PHP/MySQL combination 
+runslim:
+  matrix:
+    script: '["component:~/php-cs-report.sh"]'
 
 sonarcloud:
-  matrix:
-    # Remove the next line if you want to feed the results of your tests to
-    # sonarcloud. You need to make sure that your scripts generate an xml
+    # Remove the next two lines if you want to feed the results of your tests
+    # to sonarcloud. You need to make sure that your scripts generate an xml
     # coverage file in tests/Reports, e.g. by adding
     # --coverage-clover=tests/Reports/coverage_phpunit_integration.xml to them.
+  matrix:
     testplan: 'skip'
   # If you want to enable sonarcloud, you need to uncomment and fill out the
   # settings for project_key and project_name. You can get them from
