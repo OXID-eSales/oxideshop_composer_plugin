@@ -41,7 +41,7 @@ jobs:
           esac
           echo "testplan=${TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
 
-  shop_ce:
+  trigger:
     needs: build_testplan
     uses: oxid-eSales/github-actions/.github/workflows/universal_workflow_light.yml@v4
     with:
