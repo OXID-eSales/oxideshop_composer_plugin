@@ -21,22 +21,22 @@ runscript:
     # If you want to see the tests output, make sure to generate it in tests/Output
     script: '["component:~/unit.sh","component:~/integration.sh"]'
 
-# These tests are only run for one PHP/MySQL combination 
+# These tests are only run for one PHP/MySQL combination
 runslim:
   matrix:
     script: '["component:~/php-cs-report.sh"]'
 
 sonarcloud:
-    # Remove the next two lines if you want to feed the results of your tests
-    # to sonarcloud. You need to make sure that your scripts generate an xml
-    # coverage file in tests/Reports, e.g. by adding
-    # --coverage-clover=tests/Reports/coverage_phpunit_integration.xml to them.
+  # Remove the next two lines if you want to feed the results of your tests
+  # to sonarcloud. You need to make sure that your scripts generate an xml
+  # coverage file in tests/Reports, e.g. by adding
+  # --coverage-clover=tests/Reports/coverage_phpunit_integration.xml to them.
   matrix:
     testplan: 'skip'
-  # If you want to enable sonarcloud, you need to uncomment and fill out the
+  # If you want to enable sonarcloud, you need to fill out the
   # settings for project_key and project_name. You can get them from
   # https://sonarcloud.io/organizations/oxid-esales/projects. The defaults for
   # organization and parameters should be OK for most cases, so you don't need
   # to overwrite them here.
-  # project_key: '???'
-  # project_name: '???'
+  project_key: '???'
+  project_name: '???'
