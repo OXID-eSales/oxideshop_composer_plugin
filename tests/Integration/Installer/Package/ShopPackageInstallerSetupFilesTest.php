@@ -133,8 +133,6 @@ class ShopPackageInstallerSetupFilesTest extends AbstractShopPackageInstaller
     $this->dbUser = '<dbUser>';
     $this->dbPwd  = '<dbPwd>';
     $this->sShopURL     = '<sShopURL>';
-    $this->sShopDir     = '<sShopDir>';
-    $this->sCompileDir  = '<sCompileDir>';
 EOT;
     }
 
@@ -148,8 +146,6 @@ EOT;
     $this->dbUser = 'test_user';
     $this->dbPwd  = 'test_password';
     $this->sShopURL     = 'http://test.url/';
-    $this->sShopDir     = '/var/www/test/dir';
-    $this->sCompileDir  = '/var/www/test/dir/tmp';
 EOT;
     }
 }

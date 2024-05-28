@@ -232,8 +232,6 @@ class ShopPackageInstaller extends AbstractPackageInstaller
             '<dbUser>',
             '<dbPwd>',
             '<sShopURL>',
-            '<sShopDir>',
-            '<sCompileDir>',
         ];
 
         foreach ($wordsIndicatingNotConfigured as $word) {
