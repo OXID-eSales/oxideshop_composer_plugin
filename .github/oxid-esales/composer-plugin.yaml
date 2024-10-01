@@ -1,61 +1,38 @@
-# {{ $ids := "composer-plugin" }}ids: {{ print $ids }}
-# {{ $org := "oxid-esales" }}organisation: {{ print $org }}
-# {{ $name := "oxideshop-composer-plugin" }}name: {{ print $name }}
-
-prepare_shop:
-  git:
-    shop_ref: '{{ .Data.global.git.default_ref }}'
-  composer:
-    transform: |
-      {
-        "autoload-dev": {
-          "psr-4": {
-              "OxidEsales\\ComposerPlugin\\Tests\\": "vendor/{{ print $org }}/{{ print $name }}/tests/"
-          }
-        }
-      }
-
-install_module:
-  matrix:
-    testplan: '["-"]'
+install:
   cache:
-    prefix: &install_module_prefix 'moduleInstallation-ce-{{ .Github.SHA }}-{{ .Github.RunID }}'
-  ids: &ids '{{ print $ids }}'
-  activate: ''
+    prepared_shop: false
   git:
-    module:
-      url: &git_module_url '{{ .Github.Repository }}'
-      ref: '{{ .Github.RefName }}'
-  package_name: &package_name '{{ print $org }}/{{ print $name }}'
-  path: *ids
+    repository: 'OXID-eSales/oxideshop_composer_plugin'
+    ref: &ref '{{ .Github.RefName }}'
+    shop_url: 'https://github.com/OXID-eSales/oxideshop_composer_plugin.git'
+    shop_ref: *ref
+  composer:
+    root_url: ''
+    transform: ''
+  custom_script_container: ''
 
-phpunit:
-  matrix:
-    testplan: '["~/defaults/module_phpunit_unit.yml","~/defaults/module_phpunit_integration.yml"]'
-  load_shop: *install_module_prefix
+install_shop_with_modules:
+  skip_shop_installation: true
+  composer:
+    root_url: ''
 
-codeception:
+runscript: &runscript
   matrix:
-    testplan: 'skip'
-  load_shop: *install_module_prefix
+    script: |
+      [
+        "composer_plugin:tests-unit",
+      ]
+  composer_plugin:
+    path: ''
 
-runtest:
+runslim:
+  <<: *runscript
   matrix:
-    testplan: 'skip'
-  load_shop: *install_module_prefix
+    script: |
+      [
+        "composer_plugin:phpcs",
+      ]
 
 sonarcloud:
   matrix:
     testplan: 'skip'
-
-styles:
-  matrix:
-    testplan: 'skip'
-  load_shop: *install_module_prefix
-
-phpcs_tests:
-  matrix:
-    testplan: 'skip'
-
-finish:
-  slack_title: 'Component {{ print $name }} ({{ .Data.global.git.shop_ref }}) on {{ .Github.Repository }} by {{ .Github.Actor }}'

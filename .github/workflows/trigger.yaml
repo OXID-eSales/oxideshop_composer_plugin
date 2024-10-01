@@ -1,0 +1,16 @@
+name: Auto trigger on push or pull requests
+
+on:
+  pull_request: {}
+  push: {}
+
+jobs:
+  shop72:
+    uses: oxid-eSales/github-actions/.github/workflows/universal_workflow_light.yml@v4
+    with:
+      testplan: '~/defaults/7.2.x.yaml,~/composer-plugin.yaml,~/_custom.yaml'
+      runs_on: '"ubuntu-latest"'
+      defaults: 'v4'
+      plan_folder: '.github/oxid-esales'
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

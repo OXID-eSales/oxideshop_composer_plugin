@@ -31,7 +31,7 @@ on:
         type: string
         required: true
         description: 'URL/PATH of the testplan to run'
-        default: '~/defaults/7.2.x.yml,~/composer-plugin.yaml'
+        default: '~/defaults/7.2.x.yaml,~/composer-plugin.yaml,~/_custom.yaml'
       runs_on:
         type: string
         description: 'JSON string/array describing the runner'
@@ -56,14 +56,14 @@ jobs:
           # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
           case '${{inputs.limit}}' in
             "no") LIMIT='';;
-            "PHP8.0/MySQL5.7") LIMIT='~/defaults/php8.0_mysql5.7_only.yml,' ;;
-            "PHP8.0/MySQL8.0") LIMIT='~/defaults/php8.0_mysql8.0_only.yml,' ;;
-            "PHP8.1/MySQL5.7") LIMIT='~/defaults/php8.1_mysql5.7_only.yml,' ;;
-            "PHP8.1/MySQL8.0") LIMIT='~/defaults/php8.1_mysql8.0_only.yml,' ;;
-            "PHP8.2/MySQL5.7") LIMIT='~/defaults/php8.2_mysql5.7_only.yml,' ;;
-            "PHP8.2/MySQL8.0") LIMIT='~/defaults/php8.2_mysql8.0_only.yml,' ;;
-            "PHP8.3/MySQL5.7") LIMIT='~/defaults/php8.3_mysql5.7_only.yml,' ;;
-            "PHP8.3/MySQL8.0") LIMIT='~/defaults/php8.3_mysql8.0_only.yml,' ;;
+            "PHP8.0/MySQL5.7") LIMIT='~/defaults/php8.0_mysql5.7_only.yaml,' ;;
+            "PHP8.0/MySQL8.0") LIMIT='~/defaults/php8.0_mysql8.0_only.yaml,' ;;
+            "PHP8.1/MySQL5.7") LIMIT='~/defaults/php8.1_mysql5.7_only.yaml,' ;;
+            "PHP8.1/MySQL8.0") LIMIT='~/defaults/php8.1_mysql8.0_only.yaml,' ;;
+            "PHP8.2/MySQL5.7") LIMIT='~/defaults/php8.2_mysql5.7_only.yaml,' ;;
+            "PHP8.2/MySQL8.0") LIMIT='~/defaults/php8.2_mysql8.0_only.yaml,' ;;
+            "PHP8.3/MySQL5.7") LIMIT='~/defaults/php8.3_mysql5.7_only.yaml,' ;;
+            "PHP8.3/MySQL8.0") LIMIT='~/defaults/php8.3_mysql8.0_only.yaml,' ;;
             *) echo "Illegal choice, fix the workflow"
                exit 1
                ;;
@@ -71,19 +71,19 @@ jobs:
           case '${{ inputs.scenario}}' in
             "7.0.x")
               # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="~/defaults/7.0.x.yml,${LIMIT}~/composer-plugin.yaml"
+              TESTPLAN="~/defaults/7.0.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
               ;;
             "7.1.x")
               # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="~/defaults/7.1.x.yml,${LIMIT}~/composer-plugin.yaml"
+              TESTPLAN="~/defaults/7.1.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
               ;;
             "7.2.x")
               # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="~/defaults/7.2.x.yml,${LIMIT}~/composer-plugin.yaml"
+              TESTPLAN="~/defaults/7.2.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
               ;;
             "8.0.x")
               # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="${LIMIT}~/composer-plugin.yaml"
+              TESTPLAN="~/defaults/8.0.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
               ;;
             "use custom testplan")
               # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
@@ -99,7 +99,7 @@ jobs:
   dispatch_stable:
     if: ${{ inputs.use_dev_version == 'no' }}
     needs: build_testplan
-    uses: oxid-eSales/github-actions/.github/workflows/call-universal_test_workflow.yml@v4
+    uses: oxid-eSales/github-actions/.github/workflows/universal_workflow_light.yaml@v4
     with:
       testplan: ${{ needs.build_testplan.outputs.testplan }}
       runs_on: ${{ inputs.runs_on }}
@@ -118,7 +118,7 @@ jobs:
   dispatch_v0:
     if: ${{ inputs.use_dev_version == 'v0' }}
     needs: build_testplan
-    uses: oxid-eSales/github-actions/.github/workflows/call-universal_test_workflow.yml@v0
+    uses: oxid-eSales/github-actions/.github/workflows/universal_workflow_light.yaml@v4
     with:
       testplan: ${{ needs.build_testplan.outputs.testplan }}
       runs_on: ${{ inputs.runs_on }}
