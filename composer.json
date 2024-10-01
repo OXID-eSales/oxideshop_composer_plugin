@@ -39,7 +39,8 @@
     },
     "scripts": {
         "phpcs": "phpcs --standard=PSR12 --extensions=php src tests",
-        "phpunit": "phpunit tests -c tests/phpunit.xml",
-        "phpunit-coverage": "XDEBUG_MODE=coverage phpunit tests --coverage-html=./coverage -c tests/phpunit.xml"
+
+        "tests-unit": "XDEBUG_MODE=coverage vendor/bin/phpunit --config=tests/ --coverage-clover=tests/Reports/coverage_composer_plugin.xml",
+        "tests-coverage": "XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text --config=tests/ --coverage-html=tests/Reports/CoverageHtml"
     }
 }
