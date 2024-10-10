@@ -9,9 +9,10 @@ on:
           - 7.0.x
           - 7.1.x
           - 7.2.x
+          - 7.3.x
           - 8.0.x
           - use custom testplan
-        default: '7.2.x'
+        default: '7.3.x'
         description: 'Choose test scenario'
       limit:
         type: choice
@@ -31,7 +32,7 @@ on:
         type: string
         required: true
         description: 'URL/PATH of the testplan to run'
-        default: '~/defaults/7.2.x.yaml,~/composer-plugin.yaml,~/_custom.yaml'
+        default: '~/defaults/7.3.x.yaml,~/composer-plugin.yaml,~/_custom.yaml'
       runs_on:
         type: string
         description: 'JSON string/array describing the runner'
@@ -80,6 +81,10 @@ jobs:
             "7.2.x")
               # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
               TESTPLAN="~/defaults/7.2.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
+              ;;
+            "7.3.x")
+              # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
+              TESTPLAN="~/defaults/7.3.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
               ;;
             "8.0.x")
               # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
