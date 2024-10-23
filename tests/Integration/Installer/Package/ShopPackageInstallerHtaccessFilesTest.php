@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer\Package;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class ShopPackageInstallerHtaccessFilesTest extends AbstractShopPackageInstaller
 {
     public static function providerHtaccessFiles(): array
@@ -23,10 +25,8 @@ class ShopPackageInstallerHtaccessFilesTest extends AbstractShopPackageInstaller
         ];
     }
 
-    /**
-     * @dataProvider providerHtaccessFiles
-     */
-    public function testShopInstallProcessCopiesHtaccessFilesIfTheyAreMissing($htaccessFile): void
+    #[DataProvider('providerHtaccessFiles')]
+    public function testShopInstallProcessCopiesHtaccessFilesIfTheyAreMissing(string $htaccessFile): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
@@ -39,10 +39,8 @@ class ShopPackageInstallerHtaccessFilesTest extends AbstractShopPackageInstaller
         $this->assertVirtualFileEquals("vendor/test-vendor/test-package/source/$htaccessFile", "source/$htaccessFile");
     }
 
-    /**
-     * @dataProvider providerHtaccessFiles
-     */
-    public function testShopInstallProcessDoesNotCopyHtaccessFilesIfTheyAreAlreadyPresent($htaccessFile): void
+    #[DataProvider('providerHtaccessFiles')]
+    public function testShopInstallProcessDoesNotCopyHtaccessFilesIfTheyAreAlreadyPresent(string $htaccessFile): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
