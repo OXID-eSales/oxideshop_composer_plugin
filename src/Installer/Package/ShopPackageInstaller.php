@@ -13,6 +13,8 @@ use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileMana
 use Webmozart\Glob\Iterator\GlobIterator;
 use Symfony\Component\Filesystem\Path;
 
+use function sprintf;
+
 /**
  * @inheritdoc
  */
@@ -20,20 +22,12 @@ class ShopPackageInstaller extends AbstractPackageInstaller
 {
     public const SHOP_SOURCE_DIRECTORY = 'source';
     public const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
-    public const SHOP_SOURCE_CONFIGURATION_FILE = 'config.inc.php';
     public const FAVICON_FILE = 'favicon.ico';
     public const OFFLINE_FILE = 'offline.html';
-    public const DISTRIBUTION_FILE_EXTENSION_MARK = '.dist';
-    public const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
     public const HTACCESS_FILTER = '**/.htaccess';
     public const ROBOTS_EXCLUSION_FILTER = '**/robots.txt';
-    public const SETUP_FILES_FILTER = self::SHOP_SOURCE_SETUP_DIRECTORY
-        . DIRECTORY_SEPARATOR
-        . AbstractPackageInstaller::BLACKLIST_ALL_FILES;
 
     /**
-     * @param string $packagePath
-     *
      * @return bool
      */
     public function isInstalled(string $packagePath)
@@ -64,15 +58,18 @@ class ShopPackageInstaller extends AbstractPackageInstaller
     public function update($packagePath)
     {
         $shopSourceDirectory = str_replace(
-            "source",
-            $this->highlightMessage("source"),
+            'source',
+            $this->highlightMessage('source'),
             $this->getTargetDirectoryOfShopSource()
         );
 
         $this->writeUpdatingMessage($this->getPackageTypeDescription());
-        $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
-                    '- ' . $shopSourceDirectory . PHP_EOL .
-                    'Do you want to overwrite them? (y/N) ';
+        $question = sprintf(
+            'All files in the following directories will be overwritten:%s- %s%sDo you want to overwrite them? (y/N) ',
+            PHP_EOL,
+            $shopSourceDirectory,
+            PHP_EOL
+        );
 
         if ($this->askQuestionIfNotInstalled($question, $packagePath)) {
             $this->writeCopyingMessage();
@@ -97,8 +94,6 @@ class ShopPackageInstaller extends AbstractPackageInstaller
     private function copyPackage($packagePath)
     {
         $this->copyShopSourceFromPackageToTarget($packagePath);
-        $this->copySetupFiles($packagePath);
-        $this->copyConfigurationDistFileWithinTarget();
         $this->copyHtaccessFiles($packagePath);
         $this->copyFaviconFile($packagePath);
         $this->copyOfflineFile($packagePath);
@@ -116,7 +111,6 @@ class ShopPackageInstaller extends AbstractPackageInstaller
             $this->getBlacklistFilterValue(),
             [self::HTACCESS_FILTER],
             [self::ROBOTS_EXCLUSION_FILTER],
-            [self::SETUP_FILES_FILTER],
             [self::FAVICON_FILE],
             [self::OFFLINE_FILE],
             $this->getVCSFilter(),
@@ -127,17 +121,6 @@ class ShopPackageInstaller extends AbstractPackageInstaller
             $this->getTargetDirectoryOfShopSource(),
             $this->getCombinedFilters($filtersToApply)
         );
-    }
-
-    /**
-     * Copy shop's configuration file from distribution file.
-     */
-    private function copyConfigurationDistFileWithinTarget()
-    {
-        $pathToConfig       = Path::join($this->getTargetDirectoryOfShopSource(), self::SHOP_SOURCE_CONFIGURATION_FILE);
-        $pathToConfigDist   = $pathToConfig . self::DISTRIBUTION_FILE_EXTENSION_MARK;
-
-        $this->copyFileIfIsMissing($pathToConfigDist, $pathToConfig);
     }
 
     /**
@@ -190,57 +173,6 @@ class ShopPackageInstaller extends AbstractPackageInstaller
             $packagePath,
             self::ROBOTS_EXCLUSION_FILTER
         );
-    }
-
-    /**
-     * Copy shop's setup files from package.
-     *
-     * @param string $packagePath Absolute path which points to shop's package directory.
-     */
-    private function copySetupFiles($packagePath)
-    {
-        $packageDirectoryOfShopSource = $this->getPackageDirectoryOfShopSource($packagePath);
-        $installationDirectoryOfShopSource = $this->getTargetDirectoryOfShopSource();
-
-        $shopConfigFileName = Path::join($installationDirectoryOfShopSource, self::SHOP_SOURCE_CONFIGURATION_FILE);
-
-        if ($this->isConfigFileNotConfiguredOrMissing($shopConfigFileName)) {
-            CopyGlobFilteredFileManager::copy(
-                Path::join($packageDirectoryOfShopSource, self::SHOP_SOURCE_SETUP_DIRECTORY),
-                Path::join($installationDirectoryOfShopSource, self::SHOP_SOURCE_SETUP_DIRECTORY)
-            );
-        }
-    }
-
-    /**
-     * Return true if config file is not configured or missing.
-     *
-     * @param string $shopConfigFileName Absolute path to shop configuration file to check.
-     *
-     * @return bool
-     */
-    private function isConfigFileNotConfiguredOrMissing($shopConfigFileName)
-    {
-        if (!file_exists($shopConfigFileName)) {
-            return true;
-        }
-
-        $shopConfigFileContents = file_get_contents($shopConfigFileName);
-        $wordsIndicatingNotConfigured = [
-            '<dbHost>',
-            '<dbName>',
-            '<dbUser>',
-            '<dbPwd>',
-            '<sShopURL>',
-        ];
-
-        foreach ($wordsIndicatingNotConfigured as $word) {
-            if (strpos($shopConfigFileContents, $word) !== false) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -312,9 +244,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
      */
     private function getFilteredFiles($directory, $filter)
     {
-        $glob = Path::join($directory, $filter);
-
-        return new GlobIterator($glob);
+        return new GlobIterator(Path::join($directory, $filter));
     }
 
     /**
@@ -336,12 +266,10 @@ class ShopPackageInstaller extends AbstractPackageInstaller
             $sourcePackageDirectory
         );
 
-        $absolutePathToFileFromInstallation = Path::join(
+        return Path::join(
             $installationDirectoryOfShopSource,
             $relativePathOfSourceFromPackage
         );
-
-        return $absolutePathToFileFromInstallation;
     }
 
     /**

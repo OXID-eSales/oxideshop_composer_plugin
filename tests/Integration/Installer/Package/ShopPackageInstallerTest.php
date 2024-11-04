@@ -49,7 +49,6 @@ class ShopPackageInstallerTest extends AbstractShopPackageInstaller
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
             'index.php' => '<?php',
             'Application/views/template.tpl' => 'tpl',
-            'config.inc.php.dist' => 'dist',
         ]);
 
         $installer = $this->getPackageInstaller();
@@ -63,45 +62,6 @@ class ShopPackageInstallerTest extends AbstractShopPackageInstaller
             'vendor/test-vendor/test-package/source/Application/views/template.tpl',
             'source/Application/views/template.tpl'
         );
-        $this->assertVirtualFileEquals(
-            'vendor/test-vendor/test-package/source/config.inc.php.dist',
-            'source/config.inc.php.dist'
-        );
-    }
-
-    public function testShopInstallProcessCopiesConfigFileIfItDoesNotExist(): void
-    {
-        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
-            'index.php' => '<?php',
-            'config.inc.php.dist' => 'dist',
-        ]);
-
-        $installer = $this->getPackageInstaller();
-        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
-
-        $this->assertVirtualFileEquals(
-            'vendor/test-vendor/test-package/source/config.inc.php.dist',
-            'source/config.inc.php'
-        );
-    }
-
-    public function testShopInstallProcessDoesNotCopyConfigFileIfItAlreadyExists(): void
-    {
-        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
-            'index.php' => '<?php',
-            'config.inc.php.dist' => 'dist',
-        ]);
-        $this->setupVirtualProjectRoot('source', [
-            'config.inc.php' => 'old',
-        ]);
-
-        $installer = $this->getPackageInstaller();
-        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
-
-        $this->assertVirtualFileNotEquals(
-            'vendor/test-vendor/test-package/source/config.inc.php.dist',
-            'source/config.inc.php'
-        );
     }
 
     public function testShopInstallProcessDoesNotCopyFilteredClasses(): void
@@ -113,7 +73,6 @@ class ShopPackageInstallerTest extends AbstractShopPackageInstaller
             'Application/Model/Class.php' => '<?php',
             'Application/Controller/Class.php' => '<?php',
             'Application/Component/Class.php' => '<?php',
-            'config.inc.php.dist' => 'dist',
         ]);
 
         $installer = $this->getPackageInstaller();

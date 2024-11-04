@@ -21,8 +21,9 @@ use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\DIContainer\Service\ShopStateServiceInterface;
+use OxidEsales\EshopCommunity\Internal\Framework\FileSystem\ProjectDirectoriesLocator;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ProjectConfigurationDaoInterface;
-use OxidEsales\Facts\Facts;
+use Symfony\Component\Filesystem\Path;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
@@ -135,8 +136,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     private function bootstrapOxidShopComponent(): void
     {
         if ($this->isShopLaunched()) {
-            $bootstrapFilePath = (new Facts())->getSourcePath() . DIRECTORY_SEPARATOR . 'bootstrap.php';
-            require_once $bootstrapFilePath;
+            require_once Path::join(
+                (new ProjectDirectoriesLocator())->getSourcePath(),
+                'bootstrap.php'
+            );
         }
     }
 

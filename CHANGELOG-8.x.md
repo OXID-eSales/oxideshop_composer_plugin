@@ -3,4 +3,5 @@
 ## v8.0.0 - unreleased
 
 ### Removed
--  Configuration parameters sShopDir and sCompileDir from the configuration file
+- Dependency on the `Facts` component
+- Functionality used for web-based shop setup

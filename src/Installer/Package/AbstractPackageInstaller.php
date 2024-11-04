@@ -20,9 +20,6 @@ abstract class AbstractPackageInstaller
 {
     public const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
 
-    /** Used to determine third party package internal source path. */
-    public const EXTRA_PARAMETER_KEY_SOURCE = 'source-directory';
-
     /** Used to install third party integrations. */
     public const EXTRA_PARAMETER_KEY_TARGET = 'target-directory';
 
@@ -49,15 +46,6 @@ abstract class AbstractPackageInstaller
         . DIRECTORY_SEPARATOR
         . self::BLACKLIST_ALL_FILES;
 
-    /** @var IOInterface */
-    private $io;
-
-    /** @var string */
-    private $rootDirectory;
-
-    /** @var PackageInterface */
-    private $package;
-
     /**
      * AbstractInstaller constructor.
      *
@@ -65,11 +53,11 @@ abstract class AbstractPackageInstaller
      * @param string           $rootDirectory
      * @param PackageInterface $package
      */
-    public function __construct(IOInterface $io, $rootDirectory, PackageInterface $package)
-    {
-        $this->io = $io;
-        $this->rootDirectory = $rootDirectory;
-        $this->package = $package;
+    public function __construct(
+        private readonly IOInterface $io,
+        private readonly string $rootDirectory,
+        private readonly PackageInterface $package
+    ) {
     }
 
     /**

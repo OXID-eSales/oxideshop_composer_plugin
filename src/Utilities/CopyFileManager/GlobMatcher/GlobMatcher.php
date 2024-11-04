@@ -13,8 +13,6 @@ use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Integration\
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobListMatcher\GlobListMatcher;
 
 /**
- * Class GlobMatcher.
- *
  * Expose multiple glob matching interface for given relative path.
  */
 class GlobMatcher
@@ -27,9 +25,7 @@ class GlobMatcher
      */
     public static function matchAny($relativePath, $globExpressionList)
     {
-        $globMatcher = new WebmozartGlobMatcher();
-        $globListMatcher = new GlobListMatcher($globMatcher);
-
-        return $globListMatcher->matchAny($relativePath, $globExpressionList);
+        return (new GlobListMatcher(new WebmozartGlobMatcher()))
+            ->matchAny($relativePath, $globExpressionList);
     }
 }
