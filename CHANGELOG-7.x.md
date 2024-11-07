@@ -2,6 +2,12 @@
 
 ## v7.3.0 - unreleased
 
+### Added
+- PHPUnit v11 support
+
+### Removed
+- PHPUnit v10 support
+
 ## v7.2.0 - 2024-03-14
 
 ### Added
