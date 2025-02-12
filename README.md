@@ -15,6 +15,34 @@ Available types are:
 - oxideshop-theme - Themes, which are installed into source directory,
   depend on main shop package.
 
+Configuration
+-------------
+
+In your composer.json file you can add the following to help you with the `composer update` prompts. This is useful
+for symlinks on installs or possibly other reasons. The packages name in composer is the name you would enter into the
+composer.json file.
+
+> [!NOTE]  
+> **update-ask-true** will answer Y for the `composer update` prompts
+> **update-ask-false** will answer N for the `composer update` prompts
+
+```json
+  "extra": {
+    "oxideshop": {
+      "update-ask-true": [
+        "oxid-esales/oxideshop-ce",
+        "ddoe/wysiwyg-editor-module",
+        "oxid-esales/wave-theme",
+        "ecs/fixsmartyincontent"
+      ],
+      "update-ask-false": [
+        "ecs/adminrights",
+        "ecs/ustidcheck"
+      ]
+    }
+  }
+```
+
 ## Bugs and Issues
 
 If you experience any bugs or issues, please report them in the section
