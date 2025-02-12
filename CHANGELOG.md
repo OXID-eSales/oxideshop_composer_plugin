@@ -4,7 +4,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.2.3] - Unreleased
+## [Unreleased]
+
+### Added
+
+- A way to configure extra parameters to answer the update overwrite question. Useful if you have symlinks
+
+In your composer.json file you can add the following.
+
+> [!NOTE]  
+> **update-ask-true** will answer Y for the `composer update` prompts
+> **update-ask-false** will answer N for the `composer update` prompts
+
+```json
+  "extra": {
+    "oxideshop": {
+      "update-ask-true": [
+        "oxid-esales/oxideshop-ce",
+        "ddoe/wysiwyg-editor-module",
+        "oxid-esales/wave-theme",
+        "ecs/fixsmartyincontent"
+      ],
+      "update-ask-false": [
+        "ecs/adminrights",
+        "ecs/ustidcheck"
+      ]
+    }
+  }
+```
 
 ### Fixed
 - Install/update logic disregards package dependency weight

@@ -58,6 +58,9 @@ abstract class AbstractPackageInstaller
     /** @var PackageInterface */
     private $package;
 
+    /** @var array  */
+    private $settings = [];
+
     /**
      * AbstractInstaller constructor.
      *
@@ -65,12 +68,27 @@ abstract class AbstractPackageInstaller
      * @param string           $rootDirectory
      * @param PackageInterface $package
      */
-    public function __construct(IOInterface $io, $rootDirectory, PackageInterface $package)
+    public function __construct(IOInterface $io, $rootDirectory, PackageInterface $package, $settings)
     {
         $this->io = $io;
         $this->rootDirectory = $rootDirectory;
         $this->package = $package;
+        $this->settings = $settings;
     }
+
+
+    /**
+     * Check if the package has a preference to the update y/n question
+     *
+     * @param $packageName
+     * @param $preferenceCheck
+     * @return bool
+     */
+    public function isPreferenceUpdate($packageName, $preferenceCheck = 'true')
+    {
+        return in_array($packageName, $this->settings['update-ask-' . $preferenceCheck]);
+    }
+
 
     /**
      * Run package installation procedure. After installation files should be moved to correct location.
@@ -198,9 +216,14 @@ abstract class AbstractPackageInstaller
      */
     protected function askQuestion($messageToAsk)
     {
-        $userInput = $this->getIO()->ask($messageToAsk, 'N');
-
-        return $this->isPositiveUserInput($userInput);
+        if ($this->isPreferenceUpdate($this->getPackageName(), 'false')) {
+            return false;
+        } elseif ($this->isPreferenceUpdate($this->getPackageName(), 'true')) {
+            return true;
+        } else {
+            $userInput = $this->getIO()->ask($messageToAsk, 'N');
+            return $this->isPositiveUserInput($userInput);
+        }
     }
 
     /**
