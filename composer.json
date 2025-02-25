@@ -5,12 +5,12 @@
   "keywords": ["oxidEshop", "plugin"],
   "homepage": "https://www.oxid-esales.com/en/home.html",
   "license": [
-    "GPL-3.0-only"
+    "proprietary"
   ],
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "composer-plugin-api": "^1.0",
+    "composer-plugin-api": "^1.0||^2.0",
     "symfony/filesystem": "^3.0",
     "webmozart/glob": "^4.1",
     "webmozart/path-util": "^2.3"
