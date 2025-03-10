@@ -17,6 +17,8 @@ use Symfony\Component\Filesystem\Path;
 
 abstract class AbstractPackageInstaller extends TestCase
 {
+    protected vfsStreamDirectory $vfsRoot;
+
     public function setUp(): void
     {
         $this->setupVirtualFileSystem();
@@ -24,14 +26,11 @@ abstract class AbstractPackageInstaller extends TestCase
 
     protected function setupVirtualFileSystem(): void
     {
-        vfsStream::setup(
-            'root',
-            777,
-            [
-                'vendor' => [],
-                'source' => [],
-            ]
-        );
+        $this->vfsRoot = vfsStream::setup('root', 0777);
+        vfsStream::create([
+            'vendor' => [],
+            'source' => [],
+        ], $this->vfsRoot);
     }
 
     protected function setupVirtualProjectRoot($prefix, $input): vfsStreamDirectory

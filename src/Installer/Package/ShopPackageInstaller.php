@@ -21,11 +21,12 @@ use function sprintf;
 class ShopPackageInstaller extends AbstractPackageInstaller
 {
     public const SHOP_SOURCE_DIRECTORY = 'source';
-    public const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
-    public const FAVICON_FILE = 'favicon.ico';
-    public const OFFLINE_FILE = 'offline.html';
-    public const HTACCESS_FILTER = '**/.htaccess';
-    public const ROBOTS_EXCLUSION_FILTER = '**/robots.txt';
+    private const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
+    private const FAVICON_FILE = 'favicon.ico';
+    private const OFFLINE_FILE = 'offline.html';
+    private const ENV_DIST_FILE = '.env.dist';
+    private const HTACCESS_FILTER = '**/.htaccess';
+    private const ROBOTS_EXCLUSION_FILTER = '**/robots.txt';
 
     /**
      * @return bool
@@ -97,6 +98,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
         $this->copyHtaccessFiles($packagePath);
         $this->copyFaviconFile($packagePath);
         $this->copyOfflineFile($packagePath);
+        $this->copyEnvDistFile($packagePath);
         $this->copyRobotsExclusionFiles($packagePath);
     }
 
@@ -160,6 +162,15 @@ class ShopPackageInstaller extends AbstractPackageInstaller
             $packagePath,
             self::OFFLINE_FILE
         );
+    }
+
+    private function copyEnvDistFile($packagePath)
+    {
+        $sourceFilePath = Path::join($packagePath, self::ENV_DIST_FILE);
+        $projectRootPath = dirname($this->getRootDirectory());
+        $targetFilePath = Path::join($projectRootPath, self::ENV_DIST_FILE);
+
+        $this->copyFileIfIsMissing($sourceFilePath, $targetFilePath);
     }
 
     /**

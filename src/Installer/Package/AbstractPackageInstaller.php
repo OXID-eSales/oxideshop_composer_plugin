@@ -20,28 +20,20 @@ abstract class AbstractPackageInstaller
 {
     public const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
 
-    /** Used to install third party integrations. */
     public const EXTRA_PARAMETER_KEY_TARGET = 'target-directory';
 
-    /** Used to install third party integration assets. */
     public const EXTRA_PARAMETER_KEY_ASSETS = 'assets-directory';
 
-    /** Used to decide what the shop source directory is. */
     public const EXTRA_PARAMETER_SOURCE_PATH = 'source-path';
 
-    /** List of glob expressions used to blacklist files being copied. */
     public const EXTRA_PARAMETER_FILTER_BLACKLIST = 'blacklist-filter';
 
-    /** Glob expression to filter all files, might be used to filter whole directory. */
     public const BLACKLIST_ALL_FILES = '**/*';
 
-    /** Name of directory to be excluded for VCS */
     public const BLACKLIST_VCS_DIRECTORY = '.git';
 
-    /** Name of ignore files to be excluded for VCS */
     public const BLACKLIST_VCS_IGNORE_FILE = '.gitignore';
 
-    /** Glob filter expression to exclude VCS files */
     public const BLACKLIST_VCS_DIRECTORY_FILTER = self::BLACKLIST_VCS_DIRECTORY
         . DIRECTORY_SEPARATOR
         . self::BLACKLIST_ALL_FILES;
