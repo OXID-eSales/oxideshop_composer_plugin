@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.5] - Unreleased
+## [2.0.5] - 2025-04-09
 
-### Fixed
+### Changed
  - Made composer.json compatible with composer v2
+ - Update LICENSE
 
 ## [2.0.4] - 2019-07-16
 
