@@ -18,11 +18,10 @@ use Composer\Plugin\PluginInterface;
 use Composer\Util\PackageSorter;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
+use OxidEsales\EshopCommunity\Core\Autoload\ModuleAutoload;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Framework\DIContainer\Service\ShopStateServiceInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\FileSystem\ProjectDirectoriesLocator;
-use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ProjectConfigurationDaoInterface;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ShopConfigurationDaoInterface;
 use Symfony\Component\Filesystem\Path;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
@@ -135,37 +134,22 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     private function bootstrapOxidShopComponent(): void
     {
-        if ($this->isShopLaunched()) {
-            require_once Path::join(
-                (new ProjectDirectoriesLocator())->getSourcePath(),
-                'bootstrap.php'
-            );
-        }
-    }
+        $bootstrapFilePath = Path::join((new ProjectDirectoriesLocator())->getSourcePath(), 'bootstrap.php');
 
-    private function isShopLaunched(): bool
-    {
-        return BootstrapContainerFactory::getBootstrapContainer()
-            ->get(ShopStateServiceInterface::class)
-            ->isLaunched();
+        if (file_exists($bootstrapFilePath)) {
+            require_once $bootstrapFilePath;
+            spl_autoload_unregister([ModuleAutoload::class, 'autoload']);
+        }
     }
 
     private function generateDefaultProjectConfigurationIfMissing(): void
     {
         $bootstrapContainer = BootstrapContainerFactory::getBootstrapContainer();
-        $projectConfigurationDao = $bootstrapContainer->get(ProjectConfigurationDaoInterface::class);
 
-        if ($projectConfigurationDao->isConfigurationEmpty()) {
-            if ($this->isShopLaunched()) {
-                $container = ContainerFactory::getInstance()->getContainer();
-                $container
-                    ->get('oxid_esales.module.install.service.launched_shop_project_configuration_generator')
-                    ->generate();
-            } else {
-                $bootstrapContainer
-                    ->get('oxid_esales.module.install.service.installed_shop_project_configuration_generator')
-                    ->generate();
-            }
+        if (count($bootstrapContainer->get(ShopConfigurationDaoInterface::class)->getAll()) === 0) {
+            $bootstrapContainer
+                ->get('oxid_esales.module.install.service.installed_shop_project_configuration_generator')
+                ->generate();
         }
     }
 

@@ -9,9 +9,8 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
+use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Framework\DIContainer\Service\ShopStateServiceInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\DataObject\OxidEshopPackage;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Install\Service\ModuleInstallerInterface;
 
@@ -70,23 +69,11 @@ class ModulePackageInstaller extends AbstractPackageInstaller
      */
     private function getModuleInstaller(): ModuleInstallerInterface
     {
-        if ($this->isShopLaunched()) {
-            return ContainerFactory::getInstance()->getContainer()
-                ->get(ModuleInstallerInterface::class);
-        } else {
+        try {
+            return ContainerFacade::get(ModuleInstallerInterface::class);
+        } catch (\Exception) {
             return $this->getBootstrapModuleInstaller();
         }
-    }
-
-    /**
-     * @return bool
-     */
-    private function isShopLaunched(): bool
-    {
-        $container = BootstrapContainerFactory::getBootstrapContainer();
-        $shopStateService = $container->get(ShopStateServiceInterface::class);
-
-        return $shopStateService->isLaunched();
     }
 
     /**
