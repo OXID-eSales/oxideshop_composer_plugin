@@ -1,6 +1,6 @@
 # Change Log for OXID eSales Composer Plugin
 
-## v7.3.0 - unreleased
+## v7.3.0 - 2025-04-08
 
 ### Added
 - PHPUnit v11 support
