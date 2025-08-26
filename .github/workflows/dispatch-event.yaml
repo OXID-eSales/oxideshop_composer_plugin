@@ -72,7 +72,7 @@ jobs:
           case '${{ inputs.scenario}}' in
             "8.0.x")
               # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="~/defaults/8.0.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
+              TESTPLAN="~/defaults/8.0.x.yaml,~/defaults/component.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
               ;;
             "use custom testplan")
               # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
