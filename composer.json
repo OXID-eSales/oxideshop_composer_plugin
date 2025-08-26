@@ -38,7 +38,8 @@
         "class": "OxidEsales\\ComposerPlugin\\Plugin"
     },
     "scripts": {
-        "phpcs": "phpcs --standard=PSR12 --extensions=php src tests",
+        "phpcs": "phpcs --standard=tests/phpcs.xml  --report=full",
+        "phpcs-report": "phpcs --standard=tests/phpcs.xml --report=json --report-file=tests/Reports/phpcs.report.json",
         "tests-unit": "XDEBUG_MODE=coverage vendor/bin/phpunit --config=tests/ --coverage-clover=tests/Reports/coverage_composer_plugin.xml",
         "tests-coverage": "XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text --config=tests/ --coverage-html=tests/Reports/CoverageHtml"
     }

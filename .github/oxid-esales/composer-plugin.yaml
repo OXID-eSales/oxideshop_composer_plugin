@@ -1,22 +1,8 @@
 install:
   cache:
     prepared_shop: false
-  git:
-    repository: 'OXID-eSales/oxideshop_composer_plugin'
-    ref: &ref '{{ .Github.RefName }}'
-    shop_url: 'https://github.com/OXID-eSales/oxideshop_composer_plugin.git'
-    shop_ref: *ref
-  composer:
-    root_url: ''
-    transform: ''
-  custom_script_container: ''
 
-install_shop_with_modules:
-  skip_shop_installation: true
-  composer:
-    root_url: ''
-
-runscript: &runscript
+runscript:
   matrix:
     script: |
       [
@@ -26,11 +12,10 @@ runscript: &runscript
     path: ''
 
 runslim:
-  <<: *runscript
   matrix:
     script: |
       [
-        "composer_plugin:phpcs",
+        "composer_plugin:phpcs-report",
       ]
 
 sonarcloud:
