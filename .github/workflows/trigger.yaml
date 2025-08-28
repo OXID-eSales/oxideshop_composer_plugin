@@ -5,12 +5,15 @@ on:
   push: {}
 
 jobs:
-  shop80:
-    uses: oxid-eSales/github-actions/.github/workflows/universal_workflow_light.yml@v4
+  composer_plugin:
+    uses: oxid-eSales/github-actions/.github/workflows/universal_workflow_light.yaml@v5
     with:
-      testplan: '~/defaults/8.0.x.yaml,~/composer-plugin.yaml,~/_custom.yaml'
+      testplan: '~/defaults/8.0.x.yaml,~/defaults/component.yaml,~/composer-plugin.yaml,~/_custom.yaml'
       runs_on: '"ubuntu-latest"'
-      defaults: 'v4'
+      defaults: 'v5'
       plan_folder: '.github/oxid-esales'
     secrets:
+      DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+      DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

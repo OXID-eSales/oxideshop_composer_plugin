@@ -6,11 +6,6 @@ on:
       scenario:
         type: choice
         options:
-          - 7.0.x
-          - 7.1.x
-          - 7.2.x
-          - 7.3.x
-          - 7.4.x
           - 8.0.x
           - use custom testplan
         default: '8.0.x'
@@ -29,13 +24,13 @@ on:
           - 'PHP8.3/MySQL8.0'
           - 'PHP8.4/MySQL5.7'
           - 'PHP8.4/MySQL8.0'
-        default: 'PHP8.1/MySQL5.7'
+        default: 'PHP8.4/MySQL8.0'
         description: 'Limit to one PHP/MySQL combination'
       custom_testplan:
         type: string
         required: true
         description: 'URL/PATH of the testplan to run'
-        default: '~/defaults/8.0.x.yaml,~/composer-plugin.yaml,~/_custom.yaml'
+        default: '~/defaults/8.0.x.yaml,~/defaults/component.yaml,~/composer-plugin.yaml,~/_custom.yaml'
       runs_on:
         type: string
         description: 'JSON string/array describing the runner'
@@ -75,26 +70,6 @@ jobs:
                ;;
           esac
           case '${{ inputs.scenario}}' in
-            "7.0.x")
-              # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="~/defaults/7.0.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
-              ;;
-            "7.1.x")
-              # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="~/defaults/7.1.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
-              ;;
-            "7.2.x")
-              # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="~/defaults/7.2.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
-              ;;
-            "7.3.x")
-              # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="~/defaults/7.3.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
-              ;;
-            "7.4.x")
-              # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
-              TESTPLAN="~/defaults/7.4.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
-              ;;
             "8.0.x")
               # shellcheck disable=SC2088 # Tilde expansion happens in the workflow and not by bash
               TESTPLAN="~/defaults/8.0.x.yaml,${LIMIT}~/composer-plugin.yaml,~/_custom.yaml"
@@ -113,11 +88,11 @@ jobs:
   dispatch_stable:
     if: ${{ inputs.use_dev_version == 'no' }}
     needs: build_testplan
-    uses: oxid-eSales/github-actions/.github/workflows/universal_workflow_light.yaml@v4
+    uses: oxid-eSales/github-actions/.github/workflows/universal_workflow_light.yaml@v5
     with:
       testplan: ${{ needs.build_testplan.outputs.testplan }}
       runs_on: ${{ inputs.runs_on }}
-      defaults: 'v4'
+      defaults: 'v5'
       plan_folder: '.github/oxid-esales'
     secrets:
       DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
