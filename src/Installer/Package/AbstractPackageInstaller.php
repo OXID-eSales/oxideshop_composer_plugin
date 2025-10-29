@@ -11,6 +11,7 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
+use OxidEsales\ComposerPlugin\Utilities\PackageUpdatePreferenceChecker;
 
 /**
  * Class is responsible for preparing project structure.
@@ -58,8 +59,7 @@ abstract class AbstractPackageInstaller
     /** @var PackageInterface */
     private $package;
 
-    /** @var array  */
-    private $settings = [];
+    private PackageUpdatePreferenceChecker $packageUpdatePreferenceChecker;
 
     /**
      * AbstractInstaller constructor.
@@ -67,28 +67,15 @@ abstract class AbstractPackageInstaller
      * @param IOInterface      $io
      * @param string           $rootDirectory
      * @param PackageInterface $package
+     * @param array            $settings
      */
-    public function __construct(IOInterface $io, $rootDirectory, PackageInterface $package, $settings)
+    public function __construct(IOInterface $io, $rootDirectory, PackageInterface $package, $settings = [])
     {
         $this->io = $io;
         $this->rootDirectory = $rootDirectory;
         $this->package = $package;
-        $this->settings = $settings;
+        $this->packageUpdatePreferenceChecker = new PackageUpdatePreferenceChecker($settings);
     }
-
-
-    /**
-     * Check if the package has a preference to the update y/n question
-     *
-     * @param $packageName
-     * @param $preferenceCheck
-     * @return bool
-     */
-    public function isPreferenceUpdate($packageName, $preferenceCheck = 'true')
-    {
-        return in_array($packageName, $this->settings['update-ask-' . $preferenceCheck]);
-    }
-
 
     /**
      * Run package installation procedure. After installation files should be moved to correct location.
@@ -219,10 +206,10 @@ abstract class AbstractPackageInstaller
      */
     protected function askQuestion($messageToAsk)
     {
-        if ($this->isPreferenceUpdate($this->getPackageName(), 'false')) {
-            return false;
-        } elseif ($this->isPreferenceUpdate($this->getPackageName(), 'true')) {
-            return true;
+        $preferenceValue = $this->packageUpdatePreferenceChecker->getUpdatePreferenceValue($this->getPackageName());
+
+        if (!is_null($preferenceValue)) {
+            return $preferenceValue;
         } else {
             $userInput = $this->getIO()->ask($messageToAsk, 'N');
             return $this->isPositiveUserInput($userInput);

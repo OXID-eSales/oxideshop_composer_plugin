@@ -23,19 +23,19 @@ for symlinks on installs or possibly other reasons. The packages name in compose
 composer.json file.
 
 > [!NOTE]  
-> **update-ask-true** will answer Y for the `composer update` prompts
-> **update-ask-false** will answer N for the `composer update` prompts
+> **update-answer-yes** will answer Y for the `composer update` prompts for specific package  
+> **update-answer-no** will answer N for the `composer update` prompts for specific package
 
 ```json
   "extra": {
     "oxideshop": {
-      "update-ask-true": [
+      "update-answer-yes": [
         "oxid-esales/oxideshop-ce",
         "ddoe/wysiwyg-editor-module",
         "oxid-esales/wave-theme",
         "ecs/fixsmartyincontent"
       ],
-      "update-ask-false": [
+      "update-answer-no": [
         "ecs/adminrights",
         "ecs/ustidcheck"
       ]
