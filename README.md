@@ -30,14 +30,10 @@ composer.json file.
   "extra": {
     "oxideshop": {
       "update-answer-yes": [
-        "oxid-esales/oxideshop-ce",
-        "ddoe/wysiwyg-editor-module",
-        "oxid-esales/wave-theme",
-        "ecs/fixsmartyincontent"
+        "oxid-esales/apex-theme"
       ],
       "update-answer-no": [
-        "ecs/adminrights",
-        "ecs/ustidcheck"
+        "my-vendor/other-example"
       ]
     }
   }
