@@ -11,6 +11,7 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
+use OxidEsales\ComposerPlugin\Utilities\PackageUpdatePreferenceChecker;
 
 /**
  * Class is responsible for preparing project structure.
@@ -38,18 +39,23 @@ abstract class AbstractPackageInstaller
         . DIRECTORY_SEPARATOR
         . self::BLACKLIST_ALL_FILES;
 
+    private PackageUpdatePreferenceChecker $packageUpdatePreferenceChecker;
+
     /**
      * AbstractInstaller constructor.
      *
      * @param IOInterface      $io
      * @param string           $rootDirectory
      * @param PackageInterface $package
+     * @param array            $settings
      */
     public function __construct(
         private readonly IOInterface $io,
         private readonly string $rootDirectory,
-        private readonly PackageInterface $package
+        private readonly PackageInterface $package,
+        array $settings = [],
     ) {
+        $this->packageUpdatePreferenceChecker = new PackageUpdatePreferenceChecker($settings);
     }
 
     /**
@@ -181,9 +187,14 @@ abstract class AbstractPackageInstaller
      */
     protected function askQuestion($messageToAsk)
     {
-        $userInput = $this->getIO()->ask($messageToAsk, 'N');
+        $preferenceValue = $this->packageUpdatePreferenceChecker->getUpdatePreferenceValue($this->getPackageName());
 
-        return $this->isPositiveUserInput($userInput);
+        if (!is_null($preferenceValue)) {
+            return $preferenceValue;
+        } else {
+            $userInput = $this->getIO()->ask($messageToAsk, 'N');
+            return $this->isPositiveUserInput($userInput);
+        }
     }
 
     /**
