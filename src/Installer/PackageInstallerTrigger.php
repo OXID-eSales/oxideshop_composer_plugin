@@ -13,8 +13,8 @@ use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ComponentInstaller;
-use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller;
+use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ThemePackageInstaller;
 use Symfony\Component\Filesystem\Path;
 
@@ -45,7 +45,7 @@ class PackageInstallerTrigger extends LibraryInstaller
     /**
      * Decides if the installer supports the given type
      *
-     * @param  string $packageType
+     * @param string $packageType
      * @return bool
      */
     public function supports($packageType)
@@ -116,6 +116,11 @@ class PackageInstallerTrigger extends LibraryInstaller
      */
     protected function createInstaller(PackageInterface $package)
     {
-        return new $this->installers[$package->getType()]($this->io, $this->getShopSourcePath(), $package);
+        return new $this->installers[$package->getType()](
+            $this->io,
+            $this->getShopSourcePath(),
+            $package,
+            $this->settings
+        );
     }
 }

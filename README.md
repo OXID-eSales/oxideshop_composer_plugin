@@ -15,6 +15,30 @@ Available types are:
 - oxideshop-theme - Themes, which are installed into source directory,
   depend on main shop package.
 
+Configuration
+-------------
+
+In your composer.json file you can add the following to help you with the `composer update` prompts. This is useful
+for symlinks on installs or possibly other reasons. The packages name in composer is the name you would enter into the
+composer.json file.
+
+> [!NOTE]  
+> **update-answer-yes** will answer Y for the `composer update` prompts for specific package  
+> **update-answer-no** will answer N for the `composer update` prompts for specific package
+
+```json
+  "extra": {
+    "oxideshop": {
+      "update-answer-yes": [
+        "oxid-esales/apex-theme"
+      ],
+      "update-answer-no": [
+        "my-vendor/other-example"
+      ]
+    }
+  }
+```
+
 ## Bugs and Issues
 
 If you experience any bugs or issues, please report them in the section
