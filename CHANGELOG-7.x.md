@@ -3,7 +3,7 @@
 ## v7.4.0 - Unreleased
 
 ### Added
-- A way to configure extra parameters to answer the update overwrite question.
+- A way to configure extra parameters to answer the update overwrite question. [PR-31](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/31)
 
 ## v7.3.0 - 2025-04-08
 
