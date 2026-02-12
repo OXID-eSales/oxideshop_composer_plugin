@@ -21,7 +21,7 @@
         "phpunit/phpunit": "^11.4",
         "squizlabs/php_codesniffer": "3.*"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "alpha",
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
