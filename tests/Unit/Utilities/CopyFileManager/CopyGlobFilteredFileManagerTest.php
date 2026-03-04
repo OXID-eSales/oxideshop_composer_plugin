@@ -11,19 +11,22 @@ namespace OxidEsales\ComposerPlugin\Tests\Unit\Utilities\CopyFileManager;
 
 use org\bovigo\vfs\vfsStream;
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
+use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobListMatcher\GlobListMatcher;
+use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobMatcher;
+use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Integration\AbstractGlobMatcher;
+use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Integration\WebmozartGlobMatcher;
+use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Iteration\BlacklistFilterIterator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Path;
 
-/**
- * Class CopyGlobFilteredFileManagerTest.
- *
- * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager
- * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobMatcher
- * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Iteration\BlacklistFilterIterator
- * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Integration\AbstractGlobMatcher
- * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\Integration\WebmozartGlobMatcher
- * @covers \OxidEsales\ComposerPlugin\Utilities\CopyFileManager\GlobMatcher\GlobListMatcher\GlobListMatcher
- */
-class CopyGlobFilteredFileManagerTest extends \PHPUnit\Framework\TestCase
+#[CoversClass(CopyGlobFilteredFileManager::class)]
+#[CoversClass(GlobMatcher::class)]
+#[CoversClass(BlacklistFilterIterator::class)]
+#[CoversClass(AbstractGlobMatcher::class)]
+#[CoversClass(WebmozartGlobMatcher::class)]
+#[CoversClass(GlobListMatcher::class)]
+class CopyGlobFilteredFileManagerTest extends TestCase
 {
     /** @var array */
     private $filter = [];
