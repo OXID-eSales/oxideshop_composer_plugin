@@ -1,6 +1,6 @@
 # Change Log for OXID eSales Composer Plugin
 
-## v7.4.0 - Unreleased
+## v7.4.0 - 2026-04-08
 
 ### Added
 - A way to configure extra parameters to answer the update overwrite question. [PR-31](https://github.com/OXID-eSales/oxideshop_composer_plugin/pull/31)
