@@ -1,7 +1,12 @@
 # Change Log for OXID eSales Composer Plugin
 
 ## v8.0.0-alpha.3 - Unreleased
-*Compilation release*
+
+### Added
+- Invoke `ThemeConfigurationInstallerInterface` on theme package install and update
+
+### Changed
+- Theme installer checks for `metadata.yaml` instead of `theme.php`
 
 ## v8.0.0-alpha.2 - 2026-02-12
 *Compilation release*
