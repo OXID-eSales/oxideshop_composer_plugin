@@ -11,6 +11,8 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use Composer\Package\PackageInterface;
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
+use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Theme\Install\Service\ThemeConfigurationInstallerInterface;
 use Symfony\Component\Filesystem\Path;
 
 /**
@@ -18,8 +20,8 @@ use Symfony\Component\Filesystem\Path;
  */
 class ThemePackageInstaller extends AbstractPackageInstaller
 {
-    public const METADATA_FILE_NAME = 'theme.php';
     public const PATH_TO_THEMES = "Application/views";
+    private const METADATA_FILE = 'metadata.yaml';
 
     /**
      * @param string $packagePath
@@ -28,7 +30,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function isInstalled(string $packagePath)
     {
-        return file_exists($this->formThemeTargetPath() . '/' . static::METADATA_FILE_NAME);
+        return file_exists($this->formThemeTargetPath() . '/' . self::METADATA_FILE);
     }
 
     /**
@@ -41,6 +43,9 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->writeInstallingMessage($this->getPackageTypeDescription());
         $this->writeCopyingMessage();
         $this->copyPackage($packagePath);
+        if ($this->hasMetadata()) {
+            $this->getThemeConfigurationInstaller()->install($packagePath);
+        }
         $this->writeDoneMessage();
     }
 
@@ -74,6 +79,9 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         if ($this->askQuestionIfNotInstalled($question, $packagePath)) {
             $this->writeCopyingMessage();
             $this->copyPackage($packagePath);
+            if ($this->hasMetadata()) {
+                $this->getThemeConfigurationInstaller()->install($packagePath);
+            }
             $this->writeDoneMessage();
         } else {
             $this->writeSkippedMessage();
@@ -169,5 +177,16 @@ class ThemePackageInstaller extends AbstractPackageInstaller
     protected function getPackageTypeDescription(): string
     {
         return 'theme package';
+    }
+
+    private function hasMetadata(): bool
+    {
+        return file_exists($this->formThemeTargetPath() . '/' . self::METADATA_FILE);
+    }
+
+    private function getThemeConfigurationInstaller(): ThemeConfigurationInstallerInterface
+    {
+        return BootstrapContainerFactory::getBootstrapContainer()
+            ->get(ThemeConfigurationInstallerInterface::class);
     }
 }
