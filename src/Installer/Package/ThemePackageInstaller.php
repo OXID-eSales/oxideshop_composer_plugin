@@ -9,18 +9,16 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
-use Composer\Package\PackageInterface;
-use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
-use Symfony\Component\Filesystem\Path;
+use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
+use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Theme\Install\DataObject\OxidThemePackage;
+use OxidEsales\EshopCommunity\Internal\Framework\Theme\Install\Service\ThemeInstallerInterface;
 
 /**
  * @inheritdoc
  */
 class ThemePackageInstaller extends AbstractPackageInstaller
 {
-    public const METADATA_FILE_NAME = 'theme.php';
-    public const PATH_TO_THEMES = "Application/views";
-
     /**
      * @param string $packagePath
      *
@@ -28,55 +26,32 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function isInstalled(string $packagePath)
     {
-        return file_exists($this->formThemeTargetPath() . '/' . static::METADATA_FILE_NAME);
+        return $this->getBootstrapThemeInstaller()->isInstalled($this->getOxidThemePackage($packagePath));
     }
 
     /**
-     * Copies theme files to shop directory.
+     * Registers theme configuration and links theme assets from the package.
      *
      * @param string $packagePath
      */
     public function install($packagePath)
     {
-        $this->writeInstallingMessage($this->getPackageTypeDescription());
-        $this->writeCopyingMessage();
-        $this->copyPackage($packagePath);
-        $this->writeDoneMessage();
+        $this->getIO()->write("Installing theme {$this->getPackageName()} package.");
+        $this->getBootstrapThemeInstaller()->install($this->getOxidThemePackage($packagePath));
     }
 
     /**
-     * Overwrites theme files.
-     *
      * @param string $packagePath
      */
     public function update($packagePath)
     {
-        $this->writeUpdatingMessage($this->getPackageTypeDescription());
-        $themeDirectoryName = $this->formThemeDirectoryName($this->getPackage());
+        $package = $this->getOxidThemePackage($packagePath);
 
-        $templatesPath = str_replace(
-            $themeDirectoryName,
-            $this->highlightMessage($themeDirectoryName),
-            $this->formThemeTargetPath()
-        );
-
-        $assetsPath = str_replace(
-            $themeDirectoryName,
-            $this->highlightMessage($themeDirectoryName),
-            $this->formAssetsDirectoryName()
-        );
-
-        $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
-            '- ' . $templatesPath . PHP_EOL .
-            '- ' . Path::join($this->getRootDirectory(), $assetsPath) . PHP_EOL .
-            'Do you want to overwrite them? (y/N) ';
-
-        if ($this->askQuestionIfNotInstalled($question, $packagePath)) {
-            $this->writeCopyingMessage();
-            $this->copyPackage($packagePath);
-            $this->writeDoneMessage();
+        if ($this->getBootstrapThemeInstaller()->isInstalled($package)) {
+            $this->getIO()->write("Updating theme {$this->getPackageName()} files...");
+            $this->getBootstrapThemeInstaller()->install($package);
         } else {
-            $this->writeSkippedMessage();
+            $this->install($packagePath);
         }
     }
 
@@ -85,89 +60,26 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function uninstall(string $packagePath): void
     {
-        //not implemented yet
+        $this->getThemeInstaller()->uninstall($this->getOxidThemePackage($packagePath));
     }
 
-    /**
-     * @param string $packagePath
-     */
-    protected function copyPackage($packagePath)
+    private function getThemeInstaller(): ThemeInstallerInterface
     {
-        $filtersToApply = [
-            [Path::join($this->formAssetsDirectoryName(), AbstractPackageInstaller::BLACKLIST_ALL_FILES)],
-            $this->getBlacklistFilterValue(),
-            $this->getVCSFilter(),
-        ];
-
-        CopyGlobFilteredFileManager::copy(
-            $packagePath,
-            $this->formThemeTargetPath(),
-            $this->getCombinedFilters($filtersToApply)
-        );
-
-        $this->installAssets($packagePath);
-    }
-
-    /**
-     * @return string
-     */
-    protected function formThemeTargetPath()
-    {
-        $package = $this->getPackage();
-        $themeDirectoryName = $this->formThemeDirectoryName($package);
-        return "{$this->getRootDirectory()}/" . static::PATH_TO_THEMES . "/$themeDirectoryName";
-    }
-
-    /**
-     * @param string $packagePath
-     */
-    protected function installAssets($packagePath)
-    {
-        $package = $this->getPackage();
-        $target = $this->getRootDirectory() . '/out/' . $this->formThemeDirectoryName($package);
-
-        $assetsDirectory = $this->formAssetsDirectoryName();
-        $source = $packagePath . '/' . $assetsDirectory;
-
-        if (file_exists($source)) {
-            CopyGlobFilteredFileManager::copy(
-                $source,
-                $target,
-                $this->getBlacklistFilterValue()
-            );
+        try {
+            return ContainerFacade::get(ThemeInstallerInterface::class);
+        } catch (\Exception) {
+            return $this->getBootstrapThemeInstaller();
         }
     }
 
-    /**
-     * @param PackageInterface $package
-     * @return string
-     */
-    protected function formThemeDirectoryName($package)
+    private function getOxidThemePackage(string $packagePath): OxidThemePackage
     {
-        $themePath = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_TARGET);
-        if (is_null($themePath)) {
-            $themePath = explode('/', $package->getName())[1];
-        }
-        return $themePath;
+        return new OxidThemePackage($packagePath);
     }
 
-    /**
-     * @return null|string
-     */
-    protected function formAssetsDirectoryName()
+    private function getBootstrapThemeInstaller(): ThemeInstallerInterface
     {
-        $assetsDirectory = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_ASSETS);
-        if (is_null($assetsDirectory)) {
-            $assetsDirectory = 'out';
-        }
-        return $assetsDirectory;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getPackageTypeDescription(): string
-    {
-        return 'theme package';
+        return BootstrapContainerFactory::getBootstrapContainer()
+            ->get('oxid_esales.theme.install.service.bootstrap_theme_installer');
     }
 }
