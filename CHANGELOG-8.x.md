@@ -4,7 +4,7 @@
 *Compilation release*
 
 ### Added
-- Install the theme configuration of a theme package on install and update
+- Install the theme configuration of a theme package on install and update, and remove it on uninstall
 
 ### Changed
 - Register a component's `services.yaml` via `ProjectYamlImportServiceInterface::addImportFromFilePath()`
