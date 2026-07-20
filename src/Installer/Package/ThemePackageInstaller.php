@@ -11,6 +11,7 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use Composer\Package\PackageInterface;
 use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
+use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Theme\Install\Service\ThemeConfigurationInstallerInterface;
 use Symfony\Component\Filesystem\Path;
@@ -44,7 +45,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         $this->writeCopyingMessage();
         $this->copyPackage($packagePath);
         if ($this->hasMetadata()) {
-            $this->getThemeConfigurationInstaller()->install($packagePath);
+            $this->getBootstrapThemeConfigurationInstaller()->install($packagePath);
         }
         $this->writeDoneMessage();
     }
@@ -80,7 +81,7 @@ class ThemePackageInstaller extends AbstractPackageInstaller
             $this->writeCopyingMessage();
             $this->copyPackage($packagePath);
             if ($this->hasMetadata()) {
-                $this->getThemeConfigurationInstaller()->install($packagePath);
+                $this->getBootstrapThemeConfigurationInstaller()->install($packagePath);
             }
             $this->writeDoneMessage();
         } else {
@@ -93,7 +94,9 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function uninstall(string $packagePath): void
     {
-        //not implemented yet
+        if ($this->hasMetadata()) {
+            $this->getThemeConfigurationInstaller()->uninstall($packagePath);
+        }
     }
 
     /**
@@ -185,6 +188,15 @@ class ThemePackageInstaller extends AbstractPackageInstaller
     }
 
     private function getThemeConfigurationInstaller(): ThemeConfigurationInstallerInterface
+    {
+        try {
+            return ContainerFacade::get(ThemeConfigurationInstallerInterface::class);
+        } catch (\Throwable) {
+            return $this->getBootstrapThemeConfigurationInstaller();
+        }
+    }
+
+    private function getBootstrapThemeConfigurationInstaller(): ThemeConfigurationInstallerInterface
     {
         return BootstrapContainerFactory::getBootstrapContainer()
             ->get(ThemeConfigurationInstallerInterface::class);
