@@ -3,7 +3,7 @@
 ## v8.0.0-alpha.3 - Unreleased
 
 ### Added
-- Invoke `ThemeConfigurationInstallerInterface` on theme package install and update
+- Invoke `ThemeConfigurationInstallerInterface` on theme package install, update and uninstall
 
 ### Changed
 - Theme installer checks for `metadata.yaml` instead of `theme.php`
