@@ -21,6 +21,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
     public const SHOP_SOURCE_DIRECTORY = 'source';
     public const FILE_TO_CHECK_IF_PACKAGE_INSTALLED = 'index.php';
     public const SHOP_SOURCE_CONFIGURATION_FILE = 'config.inc.php';
+    public const ENV_DISTRIBUTION_FILE = '.env.dist';
     public const FAVICON_FILE = 'favicon.ico';
     public const OFFLINE_FILE = 'offline.html';
     public const DISTRIBUTION_FILE_EXTENSION_MARK = '.dist';
@@ -99,6 +100,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
         $this->copyShopSourceFromPackageToTarget($packagePath);
         $this->copySetupFiles($packagePath);
         $this->copyConfigurationDistFileWithinTarget();
+        $this->copyEnvDistFile($packagePath);
         $this->copyHtaccessFiles($packagePath);
         $this->copyFaviconFile($packagePath);
         $this->copyOfflineFile($packagePath);
@@ -138,6 +140,19 @@ class ShopPackageInstaller extends AbstractPackageInstaller
         $pathToConfigDist   = $pathToConfig . self::DISTRIBUTION_FILE_EXTENSION_MARK;
 
         $this->copyFileIfIsMissing($pathToConfigDist, $pathToConfig);
+    }
+
+    private function copyEnvDistFile(string $packagePath): void
+    {
+        $envDistSource = Path::join($packagePath, self::ENV_DISTRIBUTION_FILE);
+        $envDistTarget = Path::join(
+            Path::getDirectory($this->getTargetDirectoryOfShopSource()),
+            self::ENV_DISTRIBUTION_FILE
+        );
+
+        if (file_exists($envDistSource)) {
+            CopyGlobFilteredFileManager::copy($envDistSource, $envDistTarget);
+        }
     }
 
     /**

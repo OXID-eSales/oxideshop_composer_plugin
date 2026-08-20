@@ -104,6 +104,34 @@ class ShopPackageInstallerTest extends AbstractShopPackageInstaller
         );
     }
 
+    public function testShopInstallProcessCopiesEnvDistFileToProjectRoot(): void
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package', [
+            'source/index.php' => '<?php',
+            '.env.dist' => 'env dist',
+        ]);
+
+        $installer = $this->getPackageInstaller();
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileEquals(
+            'vendor/test-vendor/test-package/.env.dist',
+            '.env.dist'
+        );
+    }
+
+    public function testShopInstallProcessDoesNotFailWhenEnvDistFileIsMissing(): void
+    {
+        $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
+            'index.php' => '<?php',
+        ]);
+
+        $installer = $this->getPackageInstaller();
+        $installer->install($this->getVirtualFileSystemRootPath('vendor/test-vendor/test-package'));
+
+        $this->assertVirtualFileNotExists('.env.dist');
+    }
+
     public function testShopInstallProcessDoesNotCopyFilteredClasses(): void
     {
         $this->setupVirtualProjectRoot('vendor/test-vendor/test-package/source', [
