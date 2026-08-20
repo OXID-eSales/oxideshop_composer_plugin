@@ -23,6 +23,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
     public const SHOP_SOURCE_CONFIGURATION_FILE = 'config.inc.php';
     public const FAVICON_FILE = 'favicon.ico';
     public const OFFLINE_FILE = 'offline.html';
+    public const ENV_DIST_FILE = '.env.dist';
     public const DISTRIBUTION_FILE_EXTENSION_MARK = '.dist';
     public const SHOP_SOURCE_SETUP_DIRECTORY = 'Setup';
     public const HTACCESS_FILTER = '**/.htaccess';
@@ -102,6 +103,7 @@ class ShopPackageInstaller extends AbstractPackageInstaller
         $this->copyHtaccessFiles($packagePath);
         $this->copyFaviconFile($packagePath);
         $this->copyOfflineFile($packagePath);
+        $this->copyEnvDistFile($packagePath);
         $this->copyRobotsExclusionFiles($packagePath);
     }
 
@@ -177,6 +179,20 @@ class ShopPackageInstaller extends AbstractPackageInstaller
             $packagePath,
             self::OFFLINE_FILE
         );
+    }
+
+    /**
+     * Copy shop's .env.dist file from package to the project root.
+     *
+     * @param string $packagePath Absolute path which points to shop's package directory.
+     */
+    private function copyEnvDistFile($packagePath)
+    {
+        $sourceFilePath = Path::join($packagePath, self::ENV_DIST_FILE);
+        $projectRootPath = dirname($this->getRootDirectory());
+        $targetFilePath = Path::join($projectRootPath, self::ENV_DIST_FILE);
+
+        $this->copyFileIfIsMissing($sourceFilePath, $targetFilePath);
     }
 
     /**

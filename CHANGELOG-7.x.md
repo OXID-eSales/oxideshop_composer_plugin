@@ -1,5 +1,10 @@
 # Change Log for OXID eSales Composer Plugin
 
+## Unreleased
+
+### Added
+- Copy the `.env.dist` file from the shop package to the project root
+
 ## v7.4.0 - 2026-04-08
 
 ### Added
