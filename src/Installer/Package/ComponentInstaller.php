@@ -11,6 +11,7 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\DIContainer\Service\ProjectYamlImportServiceInterface;
+use Symfony\Component\Filesystem\Path;
 
 class ComponentInstaller extends AbstractPackageInstaller
 {
@@ -43,6 +44,10 @@ class ComponentInstaller extends AbstractPackageInstaller
             ->get(ProjectYamlImportServiceInterface::class);
 
         $projectYamlImportService->removeNonExistingImports();
-        $projectYamlImportService->addImport($packagePath);
+
+        $serviceFilePath = Path::join($packagePath, 'services.yaml');
+        if (is_file($serviceFilePath)) {
+            $projectYamlImportService->addImportFromFilePath($serviceFilePath);
+        }
     }
 }
