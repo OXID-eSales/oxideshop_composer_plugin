@@ -26,7 +26,7 @@ abstract class AbstractPackageInstaller extends TestCase
     {
         vfsStream::setup(
             'root',
-            0777,
+            777,
             [
                 'vendor' => [],
                 'source' => [],
