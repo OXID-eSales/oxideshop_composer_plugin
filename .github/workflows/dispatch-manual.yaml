@@ -20,9 +20,6 @@ on:
           - 'PHP8.1/MySQL8.0'
           - 'PHP8.2/MySQL5.7'
           - 'PHP8.2/MySQL8.0'
-          - 'PHP8.3/MySQL5.7'
-          - 'PHP8.3/MySQL8.0'
-          - 'PHP8.3/MySQL8.4'
           - 'PHP8.4/MySQL5.7'
           - 'PHP8.4/MySQL8.0'
           - 'PHP8.4/MySQL8.4'
@@ -63,9 +60,6 @@ jobs:
             "PHP8.1/MySQL8.0") LIMIT='~/defaults/php8.1_mysql8.0_only.yaml,' ;;
             "PHP8.2/MySQL5.7") LIMIT='~/defaults/php8.2_mysql5.7_only.yaml,' ;;
             "PHP8.2/MySQL8.0") LIMIT='~/defaults/php8.2_mysql8.0_only.yaml,' ;;
-            "PHP8.3/MySQL5.7") LIMIT='~/defaults/php8.3_mysql5.7_only.yaml,' ;;
-            "PHP8.3/MySQL8.0") LIMIT='~/defaults/php8.3_mysql8.0_only.yaml,' ;;
-            "PHP8.3/MySQL8.4") LIMIT='~/defaults/php8.3_mysql8.4_only.yaml,' ;;
             "PHP8.4/MySQL5.7") LIMIT='~/defaults/php8.4_mysql5.7_only.yaml,' ;;
             "PHP8.4/MySQL8.0") LIMIT='~/defaults/php8.4_mysql8.0_only.yaml,' ;;
             "PHP8.4/MySQL8.4") LIMIT='~/defaults/php8.4_mysql8.4_only.yaml,' ;;
