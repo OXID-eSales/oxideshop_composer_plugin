@@ -18,6 +18,9 @@ use Symfony\Component\Filesystem\Path;
  */
 class ThemePackageInstaller extends AbstractPackageInstaller
 {
+    /**
+     * @deprecated
+     */
     public const METADATA_FILE_NAME = 'theme.php';
     public const PATH_TO_THEMES = "Application/views";
 

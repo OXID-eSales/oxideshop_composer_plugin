@@ -5,6 +5,9 @@
 ### Added
 - PHPUnit v13 support
 
+### Deprecated
+- `ThemePackageInstaller::METADATA_FILE_NAME`
+
 ### Removed
 - PHPUnit v12 support
 
