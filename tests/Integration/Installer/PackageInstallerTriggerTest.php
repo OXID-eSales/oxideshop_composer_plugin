@@ -12,6 +12,8 @@ namespace OxidEsales\ComposerPlugin\Tests\Integration\Installer;
 use Composer\Composer;
 use Composer\Config;
 use Composer\IO\NullIO;
+use Composer\Package\Package;
+use OxidEsales\ComposerPlugin\Installer\Package\AdminUiPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
 use PHPUnit\Framework\TestCase;
 
@@ -44,5 +46,30 @@ class PackageInstallerTriggerTest extends TestCase
         $result = $packageInstallerStub->getShopSourcePath();
 
         $this->assertEquals($result, getcwd() . '/source');
+    }
+
+    public function testAdminUiPackageTypeIsSupported(): void
+    {
+        $this->assertTrue($this->getPackageInstallerTrigger()->supports('oxideshop-admin-ui'));
+    }
+
+    public function testAdminUiPackageTypeMapsToAdminUiPackageInstaller(): void
+    {
+        $package = new Package('test-vendor/test-admin-ui', '1.0.0', '1.0.0');
+        $package->setType('oxideshop-admin-ui');
+        $packageInstallerTrigger = $this->getPackageInstallerTrigger();
+
+        $installer = (new \ReflectionMethod($packageInstallerTrigger, 'createInstaller'))
+            ->invoke($packageInstallerTrigger, $package);
+
+        $this->assertInstanceOf(AdminUiPackageInstaller::class, $installer);
+    }
+
+    private function getPackageInstallerTrigger(): PackageInstallerTrigger
+    {
+        $composer = $this->createStub(Composer::class);
+        $composer->method('getConfig')->willReturn(new Config());
+
+        return new PackageInstallerTrigger(new NullIO(), $composer);
     }
 }

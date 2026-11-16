@@ -9,11 +9,12 @@ declare(strict_types=1);
 
 namespace OxidEsales\ComposerPlugin\Installer\Package;
 
-use Composer\Package\PackageInterface;
-use OxidEsales\ComposerPlugin\Utilities\CopyFileManager\CopyGlobFilteredFileManager;
 use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Theme\Install\Service\ThemeAssetsInstallerInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Theme\Install\Service\ThemeConfigurationInstallerInterface;
+use OxidEsales\EshopCommunity\Internal\Framework\Theme\MetaData\Exception\InvalidThemeMetaDataException;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Filesystem\Path;
 
 /**
@@ -21,8 +22,9 @@ use Symfony\Component\Filesystem\Path;
  */
 class ThemePackageInstaller extends AbstractPackageInstaller
 {
-    public const PATH_TO_THEMES = "Application/views";
-    private const METADATA_FILE = 'metadata.yaml';
+    private const ASSETS_DIRECTORY = 'assets';
+
+    private ?ContainerInterface $bootstrapContainer = null;
 
     /**
      * @param string $packagePath
@@ -31,62 +33,30 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function isInstalled(string $packagePath)
     {
-        return file_exists($this->formThemeTargetPath() . '/' . self::METADATA_FILE);
+        try {
+            return $this->getBootstrapThemeConfigurationInstaller()->isInstalled($packagePath)
+                && (!$this->hasAssets($packagePath) || $this->getThemeAssetsInstaller()->isInstalled($packagePath));
+        } catch (InvalidThemeMetaDataException) {
+            return false;
+        }
     }
 
     /**
-     * Copies theme files to shop directory.
-     *
      * @param string $packagePath
      */
     public function install($packagePath)
     {
         $this->writeInstallingMessage($this->getPackageTypeDescription());
-        $this->writeCopyingMessage();
-        $this->copyPackage($packagePath);
-        if ($this->hasMetadata()) {
-            $this->getBootstrapThemeConfigurationInstaller()->install($packagePath);
-        }
-        $this->writeDoneMessage();
+        $this->installTheme($packagePath);
     }
 
     /**
-     * Overwrites theme files.
-     *
      * @param string $packagePath
      */
     public function update($packagePath)
     {
         $this->writeUpdatingMessage($this->getPackageTypeDescription());
-        $themeDirectoryName = $this->formThemeDirectoryName($this->getPackage());
-
-        $templatesPath = str_replace(
-            $themeDirectoryName,
-            $this->highlightMessage($themeDirectoryName),
-            $this->formThemeTargetPath()
-        );
-
-        $assetsPath = str_replace(
-            $themeDirectoryName,
-            $this->highlightMessage($themeDirectoryName),
-            $this->formAssetsDirectoryName()
-        );
-
-        $question = 'All files in the following directories will be overwritten:' . PHP_EOL .
-            '- ' . $templatesPath . PHP_EOL .
-            '- ' . Path::join($this->getRootDirectory(), $assetsPath) . PHP_EOL .
-            'Do you want to overwrite them? (y/N) ';
-
-        if ($this->askQuestionIfNotInstalled($question, $packagePath)) {
-            $this->writeCopyingMessage();
-            $this->copyPackage($packagePath);
-            if ($this->hasMetadata()) {
-                $this->getBootstrapThemeConfigurationInstaller()->install($packagePath);
-            }
-            $this->writeDoneMessage();
-        } else {
-            $this->writeSkippedMessage();
-        }
+        $this->installTheme($packagePath);
     }
 
     /**
@@ -94,84 +64,12 @@ class ThemePackageInstaller extends AbstractPackageInstaller
      */
     public function uninstall(string $packagePath): void
     {
-        if ($this->hasMetadata()) {
+        try {
             $this->getThemeConfigurationInstaller()->uninstall($packagePath);
+            $this->getThemeAssetsInstaller()->uninstall($packagePath);
+        } catch (InvalidThemeMetaDataException $exception) {
+            $this->writeInvalidMetadataWarning($exception);
         }
-    }
-
-    /**
-     * @param string $packagePath
-     */
-    protected function copyPackage($packagePath)
-    {
-        $filtersToApply = [
-            [Path::join($this->formAssetsDirectoryName(), AbstractPackageInstaller::BLACKLIST_ALL_FILES)],
-            $this->getBlacklistFilterValue(),
-            $this->getVCSFilter(),
-        ];
-
-        CopyGlobFilteredFileManager::copy(
-            $packagePath,
-            $this->formThemeTargetPath(),
-            $this->getCombinedFilters($filtersToApply)
-        );
-
-        $this->installAssets($packagePath);
-    }
-
-    /**
-     * @return string
-     */
-    protected function formThemeTargetPath()
-    {
-        $package = $this->getPackage();
-        $themeDirectoryName = $this->formThemeDirectoryName($package);
-        return "{$this->getRootDirectory()}/" . static::PATH_TO_THEMES . "/$themeDirectoryName";
-    }
-
-    /**
-     * @param string $packagePath
-     */
-    protected function installAssets($packagePath)
-    {
-        $package = $this->getPackage();
-        $target = $this->getRootDirectory() . '/out/' . $this->formThemeDirectoryName($package);
-
-        $assetsDirectory = $this->formAssetsDirectoryName();
-        $source = $packagePath . '/' . $assetsDirectory;
-
-        if (file_exists($source)) {
-            CopyGlobFilteredFileManager::copy(
-                $source,
-                $target,
-                $this->getBlacklistFilterValue()
-            );
-        }
-    }
-
-    /**
-     * @param PackageInterface $package
-     * @return string
-     */
-    protected function formThemeDirectoryName($package)
-    {
-        $themePath = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_TARGET);
-        if (is_null($themePath)) {
-            $themePath = explode('/', $package->getName())[1];
-        }
-        return $themePath;
-    }
-
-    /**
-     * @return null|string
-     */
-    protected function formAssetsDirectoryName()
-    {
-        $assetsDirectory = $this->getExtraParameterValueByKey(static::EXTRA_PARAMETER_KEY_ASSETS);
-        if (is_null($assetsDirectory)) {
-            $assetsDirectory = 'out';
-        }
-        return $assetsDirectory;
     }
 
     /**
@@ -182,9 +80,28 @@ class ThemePackageInstaller extends AbstractPackageInstaller
         return 'theme package';
     }
 
-    private function hasMetadata(): bool
+    private function installTheme(string $packagePath): void
     {
-        return file_exists($this->formThemeTargetPath() . '/' . self::METADATA_FILE);
+        try {
+            $this->getBootstrapThemeConfigurationInstaller()->install($packagePath);
+            $this->getThemeAssetsInstaller()->install($packagePath);
+            $this->writeDoneMessage();
+        } catch (InvalidThemeMetaDataException $exception) {
+            $this->writeInvalidMetadataWarning($exception);
+            $this->writeSkippedMessage();
+        }
+    }
+
+    private function writeInvalidMetadataWarning(InvalidThemeMetaDataException $exception): void
+    {
+        $this->getIO()->warning(
+            sprintf('Theme package %s is skipped: %s', $this->getPackageName(), $exception->getMessage())
+        );
+    }
+
+    private function hasAssets(string $packagePath): bool
+    {
+        return is_dir(Path::join($packagePath, self::ASSETS_DIRECTORY));
     }
 
     private function getThemeConfigurationInstaller(): ThemeConfigurationInstallerInterface
@@ -198,7 +115,20 @@ class ThemePackageInstaller extends AbstractPackageInstaller
 
     private function getBootstrapThemeConfigurationInstaller(): ThemeConfigurationInstallerInterface
     {
-        return BootstrapContainerFactory::getBootstrapContainer()
-            ->get(ThemeConfigurationInstallerInterface::class);
+        return $this->getBootstrapContainer()->get(ThemeConfigurationInstallerInterface::class);
+    }
+
+    private function getThemeAssetsInstaller(): ThemeAssetsInstallerInterface
+    {
+        return $this->getBootstrapContainer()->get(ThemeAssetsInstallerInterface::class);
+    }
+
+    private function getBootstrapContainer(): ContainerInterface
+    {
+        if ($this->bootstrapContainer === null) {
+            $this->bootstrapContainer = BootstrapContainerFactory::getBootstrapContainer();
+        }
+
+        return $this->bootstrapContainer;
     }
 }

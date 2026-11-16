@@ -21,10 +21,6 @@ abstract class AbstractPackageInstaller
 {
     public const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
 
-    public const EXTRA_PARAMETER_KEY_TARGET = 'target-directory';
-
-    public const EXTRA_PARAMETER_KEY_ASSETS = 'assets-directory';
-
     public const EXTRA_PARAMETER_SOURCE_PATH = 'source-path';
 
     public const EXTRA_PARAMETER_FILTER_BLACKLIST = 'blacklist-filter';
