@@ -21,9 +21,8 @@ Available types are:
 
 ## Shop cache
 
-The shop cache is cleared after `composer install` and `composer update`. If this is not
-possible, a warning is shown and the cache has to be cleared with
-`vendor/bin/oe-console oe:cache:clear`.
+The plugin does not clear the shop cache. If `composer install`, `composer update` or `composer remove` installed,
+updated or removed a shop package, it shows a hint to clear the shop cache.
 
 ## Configuration
 

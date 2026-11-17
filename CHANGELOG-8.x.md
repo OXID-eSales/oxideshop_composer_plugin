@@ -7,7 +7,6 @@
 - Install the theme configuration of a theme package on install and update, and remove it on uninstall
 - Link the `assets` directory of a theme package to the shop's `out` directory on install and update, and remove the link on uninstall
 - Package type `oxideshop-admin-ui` to link the `assets` directory of the admin UI to the shop's `out` directory on install and update, and remove the link on uninstall
-- Clear the shop cache after `composer install` and `composer update`
 
 ### Changed
 - Register a component's `services.yaml` via `ProjectYamlImportServiceInterface::addImportFromFilePath()`

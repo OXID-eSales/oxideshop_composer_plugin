@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace OxidEsales\ComposerPlugin;
 
 use Composer\Composer;
+use Composer\DependencyResolver\Operation\UpdateOperation;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Installer\PackageEvent;
 use Composer\IO\IOInterface;
@@ -19,9 +20,7 @@ use Composer\Util\PackageSorter;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
 use OxidEsales\EshopCommunity\Core\Autoload\ModuleAutoload;
-use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Framework\Cache\ShopCacheCleanerInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\FileSystem\ProjectDirectoriesLocator;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ShopConfigurationDaoInterface;
 use Symfony\Component\Filesystem\Path;
@@ -36,7 +35,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     private IOInterface $io;
 
-    private const CLEAR_SHOP_CACHE_PRIORITY = -1;
+    private bool $shopPackagesChanged = false;
+
+    private const CLEAR_SHOP_CACHE_HINT_PRIORITY = -1;
 
     /**
      * Register events.
@@ -46,15 +47,18 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'post-install-cmd'      => [
+            'post-install-cmd' => [
                 ['installPackages'],
-                ['clearShopCache', self::CLEAR_SHOP_CACHE_PRIORITY],
+                ['showClearShopCacheHint', self::CLEAR_SHOP_CACHE_HINT_PRIORITY],
             ],
-            'post-update-cmd'       => [
+            'post-update-cmd' => [
                 ['updatePackages'],
-                ['clearShopCache', self::CLEAR_SHOP_CACHE_PRIORITY],
+                ['showClearShopCacheHint', self::CLEAR_SHOP_CACHE_HINT_PRIORITY],
             ],
             'pre-package-uninstall' => 'uninstallPackage',
+            'post-package-install' => 'registerShopPackageChange',
+            'post-package-update' => 'registerShopPackageChange',
+            'post-package-uninstall' => 'registerShopPackageChange',
         ];
     }
 
@@ -155,17 +159,24 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
     }
 
-    public function clearShopCache(): void
+    public function registerShopPackageChange(PackageEvent $event): void
     {
-        $this->io->write('Clearing shop cache');
+        $operation = $event->getOperation();
+        $packages = $operation instanceof UpdateOperation
+            ? [$operation->getInitialPackage(), $operation->getTargetPackage()]
+            : [$operation->getPackage()];
 
-        try {
-            ContainerFacade::get(ShopCacheCleanerInterface::class)->clearAll();
-        } catch (\Throwable $exception) {
-            $this->io->warning(
-                'Shop cache was not cleared: ' . rtrim($exception->getMessage(), '.')
-                . '. Run "vendor/bin/oe-console oe:cache:clear".'
-            );
+        foreach ($packages as $package) {
+            if ($this->packageInstallerTrigger->supports($package->getType())) {
+                $this->shopPackagesChanged = true;
+            }
+        }
+    }
+
+    public function showClearShopCacheHint(): void
+    {
+        if ($this->shopPackagesChanged) {
+            $this->io->write('Please clear the shop cache.');
         }
     }
 
