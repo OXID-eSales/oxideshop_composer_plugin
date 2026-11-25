@@ -19,7 +19,9 @@ use Composer\Util\PackageSorter;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\PackageInstallerTrigger;
 use OxidEsales\EshopCommunity\Core\Autoload\ModuleAutoload;
+use OxidEsales\EshopCommunity\Core\Di\ContainerFacade;
 use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Cache\ShopCacheCleanerInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\FileSystem\ProjectDirectoriesLocator;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Configuration\Dao\ShopConfigurationDaoInterface;
 use Symfony\Component\Filesystem\Path;
@@ -32,6 +34,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /** @var PackageInstallerTrigger */
     private $packageInstallerTrigger;
 
+    private IOInterface $io;
+
+    private const CLEAR_SHOP_CACHE_PRIORITY = -1;
+
     /**
      * Register events.
      *
@@ -40,8 +46,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'post-install-cmd'      => 'installPackages',
-            'post-update-cmd'       => 'updatePackages',
+            'post-install-cmd' => [
+                ['installPackages'],
+                ['clearShopCache', self::CLEAR_SHOP_CACHE_PRIORITY],
+            ],
+            'post-update-cmd' => [
+                ['updatePackages'],
+                ['clearShopCache', self::CLEAR_SHOP_CACHE_PRIORITY],
+            ],
             'pre-package-uninstall' => 'uninstallPackage',
         ];
     }
@@ -58,6 +70,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $composer->getInstallationManager()->addInstaller($packageInstallerTrigger);
 
         $this->composer = $composer;
+        $this->io = $io;
         $this->packageInstallerTrigger = $packageInstallerTrigger;
 
         $extraSettings = $this->composer->getPackage()->getExtra();
@@ -139,6 +152,20 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if (file_exists($bootstrapFilePath)) {
             require_once $bootstrapFilePath;
             spl_autoload_unregister([ModuleAutoload::class, 'autoload']);
+        }
+    }
+
+    public function clearShopCache(): void
+    {
+        $this->io->write('Clearing shop cache');
+
+        try {
+            ContainerFacade::get(ShopCacheCleanerInterface::class)->clearAll();
+        } catch (\Throwable $exception) {
+            $this->io->warning(
+                'Shop cache was not cleared: ' . rtrim($exception->getMessage(), '.')
+                . '. Please clear the shop cache with vendor/bin/oe-console oe:cache:clear.'
+            );
         }
     }
 

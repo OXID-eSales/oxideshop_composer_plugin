@@ -12,6 +12,8 @@ namespace OxidEsales\ComposerPlugin\Installer\Package;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
 use OxidEsales\ComposerPlugin\Utilities\PackageUpdatePreferenceChecker;
+use OxidEsales\EshopCommunity\Internal\Container\BootstrapContainerFactory;
+use Psr\Container\ContainerInterface;
 
 /**
  * Class is responsible for preparing project structure.
@@ -20,10 +22,6 @@ use OxidEsales\ComposerPlugin\Utilities\PackageUpdatePreferenceChecker;
 abstract class AbstractPackageInstaller
 {
     public const EXTRA_PARAMETER_KEY_ROOT = 'oxideshop';
-
-    public const EXTRA_PARAMETER_KEY_TARGET = 'target-directory';
-
-    public const EXTRA_PARAMETER_KEY_ASSETS = 'assets-directory';
 
     public const EXTRA_PARAMETER_SOURCE_PATH = 'source-path';
 
@@ -40,6 +38,8 @@ abstract class AbstractPackageInstaller
         . self::BLACKLIST_ALL_FILES;
 
     private PackageUpdatePreferenceChecker $packageUpdatePreferenceChecker;
+
+    private ?ContainerInterface $bootstrapContainer = null;
 
     /**
      * AbstractInstaller constructor.
@@ -315,5 +315,14 @@ abstract class AbstractPackageInstaller
     protected function highlightMessage($message): string
     {
         return '<options=bold>' . $message . '</>';
+    }
+
+    protected function getBootstrapContainer(): ContainerInterface
+    {
+        if ($this->bootstrapContainer === null) {
+            $this->bootstrapContainer = BootstrapContainerFactory::getBootstrapContainer();
+        }
+
+        return $this->bootstrapContainer;
     }
 }

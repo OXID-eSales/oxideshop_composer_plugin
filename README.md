@@ -12,8 +12,20 @@ Available types are:
 
 - oxideshop - Main shop package is installed into source directory.
 - oxideshop-module - Modules depend on main shop package.
-- oxideshop-theme - Themes, which are installed into source directory,
-  depend on main shop package.
+- oxideshop-theme - Themes depend on main shop package. Theme files are not copied, the shop reads them from the
+  vendor directory. The plugin installs the theme configuration and links the `assets` directory of the theme to
+  `source/out/<theme id>`. A theme package needs a valid `metadata.yaml` file. A theme package that cannot be
+  installed, updated or uninstalled is skipped with a warning.
+- oxideshop-admin-ui - Admin UI depends on main shop package. Its files are not copied, the shop reads them from
+  the vendor directory. The plugin links the `assets` directory of the admin UI to `source/out/<admin UI name>`.
+  This type is only meant for `oxid-esales/twig-admin-theme`, the plugin always links the admin UI configured in
+  the shop.
+
+## Shop cache
+
+The shop cache is cleared after `composer install` and `composer update`. If this is not
+possible, a warning is shown and the cache has to be cleared with
+`vendor/bin/oe-console oe:cache:clear`.
 
 ## Configuration
 
@@ -29,7 +41,7 @@ composer.json file.
   "extra": {
     "oxideshop": {
       "update-answer-yes": [
-        "oxid-esales/apex-theme"
+        "oxid-esales/oxideshop-ce"
       ],
       "update-answer-no": [
         "my-vendor/other-example"

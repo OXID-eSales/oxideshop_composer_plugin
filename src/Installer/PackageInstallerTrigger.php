@@ -12,6 +12,7 @@ namespace OxidEsales\ComposerPlugin\Installer;
 use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
 use OxidEsales\ComposerPlugin\Installer\Package\AbstractPackageInstaller;
+use OxidEsales\ComposerPlugin\Installer\Package\AdminUiPackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ComponentInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ModulePackageInstaller;
 use OxidEsales\ComposerPlugin\Installer\Package\ShopPackageInstaller;
@@ -26,6 +27,7 @@ class PackageInstallerTrigger extends LibraryInstaller
     public const TYPE_ESHOP = 'oxideshop';
     public const TYPE_MODULE = 'oxideshop-module';
     public const TYPE_THEME = 'oxideshop-theme';
+    public const TYPE_ADMIN_UI = 'oxideshop-admin-ui';
     public const TYPE_DEMODATA = 'oxideshop-demodata';
     public const TYPE_COMPONENT = 'oxideshop-component';
 
@@ -34,6 +36,7 @@ class PackageInstallerTrigger extends LibraryInstaller
         self::TYPE_ESHOP => ShopPackageInstaller::class,
         self::TYPE_MODULE => ModulePackageInstaller::class,
         self::TYPE_THEME => ThemePackageInstaller::class,
+        self::TYPE_ADMIN_UI => AdminUiPackageInstaller::class,
         self::TYPE_COMPONENT => ComponentInstaller::class,
     ];
 

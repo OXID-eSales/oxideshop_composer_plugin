@@ -45,4 +45,17 @@ class PackageInstallerTriggerTest extends TestCase
 
         $this->assertEquals($result, getcwd() . '/source');
     }
+
+    public function testAdminUiPackageTypeIsSupported(): void
+    {
+        $this->assertTrue($this->getPackageInstallerTrigger()->supports(PackageInstallerTrigger::TYPE_ADMIN_UI));
+    }
+
+    private function getPackageInstallerTrigger(): PackageInstallerTrigger
+    {
+        $composer = $this->createStub(Composer::class);
+        $composer->method('getConfig')->willReturn(new Config());
+
+        return new PackageInstallerTrigger(new NullIO(), $composer);
+    }
 }
